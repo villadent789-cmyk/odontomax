@@ -27,7 +27,7 @@ public class CatalogoEspecialistasController {
                 ? consultarEspecialistaUseCase.listarPublicosPorSede(sedeId.trim())
                 : consultarEspecialistaUseCase.listarPublicos();
         return ResponseEntity.ok()
-                .cacheControl(CacheControl.maxAge(Duration.ofMinutes(5)).cachePublic())
+                .cacheControl(CacheControl.maxAge(Duration.ofSeconds(30)).cachePublic())
                 .body(publicos);
     }
 }

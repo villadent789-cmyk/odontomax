@@ -58,7 +58,7 @@ class CatalogoPublicoCaracterizacionTest {
 
         mockMvc.perform(get("/reservas-publicas/catalogo/especialistas"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Cache-Control", "max-age=300, public"))
+                .andExpect(header().string("Cache-Control", "max-age=30, public"))
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].id").value(doctorId.toString()))
                 .andExpect(jsonPath("$[0].nombre").value("Dr. Fernando Morales"))
