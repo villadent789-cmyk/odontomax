@@ -46,6 +46,8 @@ class SecurityEndpointsTest {
     @MockBean
     private com.odontomax.pacientes.application.port.in.GestionarSolicitudesCorreccionUseCase solicitudesCorreccionUseCase;
     @MockBean
+    private com.odontomax.pacientes.application.port.in.GestionarSolicitudesEliminacionUseCase solicitudesEliminacionUseCase;
+    @MockBean
     private com.odontomax.pacientes.application.port.in.EliminarPacienteUseCase eliminarPacienteUseCase;
     @MockBean
     private com.odontomax.pacientes.application.port.in.ConsultarPacienteUseCase consultarPacienteUseCase;

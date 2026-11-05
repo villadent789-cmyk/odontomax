@@ -229,7 +229,7 @@ class OpenApiExportTest {
     }
 
     @Test
-    @DisplayName("Exporta /v3/api-docs a docs/api/openapi.json con los 192 endpoints de la matriz y sin desincronizarse")
+    @DisplayName("Exporta /v3/api-docs a docs/api/openapi.json con los 196 endpoints de la matriz y sin desincronizarse")
     void exportarContrato() throws Exception {
         String token = tokenAdminGeneral();
 
@@ -251,7 +251,7 @@ class OpenApiExportTest {
         sobran.removeAll(enCsv);
         assertThat(faltan).as("Endpoints de la matriz ausentes en el documento OpenAPI").isEmpty();
         assertThat(sobran).as("Endpoints del documento OpenAPI que no están en la matriz").isEmpty();
-        assertThat(enDocumento).hasSize(192);
+        assertThat(enDocumento).hasSize(196);
 
         // 2. JSON determinista y comparación con el contrato publicado
         String generado = formatear(normalizar(doc));
@@ -305,7 +305,7 @@ class OpenApiExportTest {
                 endpoints.add(c[1] + " " + c[2]);
             }
         }
-        assertThat(endpoints).hasSize(192);
+        assertThat(endpoints).hasSize(196);
         return endpoints;
     }
 

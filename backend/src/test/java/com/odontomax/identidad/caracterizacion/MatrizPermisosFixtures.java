@@ -256,6 +256,10 @@ final class MatrizPermisosFixtures {
         sinCuerpo("GET", "/pacientes/solicitudes-correccion/pendientes", "/pacientes/solicitudes-correccion/pendientes");
         conCuerpo("POST", "/pacientes/solicitudes-correccion/{solicitudId}/aprobar", "/pacientes/solicitudes-correccion/" + id + "/aprobar", "{\"comentario\":\"Autorizado\"}");
         conCuerpo("POST", "/pacientes/solicitudes-correccion/{solicitudId}/rechazar", "/pacientes/solicitudes-correccion/" + id + "/rechazar", "{\"comentario\":\"No procede\"}");
+        conCuerpo("POST", "/solicitudes-eliminacion", "/solicitudes-eliminacion", "{\"tipo\":\"PACIENTE\",\"objetivoId\":\"" + id + "\",\"motivo\":\"Paciente creado por error\"}");
+        sinCuerpo("GET", "/solicitudes-eliminacion/pendientes", "/solicitudes-eliminacion/pendientes");
+        conCuerpo("POST", "/solicitudes-eliminacion/{solicitudId}/aprobar", "/solicitudes-eliminacion/" + id + "/aprobar", "{\"comentario\":\"Autorizado\"}");
+        conCuerpo("POST", "/solicitudes-eliminacion/{solicitudId}/rechazar", "/solicitudes-eliminacion/" + id + "/rechazar", "{\"comentario\":\"No procede\"}");
         conCuerpo("POST", "/presupuestos", "/presupuestos", "{\"pacienteId\":\"" + id + "\",\"sedeId\":\"" + SEDE
                 + "\",\"items\":[{\"nombre\":\"Curación\",\"cantidad\":2,\"precioUnitario\":50}]}");
         conCuerpo("POST", "/presupuestos/{id}/aceptar", "/presupuestos/" + id + "/aceptar", "{}");

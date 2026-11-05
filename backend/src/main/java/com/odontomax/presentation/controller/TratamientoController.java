@@ -69,7 +69,7 @@ public class TratamientoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE')")
+    @PreAuthorize("hasRole('ADMIN_GENERAL')")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         tratamientoService.eliminar(id);
         return ResponseEntity.noContent().build();

@@ -16,6 +16,7 @@ import { useDatosSede } from '../caja/useDatosSede'
 import { AccionesAdminPaciente } from './AccionesAdminPaciente'
 import { cambiosDe, useSolicitudesDePaciente } from './api-correcciones'
 import { SolicitarCorreccionModal } from './SolicitarCorreccionModal'
+import { SolicitarEliminacionModal } from './SolicitarEliminacionModal'
 import {
   useTratamientosPaciente,
   useAceptarTratamientoMutation,
@@ -152,6 +153,7 @@ export function FichaPacientePage() {
   /* Consultas Backend */
   const { data: paciente, isLoading, isError, error, refetch } = usePacienteQuery(id)
   const [corrigiendo, setCorrigiendo] = useState(false)
+  const [eliminandoPaciente, setEliminandoPaciente] = useState(false)
   const solicitudesCorreccion = useSolicitudesDePaciente(id)
   const correccionesPendientes = (solicitudesCorreccion.data ?? []).filter((s) => s.estado === 'PENDIENTE')
   const { data: tratamientos = [], refetch: recargarTratamientos, isPending: cargandoTratamientos, isError: errorTratamientos } =
@@ -407,12 +409,24 @@ export function FichaPacientePage() {
           <Button type="button" variant="secundario" onClick={() => setCorrigiendo(true)}>
             Solicitar corrección de nombre, DNI o fecha de nacimiento
           </Button>
+          {sesion?.usuario.rol !== 'ADMIN_GENERAL' && (
+            <Button type="button" variant="secundario" onClick={() => setEliminandoPaciente(true)}>
+              Solicitar eliminación del paciente
+            </Button>
+          )}
           {correccionesPendientes.map((s) => (
             <span key={s.id} className="text-xs text-on-surface-variant">
               Pendiente de autorización del dueño: {cambiosDe(s).join('; ')}
             </span>
           ))}
         </div>
+        <SolicitarEliminacionModal
+          abierto={eliminandoPaciente}
+          alCerrar={() => setEliminandoPaciente(false)}
+          tipo="PACIENTE"
+          objetivoId={paciente.id!}
+          descripcion={`al paciente ${paciente.nombreCompleto ?? ''}`}
+        />
         <SolicitarCorreccionModal
           abierto={corrigiendo}
           alCerrar={() => setCorrigiendo(false)}
@@ -1962,6 +1976,7 @@ export function FichaPacientePage() {
         abierto={Boolean(radiografiaSeleccionada)}
         alCerrar={() => setRadiografiaSeleccionada(null)}
         radiografia={radiografiaSeleccionada}
+        esDueno={sesion?.usuario.rol === 'ADMIN_GENERAL'}
       />
 
       <FirmarConsentimientoModal

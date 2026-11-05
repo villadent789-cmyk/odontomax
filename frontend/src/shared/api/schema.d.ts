@@ -1291,7 +1291,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["listarPendientes"];
+        get: operations["listarPendientes_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1309,7 +1309,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["aprobar"];
+        post: operations["aprobar_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1325,7 +1325,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["rechazar_1"];
+        post: operations["rechazar_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1389,7 +1389,7 @@ export interface paths {
         };
         get: operations["listarDePaciente"];
         put?: never;
-        post: operations["solicitar"];
+        post: operations["solicitar_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1741,7 +1741,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["rechazar"];
+        post: operations["rechazar_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2322,6 +2322,70 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["cambiarEstado_1"];
+        trace?: never;
+    };
+    "/solicitudes-eliminacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["solicitar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/solicitudes-eliminacion/pendientes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listarPendientes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/solicitudes-eliminacion/{solicitudId}/aprobar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["aprobar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/solicitudes-eliminacion/{solicitudId}/rechazar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["rechazar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/tratamientos": {
@@ -4649,6 +4713,32 @@ export interface components {
             /** Format: date-time */
             solicitadoEn?: string;
             solicitadoPorNombre?: string;
+        };
+        SolicitudEliminacionRequestDTO: {
+            motivo: string;
+            /** Format: uuid */
+            objetivoId: string;
+            tipo: string;
+        };
+        SolicitudEliminacionResponseDTO: {
+            comentarioResolucion?: string;
+            descripcion?: string;
+            estado?: string;
+            /** Format: uuid */
+            id?: string;
+            motivo?: string;
+            /** Format: uuid */
+            objetivoId?: string;
+            /** Format: uuid */
+            pacienteId?: string;
+            /** Format: date-time */
+            resueltoEn?: string;
+            resueltoPorNombre?: string;
+            sedeId?: string;
+            /** Format: date-time */
+            solicitadoEn?: string;
+            solicitadoPorNombre?: string;
+            tipo?: string;
         };
         TablaSizeDTO: {
             tabla?: string;
@@ -7274,7 +7364,7 @@ export interface operations {
             };
         };
     };
-    listarPendientes: {
+    listarPendientes_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7294,7 +7384,7 @@ export interface operations {
             };
         };
     };
-    aprobar: {
+    aprobar_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7320,7 +7410,7 @@ export interface operations {
             };
         };
     };
-    rechazar_1: {
+    rechazar_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7495,7 +7585,7 @@ export interface operations {
             };
         };
     };
-    solicitar: {
+    solicitar_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -8103,7 +8193,7 @@ export interface operations {
             };
         };
     };
-    rechazar: {
+    rechazar_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -9083,6 +9173,102 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ServicioResponseDTO"];
+                };
+            };
+        };
+    };
+    solicitar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SolicitudEliminacionRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SolicitudEliminacionResponseDTO"];
+                };
+            };
+        };
+    };
+    listarPendientes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SolicitudEliminacionResponseDTO"][];
+                };
+            };
+        };
+    };
+    aprobar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitudId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResolverSolicitudCorreccionRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SolicitudEliminacionResponseDTO"];
+                };
+            };
+        };
+    };
+    rechazar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitudId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ResolverSolicitudCorreccionRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SolicitudEliminacionResponseDTO"];
                 };
             };
         };

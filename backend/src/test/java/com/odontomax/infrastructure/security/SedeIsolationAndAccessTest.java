@@ -47,6 +47,8 @@ class SedeIsolationAndAccessTest {
     @MockBean
     private com.odontomax.pacientes.application.port.in.GestionarSolicitudesCorreccionUseCase solicitudesCorreccionUseCase;
     @MockBean
+    private com.odontomax.pacientes.application.port.in.GestionarSolicitudesEliminacionUseCase solicitudesEliminacionUseCase;
+    @MockBean
     private com.odontomax.pacientes.application.port.out.ExpedienteDependenciasPort expedienteDependenciasPort;
     @MockBean
     private com.odontomax.pacientes.application.port.out.BorradoArchivosPort borradoArchivosPort;

@@ -6,16 +6,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/design-system/components/Dialog'
+import { useState } from 'react'
 import { formatFecha } from '@/shared/format'
+import { SolicitarEliminacionModal } from '../pacientes/SolicitarEliminacionModal'
 import { resolverUrlRadiografia, type RadiografiaDTO } from './api-radiografias'
 
 interface Props {
   abierto: boolean
   alCerrar: () => void
   radiografia: RadiografiaDTO | null
+  /** El dueño elimina de inmediato; el resto de roles solicita la eliminación y el dueño la autoriza. */
+  esDueno?: boolean
 }
 
-export function VisorRadiografiaModal({ abierto, alCerrar, radiografia }: Props) {
+export function VisorRadiografiaModal({ abierto, alCerrar, radiografia, esDueno = false }: Props) {
+  const [eliminando, setEliminando] = useState(false)
   if (!radiografia) return null
 
   const urlVisualizacion = resolverUrlRadiografia(radiografia)
@@ -132,11 +137,24 @@ export function VisorRadiografiaModal({ abierto, alCerrar, radiografia }: Props)
               </a>
             ) : <div />}
 
-            <Button variant="primario" onClick={alCerrar}>
-              Cerrar Visor
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="secundario" className="text-xs" onClick={() => setEliminando(true)}>
+                {esDueno ? 'Eliminar estudio' : 'Solicitar eliminación'}
+              </Button>
+              <Button variant="primario" onClick={alCerrar}>
+                Cerrar Visor
+              </Button>
+            </div>
           </div>
         </div>
+        <SolicitarEliminacionModal
+          abierto={eliminando}
+          alCerrar={() => setEliminando(false)}
+          tipo="RADIOGRAFIA"
+          objetivoId={radiografia.id}
+          descripcion={`el estudio ${radiografia.nombreArchivo || radiografia.tipoEstudio}`}
+          directo={esDueno ? { pacienteId: radiografia.pacienteId, alEliminar: () => { setEliminando(false); alCerrar() } } : undefined}
+        />
       </DialogContent>
     </Dialog>
   )

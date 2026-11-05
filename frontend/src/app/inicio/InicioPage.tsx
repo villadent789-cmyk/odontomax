@@ -22,6 +22,7 @@ import { TarjetaMiAvance } from './TarjetaMiAvance'
 import { VillamaxResumenPage } from '../villamax/VillamaxResumenPage'
 import { BandejaPage } from '../agenda/BandejaPage'
 import { CorreccionesPendientes } from '../pacientes/CorreccionesPendientes'
+import { EliminacionesPendientes } from '../pacientes/EliminacionesPendientes'
 import { RotuloMostrando } from '../layout/RotuloMostrando'
 
 interface Acceso {
@@ -145,6 +146,7 @@ export function InicioPage() {
       </section>
 
       {rol === 'ADMIN_GENERAL' && <CorreccionesPendientes />}
+      {rol === 'ADMIN_GENERAL' && <EliminacionesPendientes />}
 
       {puede(rol, 'bandeja') ? (
         // Recepción y administración: la bandeja del día (confirmar, reservas web, recordatorios, sala de espera) vive aquí.

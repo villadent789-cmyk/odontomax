@@ -100,7 +100,7 @@ public class RadiografiaController {
      * Restringido a administradores; ADMIN_SEDE solo dentro de su sede.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE')")
+    @PreAuthorize("hasRole('ADMIN_GENERAL')")
     public ResponseEntity<Void> eliminarRadiografia(
             @PathVariable UUID id,
             @RequestParam("motivo") String motivo

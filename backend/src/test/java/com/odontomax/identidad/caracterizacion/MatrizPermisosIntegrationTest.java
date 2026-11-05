@@ -115,6 +115,7 @@ class MatrizPermisosIntegrationTest {
     // agenda
     @MockBean private com.odontomax.pacientes.application.port.in.GestionarFichaIngresoUseCase gestionarFichaIngresoUseCase;
     @MockBean private com.odontomax.pacientes.application.port.in.GestionarSolicitudesCorreccionUseCase solicitudesCorreccionUseCase;
+    @MockBean private com.odontomax.pacientes.application.port.in.GestionarSolicitudesEliminacionUseCase solicitudesEliminacionUseCase;
     @MockBean private com.odontomax.pacientes.application.port.in.GestionarFotoPacienteUseCase gestionarFotoPacienteUseCase;
     @MockBean private com.odontomax.clinica.service.EpisodioOdontogramaService episodioOdontogramaService;
     @MockBean private com.odontomax.tratamientos.service.PresupuestoService presupuestoService;
@@ -304,8 +305,8 @@ class MatrizPermisosIntegrationTest {
 
         assertThat(faltanEnCsv).as("Endpoints nuevos sin fila en " + CSV).isEmpty();
         assertThat(sobranEnCsv).as("Filas del CSV que ya no existen como endpoint").isEmpty();
-        assertThat(registrados).hasSize(192);
-        assertThat(leerCsv()).hasSize(192);
+        assertThat(registrados).hasSize(196);
+        assertThat(leerCsv()).hasSize(196);
         enCsv.forEach(k -> assertThat(MatrizPermisosFixtures.tieneFixture(k.split(" ")[0], k.split(" ")[1]))
                 .as("fixture de petición para %s", k).isTrue());
     }

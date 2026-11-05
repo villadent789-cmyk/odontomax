@@ -6024,6 +6024,78 @@
         },
         "type": "object"
       },
+      "SolicitudEliminacionRequestDTO": {
+        "properties": {
+          "motivo": {
+            "maxLength": 500,
+            "minLength": 5,
+            "type": "string"
+          },
+          "objetivoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipo": {
+            "pattern": "RADIOGRAFIA|PACIENTE",
+            "type": "string"
+          }
+        },
+        "required": [
+          "motivo",
+          "objetivoId",
+          "tipo"
+        ],
+        "type": "object"
+      },
+      "SolicitudEliminacionResponseDTO": {
+        "properties": {
+          "comentarioResolucion": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "objetivoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "pacienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "resueltoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "resueltoPorNombre": {
+            "type": "string"
+          },
+          "sedeId": {
+            "type": "string"
+          },
+          "solicitadoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "solicitadoPorNombre": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "TablaSizeDTO": {
         "properties": {
           "tabla": {
@@ -10259,7 +10331,7 @@
     },
     "/pacientes/solicitudes-correccion/pendientes": {
       "get": {
-        "operationId": "listarPendientes",
+        "operationId": "listarPendientes_1",
         "responses": {
           "200": {
             "content": {
@@ -10282,7 +10354,7 @@
     },
     "/pacientes/solicitudes-correccion/{solicitudId}/aprobar": {
       "post": {
-        "operationId": "aprobar",
+        "operationId": "aprobar_1",
         "parameters": [
           {
             "in": "path",
@@ -10322,7 +10394,7 @@
     },
     "/pacientes/solicitudes-correccion/{solicitudId}/rechazar": {
       "post": {
-        "operationId": "rechazar_1",
+        "operationId": "rechazar_2",
         "parameters": [
           {
             "in": "path",
@@ -10591,7 +10663,7 @@
         ]
       },
       "post": {
-        "operationId": "solicitar",
+        "operationId": "solicitar_1",
         "parameters": [
           {
             "in": "path",
@@ -11469,7 +11541,7 @@
     },
     "/presupuestos/{id}/rechazar": {
       "post": {
-        "operationId": "rechazar",
+        "operationId": "rechazar_1",
         "parameters": [
           {
             "in": "path",
@@ -12990,6 +13062,139 @@
         },
         "tags": [
           "servicio-controller"
+        ]
+      }
+    },
+    "/solicitudes-eliminacion": {
+      "post": {
+        "operationId": "solicitar",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitudEliminacionRequestDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolicitudEliminacionResponseDTO"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "solicitud-eliminacion-controller"
+        ]
+      }
+    },
+    "/solicitudes-eliminacion/pendientes": {
+      "get": {
+        "operationId": "listarPendientes",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SolicitudEliminacionResponseDTO"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "solicitud-eliminacion-controller"
+        ]
+      }
+    },
+    "/solicitudes-eliminacion/{solicitudId}/aprobar": {
+      "post": {
+        "operationId": "aprobar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "solicitudId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolverSolicitudCorreccionRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolicitudEliminacionResponseDTO"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "solicitud-eliminacion-controller"
+        ]
+      }
+    },
+    "/solicitudes-eliminacion/{solicitudId}/rechazar": {
+      "post": {
+        "operationId": "rechazar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "solicitudId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolverSolicitudCorreccionRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolicitudEliminacionResponseDTO"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "solicitud-eliminacion-controller"
         ]
       }
     },
