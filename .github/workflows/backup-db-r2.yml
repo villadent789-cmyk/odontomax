@@ -15,19 +15,36 @@ jobs:
       BACKUP_FILE: odontomax_$(date +%Y%m%d_%H%M%S).sql.gz.enc
 
     steps:
+      - name: Instalar cliente PostgreSQL 17 (Supabase usa la 17; el del runner es mas viejo y se niega a volcar)
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          . /etc/os-release
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --version
+
       - name: Volcar base de datos (pg_dump)
         env:
           PGPASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          pg_dump \
+          # Sin pipefail, si pg_dump falla gzip igual termina bien y se subiria una copia vacia sin avisar.
+          set -o pipefail
+          /usr/lib/postgresql/17/bin/pg_dump \
             --host="${{ secrets.DB_HOST }}" \
             --port="${{ secrets.DB_PORT || 5432 }}" \
             --username="${{ secrets.DB_USER }}" \
             --dbname="${{ secrets.DB_NAME }}" \
             --no-password \
             --format=custom \
+            --schema=public \
+            --no-owner \
+            --no-privileges \
           | gzip \
           > dump_raw.sql.gz
+          # Una base con las 76 migraciones pesa mucho mas que esto: si queda mas chica, el volcado salio incompleto.
+          test "$(stat -c%s dump_raw.sql.gz)" -gt 20000
 
       - name: Cifrar con AES-256-CBC
         env:
