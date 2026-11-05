@@ -26,7 +26,8 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     css: false,
     pool: 'threads',
-    testTimeout: 15_000,
+    // Los runners gratuitos de CI (2 CPU) son varias veces mas lentos que un PC de desarrollo.
+    testTimeout: 30_000,
     // URL absoluta para que fetch funcione en Node/jsdom; MSW intercepta este origen (src/test/msw.ts).
     env: { VITE_API_URL: 'http://localhost:3000/api/v1' },
     passWithNoTests: true,

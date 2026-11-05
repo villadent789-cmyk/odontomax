@@ -50,7 +50,7 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit -p tsconfig.app.json
       - run: npm run lint
-      - run: npm test
+      - run: npm test -- --maxWorkers=2
       - run: npm run build
       # Solo las dependencias que viajan a producción: las de desarrollo (eslint, vitest) no se publican.
       - run: npm audit --omit=dev --audit-level=high
