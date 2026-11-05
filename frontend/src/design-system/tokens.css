@@ -1,0 +1,115 @@
+/*
+ * Tokens del design system Villadent · Villamax.
+ *
+ * Colores medidos en las capturas de Stitch (diseno/A1 guía de estilo, B0 y B1). Siguen la nomenclatura
+ * Material 3 que usa Stitch (primary, primary-container, on-*, surface-container-*).
+ * Cada par texto/fondo que se usa en la interfaz está verificado (WCAG AA) en tokens.contrast.test.ts:
+ * si cambias un valor aquí, ese test te dirá si el par sigue siendo legible.
+ *
+ * Solo hay tema claro. El tema oscuro se añadirá redefiniendo estas mismas variables bajo
+ * :root[data-theme='dark'] (los componentes usan las variables, nunca hex directos).
+ */
+:root {
+  /* Marca Villadent (derivada del logo oficial Slate 900) */
+  --vd-primary: #0f172a; /* títulos, texto de marca, enlaces */
+  --vd-on-primary: #ffffff;
+  --vd-primary-container: #1e293b; /* botón primario, ítem de menú activo */
+  --vd-on-primary-container: #ffffff;
+  --vd-primary-fixed: #e2e8f0; /* fondo de chip "Confirmada" */
+  --vd-on-primary-fixed: #0f172a;
+  --vd-primary-fixed-dim: #94a3b8; /* acento tenue y detalles sobre fondo oscuro */
+
+  /* Acción Clínica (azul zafiro médico de alta legibilidad) */
+  --vd-secondary: #0369a1; /* texto de acción sobre fondos claros */
+  --vd-on-secondary: #ffffff;
+  --vd-secondary-container: #0369a1; /* botón de acción clínica destacada */
+  --vd-on-secondary-container: #ffffff; /* texto sobre botón de acción */
+  --vd-secondary-fixed: #e0f2fe; /* fondo de chip "En espera" */
+  --vd-on-secondary-fixed: #0c4a6e;
+
+  /* Índigo Villamax (radiología y tomografía 3D) */
+  --vd-tertiary: #3730a3;
+  --vd-on-tertiary: #ffffff;
+  --vd-tertiary-fixed: #eef2ff; /* fondo de chip "En atención" */
+  --vd-on-tertiary-fixed: #312e81;
+
+  /* Error / bloqueo */
+  --vd-error: #dc2626;
+  --vd-on-error: #ffffff;
+  --vd-error-container: #fee2e2;
+  --vd-on-error-container: #991b1b;
+
+  /* Superficies (fondo blanco clínico neutro Slate sin tinte verde) */
+  --vd-surface: #f8f7f4; /* fondo general de la aplicación */
+  --vd-surface-container-lowest: #ffffff; /* tarjetas y modales */
+  --vd-surface-container-low: #f3f2ee; /* barra lateral, campos de formulario */
+  --vd-surface-container: #ece9e1;
+  --vd-surface-container-high: #e0dccf; /* botón secundario tonal / hover */
+  --vd-surface-container-highest: #c9c4b5; /* estado deshabilitado */
+
+  /* Neutros de lectura */
+  --vd-on-surface: #0f172a; /* texto principal de alto contraste */
+  --vd-on-surface-variant: #334155; /* texto secundario, etiquetas */
+  --vd-placeholder: #475569; /* placeholder de campos (cumple WCAG AA 4.5:1) */
+  --vd-outline: #64748b; /* bordes de controles */
+  --vd-outline-variant: #e4e2db; /* separadores */
+  --vd-focus: #0f172a; /* anillo de foco */
+
+  /* Oro del emblema oficial: solo detalles de marca (aros, filetes); no se usa como color de texto. */
+  --vd-brand-gold: #ac8449;
+  --vd-brand-gold-light: #ffde8f;
+
+  /* Color de acción de la marca activa: dorado en Villadent, índigo en Villamax (data-negocio en la carcasa). */
+  --vd-acento: #ac8449;
+  --vd-on-acento: #0f172a;
+
+  /* Escala de acento de la marca activa (reemplaza a indigo-* en toda la interfaz): oro en Villadent, índigo en Villamax. */
+  --vd-ac-50: #fbf7ee;
+  --vd-ac-100: #f5ecd8;
+  --vd-ac-200: #ebd6ab;
+  --vd-ac-300: #dcb976;
+  --vd-ac-400: #c99f55;
+  --vd-ac-500: #ac8449;
+  --vd-ac-600: #8c6a33;
+  --vd-ac-700: #715329;
+  --vd-ac-800: #5a4222;
+  --vd-ac-900: #46341c;
+  --vd-ac-950: #2b2010;
+
+  /*
+   * Tipografía de la guía de estilo (A1): Bricolage Grotesque para títulos y Plus Jakarta Sans para el cuerpo.
+   * Las capturas de Stitch se ven en serif porque se renderizaron con la fuente de reserva; manda la guía.
+   * Las fuentes se sirven desde el propio bundle (@fontsource, importadas en main.tsx), sin CDN externo.
+   */
+  --vd-font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --vd-font-body: 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+  --vd-font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Radios clínicos refinados: suaves, sobrios y no excesivamente redondos */
+  --vd-radius-card: 0.875rem; /* 14px: tarjetas de módulos */
+  --vd-radius-panel: 0.625rem; /* 10px: bloques internos, alertas, campos */
+  --vd-radius-control: 0.5rem; /* 8px: inputs, controles y pestañas */
+  --vd-radius-pill: 9999px; /* chips y badges */
+
+  /* Sombras clínicas limpias basadas en Slate 900 */
+  --vd-shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --vd-shadow-raised: 0 10px 25px -5px rgb(15 23 42 / 0.08), 0 8px 10px -6px rgb(15 23 42 / 0.04);
+  --vd-shadow-accion: 0 4px 14px 0 rgb(3 105 161 / 0.25);
+}
+
+/* Villamax 3D: mismo diseño con su propio color de acción. */
+[data-negocio='VILLAMAX'] {
+  --vd-acento: #3730a3;
+  --vd-on-acento: #ffffff;
+  --vd-ac-50: #eef2ff;
+  --vd-ac-100: #e0e7ff;
+  --vd-ac-200: #c7d2fe;
+  --vd-ac-300: #a5b4fc;
+  --vd-ac-400: #818cf8;
+  --vd-ac-500: #6366f1;
+  --vd-ac-600: #4f46e5;
+  --vd-ac-700: #4338ca;
+  --vd-ac-800: #3730a3;
+  --vd-ac-900: #312e81;
+  --vd-ac-950: #1e1b4b;
+}

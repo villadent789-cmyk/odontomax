@@ -1,0 +1,19 @@
+-- =============================================================================
+-- V24 · Horario de atención Villadent: lunes a domingo de 09:00 a 20:00
+-- Cada especialista activo, en cada sede Villadent activa a la que está asignado
+-- (especialista_sedes), queda con un turno por día del 1 (lunes) al 7 (domingo)
+-- de 09:00 a 20:00. Si ya tenía turno ese día en esa sede, se reemplaza.
+-- Las sedes Villamax (radiología) no se tocan.
+-- Desde aquí el horario se sigue ajustando por doctor en Administración → Horarios.
+-- =============================================================================
+
+INSERT INTO especialista_horarios (especialista_id, sede_id, dia_semana, hora_inicio, hora_fin, activo)
+SELECT es.especialista_id, es.sede_id, d.dia, TIME '09:00', TIME '20:00', true
+FROM especialista_sedes es
+JOIN especialistas e ON e.id = es.especialista_id AND e.activo
+JOIN sedes s ON s.id = es.sede_id AND s.activa AND s.unidad_de_negocio = 'VILLADENT'
+CROSS JOIN generate_series(1, 7) AS d(dia)
+ON CONFLICT (especialista_id, sede_id, dia_semana)
+DO UPDATE SET hora_inicio = EXCLUDED.hora_inicio,
+              hora_fin    = EXCLUDED.hora_fin,
+              activo      = true;

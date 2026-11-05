@@ -1,0 +1,5 @@
+#
+#Mon Oct 05 14:04:16 PET 2026
+no\ classes\ that\ reside\ in\ a\ package\ '..domain..'\ should\ depend\ on\ classes\ that\ reside\ in\ any\ package\ ['org.springframework..',\ 'jakarta.persistence..',\ 'jakarta.validation..'],\ because\ El\ dominio\ debe\ ser\ Java\ puro\ y\ no\ acoplarse\ a\ Spring,\ JPA\ ni\ Bean\ Validation=b294f366-2d1c-459e-bdbd-ebf14372ef89
+no\ classes\ that\ reside\ in\ a\ package\ '..application..'\ should\ depend\ on\ classes\ that\ reside\ in\ a\ package\ '..infrastructure..',\ because\ La\ capa\ application\ no\ debe\ depender\ de\ infrastructure;\ debe\ invertir\ dependencias\ mediante\ puertos=62f55e52-aad2-40ef-8a65-d6c8692f81d4
+no\ classes\ that\ reside\ in\ a\ package\ '..domain.exception..'\ should\ be\ annotated\ with\ @ResponseStatus,\ because\ Las\ excepciones\ de\ dominio\ no\ deben\ llevar\ @ResponseStatus;\ el\ c\u00F3digo\ HTTP\ lo\ decide\ GlobalExceptionHandler=6b92715f-61bc-43f1-9bb4-51ed319ce7a1

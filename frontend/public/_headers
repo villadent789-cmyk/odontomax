@@ -1,0 +1,14 @@
+# Cabeceras de seguridad para la web estática (formato de Cloudflare Pages y Netlify).
+# No se define Content-Security-Policy aquí a propósito: hay que probarla con la web ya desplegada (tipografías, imágenes de R2) antes de activarla.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# Los archivos con nombre único (hash) se pueden guardar un año; la página de entrada nunca.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/index.html
+  Cache-Control: no-cache

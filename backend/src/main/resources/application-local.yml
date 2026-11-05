@@ -1,0 +1,53 @@
+# =============================================================================
+# Perfil "local": SOLO DESARROLLO LOCAL (ver docs/desarrollo-local.md)
+# -----------------------------------------------------------------------------
+# - Base de datos: PostgreSQL de docker-compose.yml (127.0.0.1:55432). LocalProfileGuard
+#   impide arrancar este perfil si la URL de BD o de Flyway no apunta a localhost.
+# - Ningún valor de este archivo es un secreto real: las claves de abajo se generaron
+#   al azar únicamente para desarrollo local y NO se usan en ningún otro entorno.
+# - Datos de prueba: LocalSeedRunner (solo con este perfil) siembra usuarios, pacientes y citas.
+# =============================================================================
+
+spring:
+  datasource:
+    # SOLO DESARROLLO LOCAL: credenciales del contenedor de docker-compose.yml
+    url: jdbc:postgresql://localhost:${ODONTOMAX_DB_PORT:55432}/odontomax
+    username: odontomax
+    password: odontomax_local_dev
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+
+  # Flyway ACTIVADO: aplica V1..V14 sobre la base nueva del contenedor
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:${ODONTOMAX_DB_PORT:55432}/odontomax
+    user: odontomax
+    password: odontomax_local_dev
+
+security:
+  jwt:
+    # SOLO DESARROLLO LOCAL: clave generada al azar para pruebas, no es la de ningún entorno real
+    secret: "SOLO-DESARROLLO-LOCAL-evd8STyS32wemDtciApeH2RtOqeREdxNvQXSDaApH7Xzv1lexb2U4V1lfCDD4A5c"
+  totp:
+    # SOLO DESARROLLO LOCAL: 32 bytes aleatorios en Base64 generados para pruebas
+    encryption-key: "Ltcn67nNUfbAe8OFScpq8MV404fYGWZj9pt0xu9aat8="
+    encryption-key-old: ""
+
+# Radiografías: sin credenciales de Cloudflare R2 el adaptador no se inicializa y
+# las subidas responden con error (el resto de la aplicación funciona).
+cloudflare:
+  r2:
+    account-id: ""
+    access-key: ""
+    secret-key: ""
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173,http://127.0.0.1:5173
+
+# Sin bootstrap de administrador: los usuarios de prueba los crea LocalSeedRunner
+admin:
+  bootstrap:
+    email: ""
+    password: ""

@@ -1,0 +1,52 @@
+# Compilación
+target/
+build/
+out/
+# ...pero no los paquetes Java de puertos de salida (application/port/out, domain/port/out)
+!**/src/**/port/out/
+node_modules/
+dist/
+
+# Variables de entorno y credenciales sensibles
+.env
+.env.*
+!.env.example
+
+# Perfiles de Spring con credenciales (BD, R2, SMTP, SUNAT). Solo se versiona application.yml sin secretos.
+application-*.properties
+application-*.yml
+application-*.yaml
+!**/src/test/resources/application-test.yml
+# Perfil de desarrollo local: sin secretos reales (claves generadas SOLO DESARROLLO LOCAL)
+!backend/src/main/resources/application-local.yml
+
+# Certificados y llaves (firma SUNAT, TLS)
+*.pfx
+*.p12
+*.jks
+*.keystore
+*.pem
+*.key
+*.crt
+*.cer
+
+# IDEs y sistema
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs y temporales
+*.log
+logs/
+uploads/
+backend/uploads/
+
+# Herramientas locales de agentes
+.claude/*
+!.claude/agents/
+.claude-flow/
+.agents/
+graphify-out/
+GRAPH_REPORT.md

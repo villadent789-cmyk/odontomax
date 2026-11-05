@@ -1,0 +1,29 @@
+# Entorno de desarrollo LOCAL de OdontoMax (ver docs/desarrollo-local.md).
+# Solo levanta PostgreSQL; el backend se arranca con mvnw (perfil "local") y el frontend con npm run dev.
+# Credenciales de prueba SOLO DESARROLLO LOCAL: el puerto se publica únicamente en 127.0.0.1.
+name: odontomax-local
+
+services:
+  postgres:
+    # Misma versión mayor que usan los tests con Testcontainers (postgres:15-alpine)
+    image: postgres:15-alpine
+    container_name: odontomax-local-db
+    environment:
+      POSTGRES_DB: odontomax
+      POSTGRES_USER: odontomax
+      POSTGRES_PASSWORD: odontomax_local_dev
+      TZ: America/Lima
+      PGTZ: America/Lima
+    ports:
+      # 55432 en el host para no chocar con un PostgreSQL instalado en Windows (5432/5433)
+      - "127.0.0.1:${ODONTOMAX_DB_PORT:-55432}:5432"
+    volumes:
+      - odontomax-local-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odontomax -d odontomax"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  odontomax-local-pgdata:

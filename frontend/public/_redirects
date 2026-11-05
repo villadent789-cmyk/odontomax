@@ -1,0 +1,2 @@
+# Web de una sola página (SPA): cualquier ruta (/app/pacientes, /reservar...) debe devolver index.html para que el navegador la resuelva.
+/*  /index.html  200

@@ -1,0 +1,15 @@
+{
+  "name": "Villadent · Villamax",
+  "short_name": "Villadent",
+  "description": "Gestión de citas, pacientes y caja de Villadent y Villamax 3D.",
+  "lang": "es-PE",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0F5C5A",
+  "icons": [
+    { "src": "/logo-villadent-128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "/logo-villadent-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

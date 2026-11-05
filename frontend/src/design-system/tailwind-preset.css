@@ -1,0 +1,202 @@
+/*
+ * Preset de Tailwind CSS v4 del design system.
+ * Expone los tokens de tokens.css como utilidades (bg-primary, text-on-surface-variant, rounded-card, font-display...).
+ * En Tailwind v4 el "preset" es CSS: @theme inline mapea cada utilidad a la variable del token.
+ */
+@theme inline {
+  /* Se conserva la paleta estándar de Tailwind (slate, emerald, rose, amber...) para los estados y acentos de cada pantalla. */
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-primary: var(--vd-primary);
+  --color-on-primary: var(--vd-on-primary);
+  --color-primary-container: var(--vd-primary-container);
+  --color-on-primary-container: var(--vd-on-primary-container);
+  --color-primary-fixed: var(--vd-primary-fixed);
+  --color-on-primary-fixed: var(--vd-on-primary-fixed);
+  --color-primary-fixed-dim: var(--vd-primary-fixed-dim);
+
+  --color-secondary: var(--vd-secondary);
+  --color-on-secondary: var(--vd-on-secondary);
+  --color-secondary-container: var(--vd-secondary-container);
+  --color-on-secondary-container: var(--vd-on-secondary-container);
+  --color-secondary-fixed: var(--vd-secondary-fixed);
+  --color-on-secondary-fixed: var(--vd-on-secondary-fixed);
+
+  --color-tertiary: var(--vd-tertiary);
+  --color-on-tertiary: var(--vd-on-tertiary);
+  --color-tertiary-fixed: var(--vd-tertiary-fixed);
+  --color-on-tertiary-fixed: var(--vd-on-tertiary-fixed);
+
+  --color-error: var(--vd-error);
+  --color-on-error: var(--vd-on-error);
+  --color-error-container: var(--vd-error-container);
+  --color-on-error-container: var(--vd-on-error-container);
+
+  --color-surface: var(--vd-surface);
+  --color-surface-container-lowest: var(--vd-surface-container-lowest);
+  --color-surface-container-low: var(--vd-surface-container-low);
+  --color-surface-container: var(--vd-surface-container);
+  --color-surface-container-high: var(--vd-surface-container-high);
+  --color-surface-container-highest: var(--vd-surface-container-highest);
+
+  --color-on-surface: var(--vd-on-surface);
+  --color-on-surface-variant: var(--vd-on-surface-variant);
+  --color-placeholder: var(--vd-placeholder);
+  --color-outline: var(--vd-outline);
+  --color-outline-variant: var(--vd-outline-variant);
+  --color-focus: var(--vd-focus);
+  --color-brand-gold: var(--vd-brand-gold);
+  --color-brand-gold-light: var(--vd-brand-gold-light);
+  --color-acento: var(--vd-acento);
+  /* Grises cálidos (marfil) y tonos de estado con contraste AA: reemplazan a los de Tailwind en toda la interfaz. */
+  --color-slate-50: #faf9f6;
+  --color-slate-100: #f4f2ed;
+  --color-slate-200: #e8e5dd;
+  --color-slate-300: #d6d2c7;
+  --color-slate-400: #7a746b;
+  --color-slate-500: #68625a;
+  --color-slate-600: #524d46;
+  --color-slate-700: #403c36;
+  --color-slate-800: #2b2824;
+  --color-slate-900: #1b1916;
+  --color-slate-950: #0f0e0c;
+  --color-gray-50: #faf9f6;
+  --color-gray-100: #f4f2ed;
+  --color-gray-200: #e8e5dd;
+  --color-gray-300: #d6d2c7;
+  --color-gray-400: #7a746b;
+  --color-gray-500: #68625a;
+  --color-gray-600: #524d46;
+  --color-gray-700: #403c36;
+  --color-gray-800: #2b2824;
+  --color-gray-900: #1b1916;
+  --color-gray-950: #0f0e0c;
+  --color-neutral-50: #faf9f6;
+  --color-neutral-100: #f4f2ed;
+  --color-neutral-200: #e8e5dd;
+  --color-neutral-300: #d6d2c7;
+  --color-neutral-400: #7a746b;
+  --color-neutral-500: #68625a;
+  --color-neutral-600: #524d46;
+  --color-neutral-700: #403c36;
+  --color-neutral-800: #2b2824;
+  --color-neutral-900: #1b1916;
+  --color-neutral-950: #0f0e0c;
+  --color-zinc-50: #faf9f6;
+  --color-zinc-100: #f4f2ed;
+  --color-zinc-200: #e8e5dd;
+  --color-zinc-300: #d6d2c7;
+  --color-zinc-400: #7a746b;
+  --color-zinc-500: #68625a;
+  --color-zinc-600: #524d46;
+  --color-zinc-700: #403c36;
+  --color-zinc-800: #2b2824;
+  --color-zinc-900: #1b1916;
+  --color-zinc-950: #0f0e0c;
+  --color-stone-50: #faf9f6;
+  --color-stone-100: #f4f2ed;
+  --color-stone-200: #e8e5dd;
+  --color-stone-300: #d6d2c7;
+  --color-stone-400: #7a746b;
+  --color-stone-500: #68625a;
+  --color-stone-600: #524d46;
+  --color-stone-700: #403c36;
+  --color-stone-800: #2b2824;
+  --color-stone-900: #1b1916;
+  --color-stone-950: #0f0e0c;
+  --color-emerald-500: #059669;
+  --color-emerald-600: #047857;
+  --color-emerald-700: #065f46;
+  --color-amber-500: #d97706;
+  --color-amber-600: #b45309;
+  --color-amber-700: #92400e;
+  --color-rose-500: #e11d48;
+  --color-rose-600: #be123c;
+  --color-rose-700: #9f1239;
+  --color-red-500: #dc2626;
+  --color-red-600: #b91c1c;
+  --color-red-700: #991b1b;
+  --color-teal-500: #0d9488;
+  --color-teal-600: #0f766e;
+  --color-teal-700: #115e59;
+  --color-sky-500: #0284c7;
+  --color-sky-600: #0369a1;
+  --color-sky-700: #075985;
+  --color-indigo-50: var(--vd-ac-50);
+  --color-indigo-100: var(--vd-ac-100);
+  --color-indigo-200: var(--vd-ac-200);
+  --color-indigo-300: var(--vd-ac-300);
+  --color-indigo-400: var(--vd-ac-400);
+  --color-indigo-500: var(--vd-ac-500);
+  --color-indigo-600: var(--vd-ac-600);
+  --color-indigo-700: var(--vd-ac-700);
+  --color-indigo-800: var(--vd-ac-800);
+  --color-indigo-900: var(--vd-ac-900);
+  --color-indigo-950: var(--vd-ac-950);
+  --color-on-acento: var(--vd-on-acento);
+
+  --font-display: var(--vd-font-display);
+  --font-body: var(--vd-font-body);
+  --font-mono: var(--vd-font-mono);
+
+  --radius-card: var(--vd-radius-card);
+  --radius-panel: var(--vd-radius-panel);
+  --radius-control: var(--vd-radius-control);
+  --radius-pill: var(--vd-radius-pill);
+
+  --shadow-card: var(--vd-shadow-card);
+  --shadow-raised: var(--vd-shadow-raised);
+  --shadow-accion: var(--vd-shadow-accion);
+
+  /* Escala tipográfica de la guía (A1): headline-xl 40/700, headline-lg 32/600, headline-md 24/600, body-lg 18, body-md 16 */
+  --text-headline-xl: 2.5rem;
+  --text-headline-xl--line-height: 1.15;
+  --text-headline-lg: 2rem;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-md: 1.5rem;
+  --text-headline-md--line-height: 1.25;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.55;
+
+  /* Tracking de etiquetas en mayúsculas */
+  --tracking-etiqueta: 0.12em;
+}
+
+@layer base {
+  html {
+    font-family: var(--vd-font-body);
+    color: var(--vd-on-surface);
+    background-color: var(--vd-surface);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--vd-font-display);
+    color: var(--vd-primary);
+  }
+
+  /* Foco visible y consistente para teclado en todo el sistema */
+  :focus-visible {
+    outline: 2px solid var(--vd-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

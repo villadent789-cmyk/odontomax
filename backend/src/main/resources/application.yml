@@ -1,0 +1,98 @@
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: native
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: odontomax-backend
+
+  # Límite de subida de archivos (15 MB para radiografías panorámicas/periapicales de alta resolución)
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+  # Conexión a Base de Datos PostgreSQL (Supabase Pooler Puerto 6543)
+  datasource:
+    url: ${SUPABASE_DB_URL:jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0}
+    username: ${SUPABASE_DB_USER:postgres.tu-proyecto-id}
+    password: ${SUPABASE_DB_PASSWORD:tu-contrasena-aqui}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+      data-source-properties:
+        prepareThreshold: 0 # Esencial para Transaction Pooling en Supabase (Puerto 6543)
+
+  # Migraciones Automáticas con Flyway (Usa puerto 5432 Directo/Session, ya que DDL no es compatible con Transaction Pooler 6543)
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    url: ${FLYWAY_DB_URL:${SUPABASE_DIRECT_DB_URL:jdbc:postgresql://aws-0-sa-east-1.pooler.supabase.com:5432/postgres?sslmode=require}}
+    user: ${FLYWAY_DB_USER:${SUPABASE_DB_USER:postgres.tu-proyecto-id}}
+    password: ${FLYWAY_DB_PASSWORD:${SUPABASE_DB_PASSWORD:tu-contrasena-aqui}}
+
+  jpa:
+    hibernate:
+      ddl-auto: none # Esquema gestionado por Flyway (V1, V2, V3)
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+# Endpoint de Salud y Monitoreo Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Contrato OpenAPI (springdoc): DESACTIVADO en ejecución para no exponer endpoints nuevos.
+# Solo OpenApiExportTest lo activa para exportar docs/api/openapi.json.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# Configuración de Seguridad y JWT
+security:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: 28800000 # 8 horas
+  totp:
+    encryption-key: ${TOTP_ENCRYPTION_KEY}
+    encryption-key-old: ${TOTP_ENCRYPTION_KEY_OLD:}
+
+# Configuración de Almacenamiento de Radiografías en Cloudflare R2
+cloudflare:
+  r2:
+    account-id: ${CLOUDFLARE_ACCOUNT_ID:tu-account-id}
+    access-key: ${CLOUDFLARE_R2_ACCESS_KEY:tu-access-key}
+    secret-key: ${CLOUDFLARE_R2_SECRET_KEY:tu-secret-key}
+    bucket-name: ${CLOUDFLARE_R2_BUCKET:radiografias-odontomax}
+    public-domain: ${CLOUDFLARE_R2_PUBLIC_DOMAIN:https://radiografias.odontomax.pe}
+
+# Orígenes Permitidos para CORS (Frontend) - Solo dominios autorizados de la clínica
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+# Parámetros de Control y Topes Financieros de Caja
+caja:
+  egreso:
+    tope-movimiento: ${CAJA_TOPE_MOVIMIENTO:200.00}
+    tope-diario-usuario: ${CAJA_TOPE_DIARIO_USUARIO:500.00}
+    tope-diario-sede: ${CAJA_TOPE_DIARIO_SEDE:1000.00}
+

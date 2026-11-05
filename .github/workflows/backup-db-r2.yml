@@ -1,0 +1,81 @@
+name: Backup DB → Cloudflare R2
+
+on:
+  schedule:
+    # 02:00 hora Lima (UTC-5) = 07:00 UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      BACKUP_FILE: odontomax_$(date +%Y%m%d_%H%M%S).sql.gz.enc
+
+    steps:
+      - name: Volcar base de datos (pg_dump)
+        env:
+          PGPASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          pg_dump \
+            --host="${{ secrets.DB_HOST }}" \
+            --port="${{ secrets.DB_PORT || 5432 }}" \
+            --username="${{ secrets.DB_USER }}" \
+            --dbname="${{ secrets.DB_NAME }}" \
+            --no-password \
+            --format=custom \
+          | gzip \
+          > dump_raw.sql.gz
+
+      - name: Cifrar con AES-256-CBC
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          FILENAME="odontomax_$(date +%Y%m%d_%H%M%S).sql.gz.enc"
+          echo "BACKUP_FILE=$FILENAME" >> "$GITHUB_ENV"
+          openssl enc -aes-256-cbc -pbkdf2 -iter 100000 \
+            -in dump_raw.sql.gz \
+            -out "$FILENAME" \
+            -pass "env:BACKUP_PASSPHRASE"
+          rm -f dump_raw.sql.gz
+
+      - name: Subir a Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          aws s3 cp "$BACKUP_FILE" \
+            "s3://${R2_BUCKET}/backups/${BACKUP_FILE}" \
+            --endpoint-url "${R2_ENDPOINT}" \
+            --no-progress
+
+      - name: Eliminar backups de más de 30 días
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          CUTOFF=$(date -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          aws s3api list-objects-v2 \
+            --bucket "${R2_BUCKET}" \
+            --prefix "backups/" \
+            --endpoint-url "${R2_ENDPOINT}" \
+            --query "Contents[?LastModified<='${CUTOFF}'].Key" \
+            --output text \
+          | tr '\t' '\n' \
+          | grep -v '^$' \
+          | while read -r KEY; do
+              aws s3 rm "s3://${R2_BUCKET}/${KEY}" \
+                --endpoint-url "${R2_ENDPOINT}"
+            done
+
+      - name: Limpiar archivo local
+        if: always()
+        run: rm -f "$BACKUP_FILE" dump_raw.sql.gz

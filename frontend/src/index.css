@@ -1,0 +1,246 @@
+@import 'tailwindcss';
+@import './design-system/tokens.css';
+@import './design-system/tailwind-preset.css';
+
+/* ?????????????????????????????????????????????????????????????????????????????
+   Paso D ? Estilos de Impresi?n Globales (@media print)
+   - Oculta men? lateral, cabecera, botones de acci?n y paneles flotantes
+   - Contenido a todo el ancho y tama?o A4 con m?rgenes
+   - Encabezado de impresi?n limpio
+   - Comprobante / boleta imprime ?nicamente el comprobante centrado y completo
+   - Tablas y gr?ficos sin partirse entre p?ginas (break-inside: avoid)
+   - Gr?ficos SVG/canvas redimensionados sin cortarse
+   ????????????????????????????????????????????????????????????????????????????? */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ocultar navegaci?n lateral, cabecera del sistema, botones y elementos interactivos */
+  aside,
+  header:not(.print-header),
+  nav:not(.print-nav),
+  button:not(.print-show),
+  .no-print,
+  [data-no-print],
+  [aria-label="Accesos r?pidos"],
+  [aria-label="Cerrar"],
+  [data-slot="dialog-overlay"],
+  [data-radix-portal]:not(:has(#area-comprobante-impresion)) > [data-state],
+  [data-radix-popper-content-wrapper] {
+    display: none !important;
+  }
+
+  /* Mostrar encabezado de impresi?n limpio en vistas est?ndar */
+  .print-header,
+  [data-testid="encabezado-impresion"] {
+    display: flex !important;
+    width: 100% !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Contenedores de contenido a todo el ancho */
+  #contenido,
+  main,
+  .max-w-6xl,
+  .max-w-7xl,
+  .max-w-5xl,
+  .max-w-4xl {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* La boleta / comprobante (#area-comprobante-impresion) imprime ?nicamente el comprobante completo */
+  body:has(#area-comprobante-impresion) {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:has(#area-comprobante-impresion) > *:not([data-radix-portal]) {
+    display: none !important;
+  }
+
+  body:has(#area-comprobante-impresion) [data-radix-portal] {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:has(#area-comprobante-impresion) [data-slot="dialog-overlay"] {
+    display: none !important;
+  }
+
+  body:has(#area-comprobante-impresion) [data-slot="dialog-content"] {
+    position: static !important;
+    display: block !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  body:has(#area-comprobante-impresion) [data-slot="dialog-content"] > *:not(#area-comprobante-impresion):not(:has(#area-comprobante-impresion)) {
+    display: none !important;
+  }
+
+  body:has(#area-comprobante-impresion) [data-slot="dialog-content"] button,
+  body:has(#area-comprobante-impresion) .no-print,
+  body:has(#area-comprobante-impresion) .print\:hidden {
+    display: none !important;
+  }
+
+  body:has(#area-comprobante-impresion) #area-comprobante-impresion {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Tablas, tarjetas y paneles sin partirse entre p?ginas */
+  table,
+  tbody,
+  tr,
+  th,
+  td,
+  .card,
+  [data-slot="card"],
+  .rounded-card,
+  .rounded-panel,
+  section,
+  article,
+  figure {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  /* Gr?ficos (SVG y Canvas) redimensionables sin cortarse */
+  svg,
+  canvas,
+  .recharts-responsive-container,
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .recharts-responsive-container {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Fondos y bordes limpios para impresi?n legible */
+  .bg-surface-container-lowest,
+  .bg-surface-container-low,
+  .bg-surface-container,
+  .bg-surface {
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+  }
+}
+
+/* ─── Celular: las tablas del contenido principal se ven como tarjetas (una por fila) ─────────────────────────────
+   Los nombres de columna salen de data-etiqueta (lo pone etiquetarTablas). Las cuadrículas llevan .sin-apilar. */
+@media (max-width: 767px) {
+  main table:not(.sin-apilar) {
+    min-width: 0 !important;
+  }
+  main table:not(.sin-apilar) thead {
+    display: none;
+  }
+  main table:not(.sin-apilar),
+  main table:not(.sin-apilar) tbody,
+  main table:not(.sin-apilar) tr {
+    display: block;
+    width: 100%;
+  }
+  main table:not(.sin-apilar) tbody tr {
+    margin: 0.625rem 0;
+    padding: 0.5rem 0;
+    border: 1px solid var(--vd-outline-variant);
+    border-radius: var(--vd-radius-panel);
+    background: var(--vd-surface-container-lowest);
+  }
+  main table:not(.sin-apilar) tbody td,
+  main table:not(.sin-apilar) tbody th[scope='row'] {
+    display: block;
+    width: 100%;
+    padding: 0.3rem 1rem;
+    border: 0;
+    text-align: left;
+  }
+  main table:not(.sin-apilar) tbody td[data-etiqueta]::before {
+    content: attr(data-etiqueta);
+    display: block;
+    margin-bottom: 0.1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--vd-on-surface-variant);
+  }
+  /* La primera celda es el título de la tarjeta y la de acciones son botones: no llevan rótulo. */
+  main table:not(.sin-apilar) tbody td:first-child::before,
+  main table:not(.sin-apilar) tbody td[data-etiqueta='Acción']::before,
+  main table:not(.sin-apilar) tbody td[data-etiqueta='Acciones']::before {
+    display: none;
+  }
+  main table:not(.sin-apilar) tbody td:empty {
+    display: none;
+  }
+}
+
+/* ─── Pantallas táctiles (celular y tablet): todo lo que se toca mide al menos 40 px de alto ──────────────────── */
+@media (pointer: coarse), (max-width: 767px) {
+  main button:not([role='checkbox']):not([role='switch']):not(.sin-toque),
+  main [role='tab'] {
+    min-height: 2.5rem;
+  }
+  main a[class*='rounded']:not(.sin-toque) {
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+  }
+}
