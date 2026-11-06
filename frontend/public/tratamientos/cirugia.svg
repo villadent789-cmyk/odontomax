@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-cirugia" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A1F2E"/><stop offset="1" stop-color="#B14B63"/>
+    </linearGradient>
+    <radialGradient id="luz-cirugia" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="esmalte-cirugia" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#E9E4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-cirugia)"/>
+  <circle cx="690" cy="70" r="170" fill="#ffffff" opacity="0.06"/>
+  <circle cx="90" cy="450" r="140" fill="#ffffff" opacity="0.06"/>
+  <rect width="800" height="500" fill="url(#luz-cirugia)"/>
+  
+  <g transform="translate(260 110) scale(2.7)"><ellipse cx="50" cy="128" rx="34" ry="6" fill="#000" opacity="0.18"/><path d="M50 6 C30 -4 6 9 8 36 C9 53 17 63 19 83 C21 106 28 120 36 120 C45 120 44 94 50 94 C56 94 55 120 64 120 C72 120 79 106 81 83 C83 63 91 53 92 36 C94 9 70 -4 50 6 Z" fill="url(#esmalte-cirugia)" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"/><path d="M26 22 C20 28 18 38 20 48" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/></g><g transform="translate(520 120)"><circle cx="70" cy="70" r="70" fill="#ffffff" fill-opacity="0.14" stroke="#fff" stroke-opacity="0.8" stroke-width="5"/><path d="M70 28 L70 96 M44 72 L70 100 L96 72" fill="none" stroke="#C9A25E" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></g><g transform="translate(180 90)"><rect x="0" y="0" width="60" height="60" rx="16" fill="#C9A25E"/><path d="M30 14 V46 M14 30 H46" stroke="#fff" stroke-width="9" stroke-linecap="round"/></g>
+</svg>

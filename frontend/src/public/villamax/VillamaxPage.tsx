@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight,
@@ -11,8 +10,11 @@ import {
   ShieldCheck,
   Users,
 } from 'lucide-react'
-import { Badge, buttonVariants, Card, CardContent, CardHeader, CardTitle, EmptyState, ErrorState, Skeleton } from '@/design-system'
-import { clavesReserva, listarServicios, textoPrecioDesde } from '@/public/reserva/api-reserva'
+import { Badge, buttonVariants } from '@/design-system'
+import { cn } from '@/design-system/cn'
+import { WHATSAPP_VILLAMAX, enlaceWhatsApp, telefonoVisible } from '@/public/contacto'
+import { ESTUDIOS_VILLAMAX } from './estudiosVillamax'
+import { TarjetaEstudio } from './TarjetaEstudio'
 
 /**
  * Pantalla A3 · Villamax Centro Radiológico e Imágenes 3D.
@@ -20,12 +22,6 @@ import { clavesReserva, listarServicios, textoPrecioDesde } from '@/public/reser
  * y en las especificaciones oficiales v2 (Sección 9: atiende a todo paciente, pago presencial sin adelanto, informe médico).
  */
 export function VillamaxPage() {
-  // Los estudios y sus precios son los del tarifario del cliente (catálogo de Villamax), no una lista fija en el código.
-  const estudios = useQuery({
-    queryKey: [...clavesReserva.servicios, 'VILLAMAX'],
-    queryFn: () => listarServicios('VILLAMAX'),
-  })
-
   return (
     <div className="flex flex-col gap-14 md:gap-20">
       {/* ─── Hero Diagnóstico Villamax ─── */}
@@ -71,14 +67,13 @@ export function VillamaxPage() {
 
           <div className="flex flex-wrap items-center gap-3 pt-4">
             <a
-              href="https://wa.me/51960112257?text=Hola%20Villamax,%20quisiera%20consultar%20por%20un%20estudio%20radiológico"
+              href={enlaceWhatsApp('Hola Villamax, quisiera consultar por un estudio radiológico', WHATSAPP_VILLAMAX)}
               target="_blank"
               rel="noreferrer"
-              className={buttonVariants({
-                variant: 'accion',
-                size: 'lg',
-                className: 'font-bold shadow-accion text-base',
-              })}
+              className={cn(
+                buttonVariants({ variant: 'villamax', size: 'lg', className: 'font-bold shadow-sm text-base' }),
+                'bg-[#22B8CF] text-[#0b1740]',
+              )}
             >
               <MessageCircle className="mr-2 size-5" />
               Consultar por WhatsApp
@@ -111,44 +106,11 @@ export function VillamaxPage() {
           </p>
         </div>
 
-        {estudios.isPending ? (
-          <div className="grid gap-6 md:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full" />
-            ))}
-          </div>
-        ) : estudios.isError ? (
-          <ErrorState titulo="No pudimos cargar los estudios" onReintentar={() => void estudios.refetch()} />
-        ) : estudios.data.length === 0 ? (
-          <EmptyState titulo="Aún no hay estudios publicados" descripcion="Consulta por WhatsApp los estudios disponibles." />
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {estudios.data.map((estudio) => (
-              <Card
-                key={estudio.id}
-                className="flex flex-col justify-between border-2 border-tertiary/20 transition-all hover:shadow-raised hover:border-tertiary/50"
-              >
-                <CardHeader className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <Badge tono="villamax">{estudio.especialidad ?? 'Radiología'}</Badge>
-                    {textoPrecioDesde(estudio.precio) && (
-                      <span className="text-sm font-bold text-tertiary">{textoPrecioDesde(estudio.precio)}</span>
-                    )}
-                  </div>
-                  <CardTitle className="font-display text-2xl font-bold text-tertiary">{estudio.nombre}</CardTitle>
-                </CardHeader>
-
-                <CardContent className="flex flex-col gap-3">
-                  {estudio.descripcion && <p className="text-sm text-on-surface-variant leading-relaxed">{estudio.descripcion}</p>}
-                  <div className="rounded-panel bg-surface-container p-3 text-xs text-on-surface">
-                    <strong className="text-tertiary">Entrega: </strong>
-                    informe del especialista radiólogo con visualizador digital.
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {ESTUDIOS_VILLAMAX.map((estudio) => (
+            <TarjetaEstudio key={estudio.id} estudio={estudio} />
+          ))}
+        </div>
       </section>
 
       {/* ─── Sección para Odontólogos y Médicos Derivadores ─── */}
@@ -190,10 +152,10 @@ export function VillamaxPage() {
             </p>
             <div className="flex flex-col gap-3 text-sm">
               <a
-                href="https://wa.me/51960112257?text=Estimado%20equipo%20Villamax,%20soy%20odontólogo%20y%20deseo%20coordinar%20órdenes%20radiológicas"
+                href={enlaceWhatsApp('Estimado equipo Villamax, soy odontólogo y deseo coordinar órdenes radiológicas', WHATSAPP_VILLAMAX)}
                 target="_blank"
                 rel="noreferrer"
-                className={buttonVariants({ variant: 'primario', size: 'md', className: 'w-full' })}
+                className={buttonVariants({ variant: 'villamax', size: 'md', className: 'w-full' })}
               >
                 <MessageCircle className="mr-2 size-4" />
                 Línea Directa para Especialistas
@@ -233,14 +195,14 @@ export function VillamaxPage() {
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="size-4 text-tertiary shrink-0" />
-                <span>960 112 257 · (064) Atención continua</span>
+                <span>{telefonoVisible(WHATSAPP_VILLAMAX)} · Atención continua</span>
               </p>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 shrink-0">
             <a
-              href="https://wa.me/51960112257?text=Hola,%20deseo%20información%20sobre%20la%20ubicación%20de%20Villamax%20Chilca"
+              href={enlaceWhatsApp('Hola, deseo información sobre la ubicación de Villamax Chilca', WHATSAPP_VILLAMAX)}
               target="_blank"
               rel="noreferrer"
               className={buttonVariants({ variant: 'secundario', size: 'lg', className: 'text-tertiary font-bold' })}

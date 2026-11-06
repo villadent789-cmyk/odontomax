@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-protesis" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#33323A"/><stop offset="1" stop-color="#6C6A78"/>
+    </linearGradient>
+    <radialGradient id="luz-protesis" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="esmalte-protesis" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#E9E4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-protesis)"/>
+  <circle cx="690" cy="70" r="170" fill="#ffffff" opacity="0.06"/>
+  <circle cx="90" cy="450" r="140" fill="#ffffff" opacity="0.06"/>
+  <rect width="800" height="500" fill="url(#luz-protesis)"/>
+  
+  <g transform="translate(260 70) scale(3.3)"><path d="M50 6 C30 -4 6 9 8 36 C9 52 14 62 18 72 L82 72 C86 62 91 52 92 36 C94 9 70 -4 50 6 Z" fill="url(#esmalte-protesis)" stroke="#fff" stroke-width="2"/><path d="M26 22 C20 28 18 38 20 48" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity="0.85"/><rect x="36" y="72" width="28" height="10" rx="3" fill="#C9A25E"/></g><g transform="translate(300 250)"><path d="M0 0 H200 L190 40 H10 Z" fill="none"/><g fill="#D7DCE4" stroke="#fff" stroke-width="3" stroke-linejoin="round"><path d="M72 70 H128 L120 96 H80 Z"/><path d="M80 96 H120 L113 122 H87 Z"/><path d="M87 122 H113 L106 148 H94 Z"/><path d="M94 148 H106 L100 172 Z"/></g></g><path d="M560 98 Q560 120 582 120 Q560 120 560 142 Q560 120 538 120 Q560 120 560 98 Z" fill="#C9A25E" opacity="0.95"/>
+</svg>

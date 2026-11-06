@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-limpieza" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E5A78"/><stop offset="1" stop-color="#5BB7C9"/>
+    </linearGradient>
+    <radialGradient id="luz-limpieza" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="esmalte-limpieza" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#E9E4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-limpieza)"/>
+  <circle cx="690" cy="70" r="170" fill="#ffffff" opacity="0.06"/>
+  <circle cx="90" cy="450" r="140" fill="#ffffff" opacity="0.06"/>
+  <rect width="800" height="500" fill="url(#luz-limpieza)"/>
+  
+  <circle cx="540" cy="130" r="34" fill="#fff" fill-opacity="0.18" stroke="#fff" stroke-opacity="0.7" stroke-width="3"/><circle cx="600" cy="230" r="22" fill="#fff" fill-opacity="0.18" stroke="#fff" stroke-opacity="0.7" stroke-width="3"/><circle cx="160" cy="190" r="26" fill="#fff" fill-opacity="0.18" stroke="#fff" stroke-opacity="0.7" stroke-width="3"/><circle cx="210" cy="90" r="16" fill="#fff" fill-opacity="0.18" stroke="#fff" stroke-opacity="0.7" stroke-width="3"/><circle cx="580" cy="330" r="14" fill="#fff" fill-opacity="0.18" stroke="#fff" stroke-opacity="0.7" stroke-width="3"/><g transform="translate(235 110) scale(2.6)"><ellipse cx="50" cy="128" rx="34" ry="6" fill="#000" opacity="0.18"/><path d="M50 6 C30 -4 6 9 8 36 C9 53 17 63 19 83 C21 106 28 120 36 120 C45 120 44 94 50 94 C56 94 55 120 64 120 C72 120 79 106 81 83 C83 63 91 53 92 36 C94 9 70 -4 50 6 Z" fill="url(#esmalte-limpieza)" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"/><path d="M26 22 C20 28 18 38 20 48" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/></g><path d="M470 64 Q470 90 496 90 Q470 90 470 116 Q470 90 444 90 Q470 90 470 64 Z" fill="#fff" opacity="0.95"/><path d="M330 44 Q330 60 346 60 Q330 60 330 76 Q330 60 314 60 Q330 60 330 44 Z" fill="#C9A25E" opacity="0.9"/>
+</svg>

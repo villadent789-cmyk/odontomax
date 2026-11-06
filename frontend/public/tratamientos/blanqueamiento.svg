@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-blanqueamiento" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E5E8C"/><stop offset="1" stop-color="#7FB8E6"/>
+    </linearGradient>
+    <radialGradient id="luz-blanqueamiento" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="esmalte-blanqueamiento" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#E9E4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-blanqueamiento)"/>
+  <circle cx="690" cy="70" r="170" fill="#ffffff" opacity="0.06"/>
+  <circle cx="90" cy="450" r="140" fill="#ffffff" opacity="0.06"/>
+  <rect width="800" height="500" fill="url(#luz-blanqueamiento)"/>
+  
+  <line x1="590" y1="250" x2="635" y2="250" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="533.0" y1="383.0" x2="564.5" y2="414.5" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="400" y1="440" x2="400" y2="485" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="267.0" y1="383.0" x2="235.5" y2="414.5" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="210" y1="250" x2="165" y2="250" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="267.0" y1="117.0" x2="235.5" y2="85.5" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="400" y1="60" x2="400" y2="15" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><line x1="533.0" y1="117.0" x2="564.5" y2="85.5" stroke="#fff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round"/><g transform="translate(350 120) scale(2.5)"><ellipse cx="50" cy="128" rx="34" ry="6" fill="#000" opacity="0.18"/><path d="M50 6 C30 -4 6 9 8 36 C9 53 17 63 19 83 C21 106 28 120 36 120 C45 120 44 94 50 94 C56 94 55 120 64 120 C72 120 79 106 81 83 C83 63 91 53 92 36 C94 9 70 -4 50 6 Z" fill="url(#esmalte-blanqueamiento)" stroke="#ffffff" stroke-width="2.2" stroke-linejoin="round"/><path d="M26 22 C20 28 18 38 20 48" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/></g><path d="M600 80 Q600 110 630 110 Q600 110 600 140 Q600 110 570 110 Q600 110 600 80 Z" fill="#fff" opacity="0.95"/><path d="M190 120 Q190 140 210 140 Q190 140 190 160 Q190 140 170 140 Q190 140 190 120 Z" fill="#C9A25E" opacity="0.9"/><path d="M620 314 Q620 330 636 330 Q620 330 620 346 Q620 330 604 330 Q620 330 620 314 Z" fill="#fff" opacity="0.9"/>
+</svg>

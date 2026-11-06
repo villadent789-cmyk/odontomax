@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 import { EmptyState, ErrorState, Field, Input, Skeleton, SoloLector, cn } from '@/design-system'
 import { formatFecha, hoyEnLima } from '@/shared/format'
-import { agruparPorEspecialidad, doctoresParaSede, textoPrecioDesde, useEspecialistas, useSedes, useServicios, type SedePublica, type ServicioPublico } from './api-reserva'
+import { agruparPorEspecialidad, doctoresParaSede, useEspecialistas, useSedes, useServicios, type SedePublica, type ServicioPublico } from './api-reserva'
 import { textoTurno, type DatosReserva, type DatosReservaValidos } from './esquemas'
 import { HORARIOS_SLOTS, diaSemanaCorto, fechaConDia, proximosDias } from './fechas'
 import { ErrorGrupo, Opcion } from './Opcion'
@@ -283,12 +283,7 @@ function TarjetaServicio({
 }: { servicio: ServicioPublico } & PropsRadio) {
   return (
     <Opcion value={servicio.id} claseTarjeta="p-3 rounded-panel border border-outline-variant/60 gap-2.5" {...radio}>
-      <div className="flex items-start justify-between gap-2">
-        <span className="font-display text-sm font-bold text-on-surface leading-tight">{servicio.nombre}</span>
-        {textoPrecioDesde(servicio.precio) && (
-          <span className="shrink-0 text-xs font-bold text-indigo-700">{textoPrecioDesde(servicio.precio)}</span>
-        )}
-      </div>
+      <span className="font-display text-sm font-bold text-on-surface leading-tight">{servicio.nombre}</span>
       {servicio.descripcion && (
         <span className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed">{servicio.descripcion}</span>
       )}

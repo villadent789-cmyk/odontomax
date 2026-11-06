@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { WHATSAPP_VILLADENT, telefonoVisible } from '@/public/contacto'
 
 /**
  * Política de privacidad de la web pública (Ley N.º 29733, Protección de Datos Personales). Es un texto base: antes de salir a
@@ -71,7 +72,7 @@ export function PrivacidadPage() {
         <h2 id="priv-derechos" className="font-display text-xl font-bold text-on-surface">Tus derechos</h2>
         <p className="text-sm leading-relaxed text-on-surface">
           Puedes pedirnos conocer qué datos tuyos tenemos (acceso), corregirlos (rectificación), cancelarlos u oponerte a su uso,
-          en los casos que la ley permite. Escríbenos por WhatsApp al 960 112 257 o acércate a recepción con tu DNI. Si crees que
+          en los casos que la ley permite. Escríbenos por WhatsApp al {telefonoVisible(WHATSAPP_VILLADENT)} o acércate a recepción con tu DNI. Si crees que
           no atendimos tu pedido, puedes acudir a la Autoridad Nacional de Protección de Datos Personales.
         </p>
       </section>

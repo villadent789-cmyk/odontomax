@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-implante" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F3B3A"/><stop offset="1" stop-color="#3F8F8A"/>
+    </linearGradient>
+    <radialGradient id="luz-implante" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="esmalte-implante" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#E9E4D8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-implante)"/>
+  <circle cx="690" cy="70" r="170" fill="#ffffff" opacity="0.06"/>
+  <circle cx="90" cy="450" r="140" fill="#ffffff" opacity="0.06"/>
+  <rect width="800" height="500" fill="url(#luz-implante)"/>
+  
+  <rect x="170" y="300" width="460" height="130" rx="26" fill="#E9D8BE" stroke="#fff" stroke-width="4"/><rect x="170" y="300" width="460" height="44" rx="22" fill="#E58B9A"/><g fill="#D7DCE4" stroke="#fff" stroke-width="3" stroke-linejoin="round"><path d="M368 330 H432 L424 358 H376 Z"/><path d="M376 358 H424 L417 384 H383 Z"/><path d="M383 384 H417 L410 410 H390 Z"/><path d="M390 410 H410 L400 430 Z"/></g><g transform="translate(330 120) scale(1.4)"><path d="M50 6 C30 -4 6 9 8 36 C9 52 14 62 18 72 L82 72 C86 62 91 52 92 36 C94 9 70 -4 50 6 Z" fill="url(#esmalte-implante)" stroke="#fff" stroke-width="2"/><path d="M26 22 C20 28 18 38 20 48" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity="0.85"/><rect x="36" y="72" width="28" height="12" rx="3" fill="#C9A25E"/></g><path d="M600 108 Q600 130 622 130 Q600 130 600 152 Q600 130 578 130 Q600 130 600 108 Z" fill="#fff" opacity="0.9"/>
+</svg>

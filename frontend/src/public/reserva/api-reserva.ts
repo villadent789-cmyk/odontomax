@@ -34,11 +34,6 @@ export function agruparPorEspecialidad(servicios: ServicioPublico[]): GrupoServi
   return [...grupos].map(([especialidad, lista]) => ({ especialidad, servicios: lista }))
 }
 
-/** «Desde S/ 60.00»: los precios del tarifario son mínimos; el precio final se define en la evaluación. */
-export function textoPrecioDesde(precio: number | null | undefined): string | null {
-  return precio != null && precio > 0 ? `Desde S/ ${Number(precio).toFixed(2)}` : null
-}
-
 export const clavesReserva = {
   sedes: ['publico', 'sedes'] as const,
   servicios: ['publico', 'catalogo', 'servicios'] as const,

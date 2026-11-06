@@ -17,6 +17,7 @@ import type { TicketReserva } from '@/shared/api'
 import { useSedes } from './api-reserva'
 import { textoTurno } from './esquemas'
 import { fechaConDia } from './fechas'
+import { WHATSAPP_VILLADENT, WHATSAPP_VILLAMAX } from '@/public/contacto'
 
 function Fila({ icono, etiqueta, children }: { icono: ReactNode; etiqueta: string; children: ReactNode }) {
   return (
@@ -86,7 +87,7 @@ export function TicketConfirmacion({ ticket }: { ticket: TicketReserva }) {
   const telefonoWhatsapp =
     ticket.telefonoWhatsappSede ||
     sede?.whatsapp ||
-    (ticket.sedeId === 'sede-villamax-chilca' ? '51960112257' : '51943672062')
+    (ticket.sedeId === 'sede-villamax-chilca' ? WHATSAPP_VILLAMAX : WHATSAPP_VILLADENT)
 
   const telefonoLimpio = telefonoWhatsapp.replace(/\D/g, '')
 

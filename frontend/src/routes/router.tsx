@@ -18,7 +18,9 @@ import { ConsultaReservaPage } from '@/public/reserva/ConsultaReservaPage'
 import { ReservaPage } from '@/public/reserva/ReservaPage'
 import { ReservarPage } from '@/public/reserva/ReservarPage'
 import { InicioPublicoPage } from '@/public/inicio/InicioPublicoPage'
+import { DetalleTratamientoPage } from '@/public/servicios/DetalleTratamientoPage'
 import { ServiciosPage } from '@/public/servicios/ServiciosPage'
+import { DetalleEstudioPage } from '@/public/villamax/DetalleEstudioPage'
 import { VillamaxPage } from '@/public/villamax/VillamaxPage'
 import { PrivacidadPage } from '@/public/privacidad/PrivacidadPage'
 import { PacientesPage } from '@/app/pacientes/PacientesPage'
@@ -51,10 +53,20 @@ const serviciosRoute = createRoute({
   path: 'servicios',
   component: ServiciosPage,
 })
+const detalleTratamientoRoute = createRoute({
+  getParentRoute: () => publicoRoute,
+  path: 'servicios/$tratamientoId',
+  component: DetalleTratamientoPage,
+})
 const villamaxPublicoRoute = createRoute({
   getParentRoute: () => publicoRoute,
   path: 'villamax',
   component: VillamaxPage,
+})
+const detalleEstudioRoute = createRoute({
+  getParentRoute: () => publicoRoute,
+  path: 'villamax/$estudioId',
+  component: DetalleEstudioPage,
 })
 const privacidadRoute = createRoute({
   getParentRoute: () => publicoRoute,
@@ -260,7 +272,7 @@ const auditoriaRoute = createRoute({
 const sinPermisoRoute = createRoute({ getParentRoute: () => sistemaRoute, path: 'sin-permiso', component: SinPermisoPage })
 
 export const routeTree = rootRoute.addChildren([
-  publicoRoute.addChildren([inicioPublicoRoute, serviciosRoute, villamaxPublicoRoute, privacidadRoute, reservarRoute, consultarReservaRoute, consultaReservaRoute]),
+  publicoRoute.addChildren([inicioPublicoRoute, serviciosRoute, detalleTratamientoRoute, villamaxPublicoRoute, detalleEstudioRoute, privacidadRoute, reservarRoute, consultarReservaRoute, consultaReservaRoute]),
   loginRoute.addChildren([loginInicioRoute, segundoFactorRoute, ajustes2faRoute]),
   ...(designRoute ? [designRoute] : []),
   sistemaRoute.addChildren([

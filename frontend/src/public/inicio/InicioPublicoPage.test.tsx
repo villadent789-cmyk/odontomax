@@ -22,7 +22,8 @@ describe('A1 · Inicio público (Landing page)', () => {
     expect(
       screen.getByRole('heading', { name: /Odontología humana, honesta y de alta precisión/i }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Reserva tu cita en línea/i })).toBeInTheDocument()
+    const reservar = screen.getByRole('link', { name: /Reserva tu cita por WhatsApp/i })
+    expect(reservar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/51912192005\?text=/)
     expect(screen.getByRole('link', { name: /Ver catálogo de servicios/i })).toBeInTheDocument()
   })
 
@@ -39,7 +40,8 @@ describe('A1 · Inicio público (Landing page)', () => {
 
     expect(screen.getByRole('heading', { name: 'Villadent Odontología' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Villamax Radiología' })).toBeInTheDocument()
-    expect(screen.getAllByText(/Ortodoncia & Brackets/i).length).toBeGreaterThan(0)
-    expect(screen.getByText(/Odontopediatría con Calidez/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Ortodoncia' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Implante dental' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Reservar cita de Ortodoncia por WhatsApp' })).toBeInTheDocument()
   })
 })

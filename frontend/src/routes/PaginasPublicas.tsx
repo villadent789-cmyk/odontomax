@@ -1,14 +1,19 @@
-import { Link, Outlet } from '@tanstack/react-router'
-import { Calendar, Clock, MapPin, Phone, Scan } from 'lucide-react'
+import { Link, Outlet, useRouterState } from '@tanstack/react-router'
+import { Calendar, Clock, MapPin, MessageCircle, Phone, Scan } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { buttonVariants } from '@/design-system'
 import { Marca } from '@/app/layout/Marca'
+import { CONTACTO_SEDES, WHATSAPP_VILLADENT, WHATSAPP_VILLAMAX, enlaceWhatsApp, telefonoVisible } from '@/public/contacto'
 
 const claseEnlace =
   'rounded-pill px-3 py-2 font-bold text-on-surface-variant hover:text-primary focus-visible:outline-2 focus-visible:outline-focus aria-[current=page]:text-primary aria-[current=page]:underline underline-offset-4 text-sm'
 
 /** Carcasa oficial de la web pública (Villadent & Villamax). */
 export function PublicLayout() {
+  // Villamax es otro negocio: en sus páginas el contacto, el botón de WhatsApp y los colores son los suyos.
+  const enVillamax = useRouterState({ select: (s) => s.location.pathname.startsWith('/villamax') })
+  const negocio = enVillamax ? 'Villamax' : 'Villadent'
+  const numeroWhatsApp = enVillamax ? WHATSAPP_VILLAMAX : WHATSAPP_VILLADENT
   return (
     <div className="flex min-h-dvh flex-col bg-surface">
       {/* Header Principal */}
@@ -39,18 +44,27 @@ export function PublicLayout() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/reservar"
-                  search={{}}
+                <Link to="/" hash="contacto" className={claseEnlace}>
+                  Contacto
+                </Link>
+              </li>
+              <li>
+                <a
+                  href={enlaceWhatsApp(
+                    enVillamax ? 'Hola Villamax, quisiera consultar por un estudio radiológico.' : 'Hola Villadent, quiero reservar una cita.',
+                    numeroWhatsApp,
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
                   className={buttonVariants({
-                    variant: 'accion',
+                    variant: enVillamax ? 'villamax' : 'accion',
                     size: 'sm',
-                    className: 'ml-2 font-bold shadow-accion',
+                    className: enVillamax ? 'ml-2 font-bold' : 'ml-2 font-bold shadow-accion',
                   })}
                 >
                   <Calendar className="mr-1.5 size-4" />
-                  Reserva tu cita
-                </Link>
+                  {enVillamax ? 'Consultar por WhatsApp' : 'Reserva tu cita'}
+                </a>
               </li>
             </ul>
           </nav>
@@ -83,11 +97,11 @@ export function PublicLayout() {
               <p className="font-display font-bold text-sm text-primary">Villadent Chilca</p>
               <p className="flex items-start gap-1.5">
                 <MapPin className="size-3.5 text-primary shrink-0 mt-0.5" />
-                <span>Chilca, Parque de los Héroes (Local Chilca)</span>
+                <span>{CONTACTO_SEDES['sede-chilca-1'].direccion}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Phone className="size-3.5 text-primary shrink-0" />
-                <span>943 672 062</span>
+                <span>{telefonoVisible(WHATSAPP_VILLADENT)}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Clock className="size-3.5 text-primary shrink-0" />
@@ -100,11 +114,11 @@ export function PublicLayout() {
               <p className="font-display font-bold text-sm text-primary">Villadent Huancayo Centro</p>
               <p className="flex items-start gap-1.5">
                 <MapPin className="size-3.5 text-primary shrink-0 mt-0.5" />
-                <span>Calle Real 450 (Centro de Huancayo)</span>
+                <span>{CONTACTO_SEDES['sede-eltambo'].direccion}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Phone className="size-3.5 text-primary shrink-0" />
-                <span>943 672 062</span>
+                <span>{telefonoVisible(WHATSAPP_VILLADENT)}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Clock className="size-3.5 text-primary shrink-0" />
@@ -117,11 +131,11 @@ export function PublicLayout() {
               <p className="font-display font-bold text-sm text-tertiary">Villamax (Centro Radiológico)</p>
               <p className="flex items-start gap-1.5">
                 <MapPin className="size-3.5 text-tertiary shrink-0 mt-0.5" />
-                <span>Chilca, Parque de los Héroes (Centro Radiológico)</span>
+                <span>{CONTACTO_SEDES['sede-villamax-chilca'].direccion}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Phone className="size-3.5 text-tertiary shrink-0" />
-                <span>960 112 257</span>
+                <span>{telefonoVisible(WHATSAPP_VILLAMAX)}</span>
               </p>
               <p className="flex items-center gap-1.5">
                 <Clock className="size-3.5 text-tertiary shrink-0" />
@@ -139,6 +153,17 @@ export function PublicLayout() {
           </div>
         </div>
       </footer>
+
+      {/* Botón flotante de WhatsApp, siempre a la mano */}
+      <a
+        href={enlaceWhatsApp(`Hola ${negocio}, quisiera información.`, numeroWhatsApp)}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={`Escribir a ${negocio} por WhatsApp`}
+        className="fixed bottom-5 right-5 z-50 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-raised transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-focus"
+      >
+        <MessageCircle className="size-7" aria-hidden />
+      </a>
     </div>
   )
 }

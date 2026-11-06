@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="fondo-tomografia" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B266B"/><stop offset="0.55" stop-color="#243385"/><stop offset="1" stop-color="#145374"/>
+    </linearGradient>
+    <radialGradient id="luz-tomografia" cx="0.5" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#fondo-tomografia)"/>
+  <circle cx="700" cy="60" r="170" fill="#ffffff" opacity="0.05"/>
+  <circle cx="80" cy="450" r="140" fill="#ffffff" opacity="0.05"/>
+  <rect width="800" height="500" fill="url(#luz-tomografia)"/>
+  <g stroke="#ABEFEB" stroke-opacity="0.55" stroke-width="3" fill="none"><path d="M250 160 L400 100 L550 160 L550 330 L400 390 L250 330 Z"/><path d="M250 160 L400 220 L550 160"/><path d="M400 220 L400 390"/></g><g transform="translate(360 150) scale(1.6)" opacity="1.0"><path d="M50 6 C30 -4 6 9 8 36 C9 53 17 63 19 83 C21 106 28 120 36 120 C45 120 44 94 50 94 C56 94 55 120 64 120 C72 120 79 106 81 83 C83 63 91 53 92 36 C94 9 70 -4 50 6 Z" fill="#E6EEF9" stroke="#ffffff" stroke-width="2.4" stroke-linejoin="round"/></g><ellipse cx="400" cy="250" rx="250" ry="70" fill="none" stroke="#22B8CF" stroke-width="12"/><ellipse cx="400" cy="250" rx="250" ry="70" fill="none" stroke="#ffffff" stroke-opacity="0.35" stroke-width="3" stroke-dasharray="6 10"/><path d="M680 86 Q680 110 704 110 Q680 110 680 134 Q680 110 656 110 Q680 110 680 86 Z" fill="#ABEFEB" opacity="0.95"/><path d="M120 114 Q120 130 136 130 Q120 130 120 146 Q120 130 104 130 Q120 130 120 114 Z" fill="#22B8CF" opacity="0.9"/>
+</svg>

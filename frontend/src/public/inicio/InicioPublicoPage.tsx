@@ -4,18 +4,16 @@ import {
   BadgeCheck,
   Calendar,
   Clock,
-  HeartPulse,
   MapPin,
   MessageCircle,
-  Phone,
   Scan,
-  ShieldCheck,
   Sparkles,
-  Stethoscope,
 } from 'lucide-react'
 import { useState } from 'react'
-import { Badge, buttonVariants, Card, CardContent } from '@/design-system'
+import { Badge, buttonVariants } from '@/design-system'
 import { IconoDiente } from '@/app/layout/Marca'
+import { CONTACTO_SEDES, enlaceMapa, enlaceWhatsApp, telefonoVisible } from '@/public/contacto'
+import { ListaTratamientos } from '@/public/servicios/ListaTratamientos'
 
 /** Devuelve el estado operativo de una sede a partir de su string de horario. */
 function estadoSede(horario: string): { etiqueta: string; clase: string } {
@@ -55,8 +53,15 @@ interface SedeLocal {
   horario: string
   telefono: string
   whatsapp: string
+  mapa: string
   destacados: string[]
   color: string
+}
+
+/** Dirección, horario y contacto de una sede, tal como están en el archivo central de contacto. */
+function datosSede(id: keyof typeof CONTACTO_SEDES) {
+  const c = CONTACTO_SEDES[id]
+  return { direccion: c.direccion, referencia: c.referencia, horario: c.horario, telefono: telefonoVisible(c.whatsapp), whatsapp: c.whatsapp, mapa: c.mapa }
 }
 
 const SEDES_OFICIALES: SedeLocal[] = [
@@ -65,11 +70,7 @@ const SEDES_OFICIALES: SedeLocal[] = [
     nombre: 'Villadent Chilca',
     negocio: 'VILLADENT',
     tipo: 'Local Chilca',
-    direccion: 'Parque de los Héroes',
-    referencia: 'Chilca, Parque de los Héroes (Local Chilca)',
-    horario: 'Lun - Sáb: 9:00 am - 8:00 pm',
-    telefono: '943 672 062',
-    whatsapp: '51943672062',
+    ...datosSede('sede-chilca-1'),
     destacados: ['Ortodoncia & Brackets', 'Odontopediatría', '4 sillones clínicos', 'Ambiente adaptado para niños'],
     color: 'border-primary/30 bg-surface-container-lowest',
   },
@@ -78,11 +79,7 @@ const SEDES_OFICIALES: SedeLocal[] = [
     nombre: 'Villadent Huancayo Centro',
     negocio: 'VILLADENT',
     tipo: 'Centro de Especialidades',
-    direccion: 'Calle Real 450',
-    referencia: 'Centro de Huancayo, a pocos metros de la Plaza Constitución',
-    horario: 'Lun - Sáb: 9:00 am - 8:00 pm',
-    telefono: '943 672 062',
-    whatsapp: '51943672062',
+    ...datosSede('sede-eltambo'),
     destacados: ['Rehabilitación Oral', 'Estética Dental & Carillas', 'Implantes Dentales', '3 sillones de alta gama'],
     color: 'border-primary/30 bg-surface-container-lowest',
   },
@@ -91,52 +88,9 @@ const SEDES_OFICIALES: SedeLocal[] = [
     nombre: 'Villamax Chilca',
     negocio: 'VILLAMAX',
     tipo: 'Centro Radiológico',
-    direccion: 'Parque de los Héroes',
-    referencia: 'Chilca, Parque de los Héroes (Centro Radiológico)',
-    horario: 'Lun - Sáb: 8:00 am - 7:30 pm',
-    telefono: '960 112 257',
-    whatsapp: '51960112257',
+    ...datosSede('sede-villamax-chilca'),
     destacados: ['Tomografía Cone Beam 3D', 'Panorámica Digital', 'Sin cita previa ni adelanto', 'Entrega digital inmediata'],
     color: 'border-tertiary/40 bg-surface-container-lowest ring-1 ring-tertiary/20',
-  },
-]
-
-const ESPECIALIDADES = [
-  {
-    titulo: 'Ortodoncia & Brackets',
-    descripcion: 'Alineación dental con brackets metálicos, cerámicos y autoligados. Diagnóstico cefalométrico computarizado.',
-    icono: Sparkles,
-    badge: 'Popular',
-  },
-  {
-    titulo: 'Odontopediatría con Calidez',
-    descripcion: 'Atención lúdica y sin miedo para niños y adolescentes. Técnicas de manejo de conducta y prevención temprana.',
-    icono: HeartPulse,
-    badge: 'Familiar',
-  },
-  {
-    titulo: 'Implantes & Rehabilitación',
-    descripcion: 'Recupera piezas perdidas con implantes de titanio oseointegrados y coronas de zirconio de alta estética.',
-    icono: Stethoscope,
-    badge: 'Avanzado',
-  },
-  {
-    titulo: 'Estética Dental & Sonrisa',
-    descripcion: 'Diseño de sonrisa, blanqueamiento LED ultrarrápido y carillas de resina y porcelana.',
-    icono: IconoDiente,
-    badge: 'Estética',
-  },
-  {
-    titulo: 'Tomografía & Rayos X 3D',
-    descripcion: 'Centro radiológico Villamax integrado: tomografías volumétricas Cone Beam para cirugías e implantes seguros.',
-    icono: Scan,
-    badge: 'Villamax 3D',
-  },
-  {
-    titulo: 'Cirugía Bucal & Endodoncia',
-    descripcion: 'Extracción de terceras molares retenidas y tratamientos de conducto indoloros con tecnología rotatoria.',
-    icono: ShieldCheck,
-    badge: 'Precisión',
   },
 ]
 
@@ -178,8 +132,10 @@ export function InicioPublicoPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              to="/reservar"
+            <a
+              href={enlaceWhatsApp('Hola Villadent, quiero reservar una cita.')}
+              target="_blank"
+              rel="noreferrer"
               className={buttonVariants({
                 variant: 'accion',
                 size: 'lg',
@@ -187,8 +143,8 @@ export function InicioPublicoPage() {
               })}
             >
               <Calendar className="mr-2 size-5" />
-              Reserva tu cita en línea
-            </Link>
+              Reserva tu cita por WhatsApp
+            </a>
 
             <Link
               to="/servicios"
@@ -239,28 +195,33 @@ export function InicioPublicoPage() {
             </div>
             <h2 className="font-display text-headline-md font-bold text-primary">Villadent Odontología</h2>
             <p className="text-body-md text-on-surface-variant">
-              Tratamientos odontológicos integrales para niños, jóvenes y adultos. Ortodoncia avanzada, estética dental,
-              curaciones estéticas y prótesis fijas con materiales certificados.
+              Atención odontológica para niños, jóvenes y adultos: prevención, restauraciones, endodoncia, prótesis,
+              implantes, ortodoncia y estética dental.
             </p>
             <ul className="mt-2 flex flex-col gap-2 text-sm text-on-surface">
               <li className="flex items-center gap-2">
                 <BadgeCheck className="size-4 text-primary shrink-0" />
-                Reserva en línea en 4 sencillos pasos
+                Reserva tu cita por WhatsApp
               </li>
               <li className="flex items-center gap-2">
                 <BadgeCheck className="size-4 text-primary shrink-0" />
-                Separación de horario con adelanto vía Yape o presencial
+                Te confirmamos el día y la hora por el mismo medio
               </li>
               <li className="flex items-center gap-2">
                 <BadgeCheck className="size-4 text-primary shrink-0" />
-                Recordatorio vía WhatsApp 24 horas antes
+                Recordatorio por WhatsApp antes de tu cita
               </li>
             </ul>
           </div>
           <div className="mt-6 pt-4 border-t border-outline-variant/40">
-            <Link to="/reservar" className={buttonVariants({ variant: 'primario', size: 'md', className: 'w-full' })}>
+            <a
+              href={enlaceWhatsApp('Hola Villadent, quiero reservar una cita.')}
+              target="_blank"
+              rel="noreferrer"
+              className={buttonVariants({ variant: 'primario', size: 'md', className: 'w-full' })}
+            >
               Agendar en Villadent
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -306,31 +267,11 @@ export function InicioPublicoPage() {
           <span className="text-xs font-bold tracking-etiqueta text-secondary uppercase">Tratamientos a tu medida</span>
           <h2 className="font-display text-headline-lg font-bold text-primary">Nuestras Especialidades Odontológicas</h2>
           <p className="text-body-md text-on-surface-variant max-w-2xl">
-            Cada tratamiento es planificado minuciosamente por odontólogos certificados, combinando salud biológica y estética.
+            Cada tratamiento es planificado por odontólogos certificados, combinando salud y estética. Reserva tu cita por WhatsApp.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {ESPECIALIDADES.map((esp) => {
-            const Icono = esp.icono
-            return (
-              <Card key={esp.titulo} className="flex flex-col justify-between transition-all hover:shadow-raised">
-                <CardContent className="flex flex-col gap-3 p-6">
-                  <div className="flex items-center justify-between">
-                    <span className="flex size-12 items-center justify-center rounded-panel bg-primary/10 text-primary">
-                      <Icono className="size-6" />
-                    </span>
-                    <span className="rounded-pill bg-surface-container-high px-2.5 py-0.5 text-xs font-semibold text-on-surface-variant">
-                      {esp.badge}
-                    </span>
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-primary mt-2">{esp.titulo}</h3>
-                  <p className="text-sm text-on-surface-variant leading-relaxed">{esp.descripcion}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
+        <ListaTratamientos />
 
         <div className="flex justify-center pt-2">
           <Link to="/servicios" className={buttonVariants({ variant: 'secundario', size: 'lg', className: 'border border-outline' })}>
@@ -340,14 +281,15 @@ export function InicioPublicoPage() {
         </div>
       </section>
 
-      {/* ─── Sedes Oficiales ─── */}
-      <section id="sedes" className="flex flex-col gap-8">
+      {/* ─── Contáctenos / Sedes ─── */}
+      <section id="contacto" className="scroll-mt-28 flex flex-col gap-8 rounded-[2rem] bg-surface-container-lowest p-6 shadow-card md:p-10">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <span className="text-xs font-bold tracking-etiqueta text-secondary uppercase">Presencia regional</span>
-            <h2 className="font-display text-headline-lg font-bold text-primary">Nuestras 3 Sedes en Huancayo</h2>
-            <p className="text-body-md text-on-surface-variant">
-              Instalaciones modernas equipadas con esterilización hospitalaria y sillones ergonómicos.
+            <h2 className="font-display text-headline-lg font-bold text-primary">Contáctenos</h2>
+            <p className="text-body-md text-on-surface-variant max-w-2xl">
+              Si tiene alguna pregunta, escríbanos por WhatsApp o visítenos directamente en cualquiera de nuestras 3 sedes en
+              Huancayo.
             </p>
           </div>
 
@@ -383,89 +325,78 @@ export function InicioPublicoPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {sedesFiltradas.map((sede) => (
-            <div
-              key={sede.id}
-              className={`flex flex-col justify-between rounded-card border p-6 transition-all shadow-card hover:shadow-raised ${sede.color}`}
-            >
-              <div className="flex flex-col gap-3">
+          {sedesFiltradas.map((sede) => {
+            const est = estadoSede(sede.horario)
+            const acento = sede.negocio === 'VILLADENT' ? 'text-primary' : 'text-tertiary'
+            return (
+              <article
+                key={sede.id}
+                className={`flex flex-col gap-4 rounded-3xl border p-5 shadow-card transition-all hover:shadow-raised ${sede.color}`}
+              >
                 <div className="flex items-center justify-between">
                   <Badge tono={sede.negocio === 'VILLADENT' ? 'primario' : 'villamax'}>{sede.tipo}</Badge>
-                  {(() => {
-                    const est = estadoSede(sede.horario)
-                    return (
-                      <span className={est.clase}>
-                        <Clock className="size-3.5" aria-hidden />
-                        {est.etiqueta}
-                      </span>
-                    )
-                  })()}
+                  <span className={est.clase}>
+                    <Clock className="size-3.5" aria-hidden />
+                    {est.etiqueta}
+                  </span>
                 </div>
 
                 <h3 className="font-display text-2xl font-bold text-on-surface">{sede.nombre}</h3>
 
-                <div className="flex flex-col gap-2 text-sm text-on-surface-variant mt-1">
-                  <p className="flex items-start gap-2">
-                    <MapPin className="size-4 text-primary shrink-0 mt-0.5" />
-                    <span>
-                      <strong className="text-on-surface">{sede.direccion}</strong>
-                      <span className="block text-xs">{sede.referencia}</span>
-                    </span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Clock className="size-4 text-primary shrink-0" />
-                    <span>{sede.horario}</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="size-4 text-primary shrink-0" />
-                    <span>{sede.telefono}</span>
+                <div className="rounded-2xl bg-surface-container-low p-4">
+                  <p className="text-xs font-bold tracking-etiqueta text-on-surface-variant uppercase">Información de contacto</p>
+                  <ul className="mt-3 flex flex-col gap-3 text-sm text-on-surface-variant">
+                    <li className="flex items-start gap-2.5">
+                      <MessageCircle className={`mt-0.5 size-4 shrink-0 ${acento}`} aria-hidden />
+                      <span>
+                        <strong className="block text-on-surface">WhatsApp</strong>
+                        {sede.telefono}
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <MapPin className={`mt-0.5 size-4 shrink-0 ${acento}`} aria-hidden />
+                      <span>
+                        <strong className="block text-on-surface">Dirección</strong>
+                        {sede.direccion}
+                        <span className="block text-xs">{sede.referencia}</span>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl bg-surface-container-low p-4">
+                  <p className="text-xs font-bold tracking-etiqueta text-on-surface-variant uppercase">Horario de atención</p>
+                  <p className="mt-2 flex items-center gap-2 text-sm text-on-surface">
+                    <Clock className={`size-4 shrink-0 ${acento}`} aria-hidden />
+                    {sede.horario}
                   </p>
                 </div>
 
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {sede.destacados.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-panel bg-surface-container px-2 py-0.5 text-xs font-medium text-on-surface-variant"
-                    >
-                      {item}
-                    </span>
-                  ))}
+                <div className="mt-auto grid gap-2 pt-1">
+                  <a
+                    href={enlaceMapa(sede.mapa)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={buttonVariants({ variant: 'secundario', size: 'sm', className: 'w-full' })}
+                  >
+                    <MapPin className="mr-1.5 size-4" />
+                    Cómo llegar
+                  </a>
+                  <a
+                    href={enlaceWhatsApp(`Hola, quisiera información sobre la sede ${sede.nombre}.`, sede.whatsapp)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={buttonVariants({ variant: 'accion', size: 'sm', className: 'w-full font-bold' })}
+                  >
+                    <MessageCircle className="mr-1.5 size-4" />
+                    Escribir por WhatsApp
+                  </a>
                 </div>
-              </div>
-
-              <div className="mt-6 flex flex-col gap-2 pt-4 border-t border-outline-variant/40">
-                {sede.negocio === 'VILLADENT' ? (
-                  <Link
-                    to="/reservar"
-                    search={{}}
-                    className={buttonVariants({ variant: 'primario', size: 'sm', className: 'w-full' })}
-                  >
-                    Reservar en esta sede
-                  </Link>
-                ) : (
-                  <Link
-                    to="/villamax"
-                    className={buttonVariants({ variant: 'secundario', size: 'sm', className: 'w-full text-tertiary' })}
-                  >
-                    Ver estudios de rayos X
-                  </Link>
-                )}
-                <a
-                  href={`https://wa.me/${sede.whatsapp}?text=Hola,%20quisiera%20información%20sobre%20la%20sede%20${encodeURIComponent(sede.nombre)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={buttonVariants({ variant: 'fantasma', size: 'sm', className: 'w-full text-xs text-primary' })}
-                >
-                  <MessageCircle className="mr-1.5 size-3.5" />
-                  Contactar por WhatsApp
-                </a>
-              </div>
-            </div>
-          ))}
+              </article>
+            )
+          })}
         </div>
       </section>
-
 
       {/* ─── Call to Action Final ─── */}
       <section className="flex flex-col items-center justify-between gap-6 rounded-card border-2 border-secondary/30 bg-surface-container-lowest p-8 text-center md:flex-row md:text-left md:p-12 shadow-card">
@@ -481,13 +412,15 @@ export function InicioPublicoPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            to="/reservar"
+          <a
+            href={enlaceWhatsApp('Hola Villadent, quiero reservar una cita.')}
+            target="_blank"
+            rel="noreferrer"
             className={buttonVariants({ variant: 'accion', size: 'lg', className: 'font-bold shadow-accion' })}
           >
             <Calendar className="mr-2 size-5" />
             Reserva tu cita hoy
-          </Link>
+          </a>
           <Link to="/villamax" className={buttonVariants({ variant: 'secundario', size: 'lg', className: 'border border-outline' })}>
             Estudios de rayos X
           </Link>
