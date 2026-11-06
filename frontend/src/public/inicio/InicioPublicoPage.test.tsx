@@ -20,9 +20,9 @@ describe('A1 · Inicio público (Landing page)', () => {
     await renderEn('/')
 
     expect(
-      screen.getByRole('heading', { name: /Odontología humana, honesta y de alta precisión/i }),
+      screen.getByRole('heading', { name: /Sonrisas saludables, confianza para toda la vida/i }),
     ).toBeInTheDocument()
-    const reservar = screen.getByRole('link', { name: /Reserva tu cita por WhatsApp/i })
+    const reservar = screen.getByRole('link', { name: /Agenda tu cita por WhatsApp/i })
     expect(reservar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/51912192005\?text=/)
     expect(screen.getByRole('link', { name: /Ver catálogo de servicios/i })).toBeInTheDocument()
   })

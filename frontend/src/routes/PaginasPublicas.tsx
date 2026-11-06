@@ -84,7 +84,7 @@ export function PublicLayout() {
             <div className="flex flex-col gap-3">
               <Marca />
               <p className="text-xs text-on-surface-variant leading-relaxed mt-1">
-                Ecosistema clínico odontológico y centro de imágenes 3D de alta precisión. Huancayo, Región Junín.
+                Clínicas odontológicas y centro de radiología en Huancayo, Junín.
               </p>
               <div className="mt-2 text-xs text-on-surface-variant">
                 <p>RUC de la empresa en trámite.</p>

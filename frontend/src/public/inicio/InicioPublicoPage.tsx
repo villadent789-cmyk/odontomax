@@ -114,21 +114,25 @@ export function InicioPublicoPage() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-pill bg-primary-fixed px-3 py-1 text-xs font-bold tracking-etiqueta text-on-primary-fixed uppercase">
               <Sparkles className="size-3.5" />
-              Red Odontológica · Huancayo & Chilca
+              Villadent + Villamax 3D
             </span>
             <span className="inline-flex items-center gap-1 rounded-pill bg-white/15 px-3 py-1 text-xs font-semibold text-white">
               <Scan className="size-3.5 text-primary-fixed-dim" />
-              Centro Radiológico Villamax 3D
+              Huancayo · Chilca
             </span>
           </div>
 
           <h1 className="font-display text-headline-xl font-bold tracking-tight text-white md:text-5xl lg:text-6xl">
-            Odontología humana, honesta y de alta precisión
+            Sonrisas saludables, confianza para toda la vida.
           </h1>
 
+          <p className="font-display text-2xl font-semibold text-acento md:text-3xl">
+            Tu salud dental está en manos de especialistas.
+          </p>
+
           <p className="max-w-2xl text-body-lg text-primary-fixed/90 md:text-xl">
-            Cuidamos tu salud bucal con especialistas de primer nivel, tecnología diagnóstica 3D y la calidez que tu familia
-            merece en el Valle del Mantaro.
+            Te escuchamos, te orientamos y cuidamos de tu sonrisa con tratamientos personalizados, profesionales
+            especializados y tecnología de diagnóstico 3D.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -143,7 +147,7 @@ export function InicioPublicoPage() {
               })}
             >
               <Calendar className="mr-2 size-5" />
-              Reserva tu cita por WhatsApp
+              Agenda tu cita por WhatsApp
             </a>
 
             <Link
@@ -157,13 +161,6 @@ export function InicioPublicoPage() {
               Ver catálogo de servicios
               <ArrowRight className="ml-2 size-4" />
             </Link>
-
-            <Link
-              to="/reserva"
-              className="inline-flex items-center text-sm font-semibold text-primary-fixed hover:text-white underline-offset-4 hover:underline px-2"
-            >
-              ¿Ya tienes cita? Consulta tu reserva
-            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-4 border-t border-white/20 pt-6 sm:grid-cols-3">
@@ -176,8 +173,8 @@ export function InicioPublicoPage() {
               <p className="text-xs text-primary-fixed/80">Tomografía Cone Beam en Villamax</p>
             </div>
             <div className="col-span-2 sm:col-span-1">
-              <p className="font-display text-2xl font-bold text-white">Yape & Efectivo</p>
-              <p className="text-xs text-primary-fixed/80">Adelanto accesible y seguro</p>
+              <p className="font-display text-2xl font-bold text-white">Paga como prefieras</p>
+              <p className="text-xs text-primary-fixed/80">Efectivo, Yape, Plin o tarjeta en recepción</p>
             </div>
           </div>
         </div>
