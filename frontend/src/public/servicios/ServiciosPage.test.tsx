@@ -35,9 +35,15 @@ describe('A2 · Servicios Odontológicos Villadent', () => {
     for (const seccion of ['Diagnóstico y prevención', 'Restauración, endodoncia y cirugía', 'Prótesis y rehabilitación', 'Ortodoncia y estética']) {
       expect(screen.getByRole('region', { name: seccion })).toBeInTheDocument()
     }
-    for (const titulo of ['Profilaxis (limpieza dental)', 'Fluorización', 'Endodoncia especializada', 'Coronas y puentes', 'Prótesis removibles y totales', 'Implante dental', 'Blanqueamiento dental']) {
+    for (const titulo of ['Profilaxis (limpieza dental)', 'Fluorización', 'Endodoncia', 'Coronas y puentes', 'Prótesis removibles y totales', 'Implante dental', 'Blanqueamiento dental']) {
       expect(screen.getByRole('heading', { name: titulo })).toBeInTheDocument()
     }
+  })
+
+  it('hay una sola endodoncia', async () => {
+    await renderEn('/servicios')
+
+    expect(screen.getAllByRole('heading', { name: /Endodoncia/ })).toHaveLength(1)
   })
 
   it('cada tarjeta lleva «Reservar cita», que abre WhatsApp con el mensaje del tratamiento', async () => {

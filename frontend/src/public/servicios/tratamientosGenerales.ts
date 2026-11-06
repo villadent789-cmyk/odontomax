@@ -110,21 +110,6 @@ export const TRATAMIENTOS_GENERALES: readonly TratamientoGeneral[] = [
     ...IMG('endodoncia'),
   },
   {
-    id: 'endodoncia-especializada',
-    titulo: 'Endodoncia especializada',
-    grupo: 'Restauración, endodoncia y cirugía',
-    categoria: 'Casos complejos',
-    descripcion: 'Tratamiento de conducto en casos complejos: dientes con varias raíces o que necesitan ser tratados nuevamente.',
-    introduccion: 'Algunos dientes necesitan una atención más cuidadosa: tienen varios conductos, conductos muy finos o ya fueron tratados antes.',
-    datos: [
-      'Atendemos dientes de varias raíces (como las muelas), que requieren más tiempo y precisión.',
-      'También evaluamos el retratamiento de conductos cuando un tratamiento anterior no tuvo el resultado esperado.',
-      'Se planifica con radiografías para conocer la forma de las raíces antes de empezar.',
-    ],
-    nota: 'Si tu diente puede conservarse o no lo define el odontólogo al evaluar tu caso con la radiografía.',
-    ...IMG('endodoncia-especializada'),
-  },
-  {
     id: 'cirugia',
     titulo: 'Cirugía y extracciones',
     grupo: 'Restauración, endodoncia y cirugía',

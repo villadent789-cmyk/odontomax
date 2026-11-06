@@ -17,7 +17,7 @@ export function PublicLayout() {
   return (
     <div className="flex min-h-dvh flex-col bg-surface">
       {/* Header Principal */}
-      <header className="sticky top-0 z-40 border-b border-outline-variant/60 bg-surface-container-lowest/95 backdrop-blur-md">
+      <header className="z-40 md:sticky md:top-0 border-b border-outline-variant/60 bg-surface-container-lowest/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3.5">
           <Link to="/" aria-label="Villadent, ir al inicio" className="rounded-panel focus-visible:outline-2 focus-visible:outline-focus">
             <Marca />
