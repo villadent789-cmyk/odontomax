@@ -33,14 +33,14 @@ public class EpisodioOdontogramaController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<EpisodioOdontogramaDTO> abrir(@PathVariable UUID pacienteId,
                                                         @Valid @RequestBody(required = false) AbrirEpisodioRequestDTO req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(episodioService.abrir(pacienteId, req));
     }
 
     @PostMapping("/{episodioId}/cerrar")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<EpisodioOdontogramaDTO> cerrar(@PathVariable UUID pacienteId, @PathVariable UUID episodioId,
                                                          @Valid @RequestBody(required = false) CerrarEpisodioRequestDTO req) {
         return ResponseEntity.ok(episodioService.cerrar(pacienteId, episodioId, req));

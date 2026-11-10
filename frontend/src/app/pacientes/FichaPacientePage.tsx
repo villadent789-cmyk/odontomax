@@ -109,8 +109,8 @@ export function FichaPacientePage() {
   const { id } = useParams({ strict: false }) as { id?: string }
   const { tab, desde } = useSearch({ strict: false }) as { tab?: string; desde?: 'agenda' | 'bandeja' }
   const sesion = useSesion()
-  // La historia clínica la escriben administración y odontólogos; recepción solo la ve.
-  const puedeEscribirClinica = tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])
+  // Notas, odontograma y antecedentes los puede escribir todo el personal de la sede (recepción ayuda a los doctores).
+  const puedeEscribirClinica = tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION'])
   const [pestañaActiva, setPestañaActiva] = useState<PestañaFicha>(() => {
     const deUrl = pestañaDesdeUrl(tab)
     if (sesion?.negocioActivo === 'VILLAMAX' && deUrl === 'odontograma') return 'resumen'
@@ -1031,7 +1031,7 @@ export function FichaPacientePage() {
       {/* ─────────── Pestaña: Odontograma 3D / Anatómico FDI (Fase 5) ─────────── */}
       {pestañaActiva === 'odontograma' && sesion?.negocioActivo !== 'VILLAMAX' && (
         <div className="space-y-6">
-          <EpisodiosOdontograma pacienteId={paciente.id!} pacienteNombre={paciente.nombreCompleto ?? ''} pacienteDni={paciente.dni} sedeNombre={sesion?.usuario.sedes.find((x) => x.id === (paciente.sedeId ?? sesion?.sedeActivaId))?.nombre ?? ''} puedeEditar={tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])} />
+          <EpisodiosOdontograma pacienteId={paciente.id!} pacienteNombre={paciente.nombreCompleto ?? ''} pacienteDni={paciente.dni} sedeNombre={sesion?.usuario.sedes.find((x) => x.id === (paciente.sedeId ?? sesion?.sedeActivaId))?.nombre ?? ''} puedeEditar={puedeEscribirClinica} />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h2 className="font-display text-xl font-bold text-on-surface">

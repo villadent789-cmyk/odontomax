@@ -27,7 +27,7 @@ public class AntecedentesController {
     }
 
     @PutMapping("/pacientes/{pacienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<PacienteResponseDTO> actualizarAntecedentes(
             @PathVariable UUID pacienteId,
             @Valid @RequestBody AntecedentesUpdateRequestDTO dto

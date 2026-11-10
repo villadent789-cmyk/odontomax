@@ -49,16 +49,16 @@ class RecepcionLeeHistoriaPostgresIntegrationTest extends PacientesPostgresTestB
     }
 
     @Test
-    @DisplayName("Recepción sigue sin poder escribir en la historia ni descargar el PDF o exportar el expediente")
+    @DisplayName("Recepción escribe en la historia para ayudar a los doctores, pero no descarga el PDF ni exporta el expediente")
     void recepcionNoEscribeNiDescarga() throws Exception {
         String sede = crearSede();
         UUID paciente = insertarPaciente(sede, "Eva", "Luna");
         UsuarioPrueba recepcion = crearUsuario("RECEPCION", sede);
 
         Map<String, Object> nota = Map.of("tipoNota", "EVOLUCION", "subjetivo", "x", "objetivo", "x", "analisis", "x", "plan", "x");
-        assertThat(ejecutar(post("/evoluciones/pacientes/" + paciente), recepcion, nota).getResponse().getStatus()).isEqualTo(403);
+        assertThat(ejecutar(post("/evoluciones/pacientes/" + paciente), recepcion, nota).getResponse().getStatus()).isNotEqualTo(403);
         Map<String, Object> pieza = Map.of("piezaFdi", 16, "estado", "caries");
-        assertThat(ejecutar(post("/odontograma/pacientes/" + paciente + "/pieza"), recepcion, pieza).getResponse().getStatus()).isEqualTo(403);
+        assertThat(ejecutar(post("/odontograma/pacientes/" + paciente + "/pieza"), recepcion, pieza).getResponse().getStatus()).isNotEqualTo(403);
         assertThat(ejecutar(get("/odontograma/pacientes/" + paciente + "/pdf"), recepcion).getResponse().getStatus()).isEqualTo(403);
         assertThat(ejecutar(get("/pacientes/" + paciente + "/exportar"), recepcion).getResponse().getStatus()).isEqualTo(403);
     }

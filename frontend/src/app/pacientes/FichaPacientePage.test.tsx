@@ -261,16 +261,14 @@ describe('B9 · Ficha Integral del Paciente (Stitch)', () => {
     expect(screen.getByText(/Restauración con resina compuesta Filtek Z350/i)).toBeInTheDocument()
   })
 
-  it('recepción ve la Historia Clínica pero sin botones para escribir', async () => {
+  it('recepción ve la Historia Clínica y puede escribir notas para ayudar a los doctores', async () => {
     const user = userEvent.setup()
     await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)
 
     await user.click(await screen.findByRole('tab', { name: /Historia Clínica/i }))
 
     expect(await screen.findByText(/Notas de Evolución Odontológica/i)).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Nueva nota/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Actualizar Antecedentes|Editar antecedentes/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Registrar Pieza/i })).not.toBeInTheDocument()
+    expect((await screen.findAllByRole('button', { name: /Nueva nota/i })).length).toBeGreaterThan(0)
   })
 
   it('el odontólogo conserva los botones para escribir la historia', async () => {

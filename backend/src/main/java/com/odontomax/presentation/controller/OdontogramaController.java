@@ -39,7 +39,7 @@ public class OdontogramaController {
     }
 
     @PostMapping("/pacientes/{pacienteId}/pieza")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<OdontogramaRegistroResponseDTO> registrarPieza(
             @PathVariable UUID pacienteId,
             @Valid @RequestBody OdontogramaPiezaRequestDTO dto
@@ -49,7 +49,7 @@ public class OdontogramaController {
     }
 
     @PostMapping("/pacientes/{pacienteId}/lote")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<OdontogramaRegistroResponseDTO>> registrarLote(
             @PathVariable UUID pacienteId,
             @Valid @RequestBody OdontogramaLoteRequestDTO dto

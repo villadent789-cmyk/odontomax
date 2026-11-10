@@ -35,7 +35,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EpisodioOdontogramaService {
 
-    private static final Set<String> ROLES_ESCRITURA = Set.of("ODONTOLOGO", "ADMIN_SEDE", "ADMIN_GENERAL");
+    private static final Set<String> ROLES_ESCRITURA = Set.of("ODONTOLOGO", "RECEPCION", "ADMIN_SEDE", "ADMIN_GENERAL");
 
     private final OdontogramaEpisodioRepository episodioRepository;
     private final SpringDataOdontogramaRepository odontogramaRepository;

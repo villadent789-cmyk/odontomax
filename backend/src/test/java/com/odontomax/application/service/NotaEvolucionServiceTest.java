@@ -160,18 +160,6 @@ class NotaEvolucionServiceTest {
         assertEquals("SOAP", nulo.getTipoNota());
     }
 
-    @Test
-    @DisplayName("Crear: RECEPCION no puede redactar notas clínicas")
-    void testCrearRecepcionDenegada() {
-        autenticar(new ClinicaUserPrincipal(UUID.randomUUID(), "rec@odontomax.pe", "Recepción", "RECEPCION", "sede-chilca-1"));
-        when(pacienteRepository.findById(pacienteId)).thenReturn(Optional.of(paciente));
-
-        AccessDeniedException ex = assertThrows(AccessDeniedException.class, () ->
-                notaEvolucionService.crearNota(pacienteId, NotaEvolucionRequestDTO.builder().contenido("x").build()));
-
-        assertTrue(ex.getMessage().contains("RECEPCION"));
-        verifyNoInteractions(notaRepository, auditoriaRepository);
-    }
 
     @Test
     @DisplayName("Crear: odontólogo de otra sede recibe AccessDenied")

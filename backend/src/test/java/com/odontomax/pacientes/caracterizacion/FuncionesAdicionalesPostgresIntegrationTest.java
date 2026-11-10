@@ -37,16 +37,15 @@ class FuncionesAdicionalesPostgresIntegrationTest extends PacientesPostgresTestB
     }
 
     @Test
-    @DisplayName("Recepcionista con función de odontólogo puede escribir en la historia clínica")
-    void recepcionMasOdontologoEscribeLaHistoria() throws Exception {
+    @DisplayName("Recepcionista con función de odontólogo puede descargar el PDF del odontograma; sola, no")
+    void recepcionMasOdontologoDescargaElPdf() throws Exception {
         String sede = crearSede();
         UUID paciente = insertarPaciente(sede, "Ana", "Paz");
         UsuarioPrueba soloRecepcion = crearUsuario("RECEPCION", sede);
         UsuarioPrueba doble = conFunciones("RECEPCION", "ODONTOLOGO", sede);
-        Map<String, Object> pieza = Map.of("piezaFdi", 16, "estado", "caries");
 
-        assertThat(ejecutar(post("/odontograma/pacientes/" + paciente + "/pieza"), soloRecepcion, pieza).getResponse().getStatus()).isEqualTo(403);
-        assertThat(ejecutar(post("/odontograma/pacientes/" + paciente + "/pieza"), doble, pieza).getResponse().getStatus()).isNotEqualTo(403);
+        assertThat(ejecutar(get("/odontograma/pacientes/" + paciente + "/pdf"), soloRecepcion).getResponse().getStatus()).isEqualTo(403);
+        assertThat(ejecutar(get("/odontograma/pacientes/" + paciente + "/pdf"), doble).getResponse().getStatus()).isNotEqualTo(403);
     }
 
     @Test

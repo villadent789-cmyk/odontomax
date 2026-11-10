@@ -171,18 +171,6 @@ class OdontogramaServiceTest {
         assertArrayEquals(new String[0], captor.getValue().getCaras());
     }
 
-    @Test
-    @DisplayName("Registrar pieza: RECEPCION (aun en su sede) no tiene permiso de escritura")
-    void testRegistrarPiezaRecepcionDenegada() {
-        autenticar(new ClinicaUserPrincipal(UUID.randomUUID(), "rec@odontomax.pe", "Recepción", "RECEPCION", "sede-chilca-1"));
-        when(pacienteRepository.findById(pacienteId)).thenReturn(Optional.of(paciente));
-
-        AccessDeniedException ex = assertThrows(AccessDeniedException.class,
-                () -> odontogramaService.registrarPieza(pacienteId, pieza(11, "caries", null)));
-
-        assertTrue(ex.getMessage().contains("RECEPCION"));
-        verifyNoInteractions(odontogramaRepository, auditoriaRepository);
-    }
 
     @Test
     @DisplayName("Registrar pieza: ADMIN_SEDE de su sede puede escribir")
@@ -253,16 +241,6 @@ class OdontogramaServiceTest {
         assertTrue(audit.getValue().getDetalle().contains("3 pieza(s)"));
     }
 
-    @Test
-    @DisplayName("Registrar lote: RECEPCION no puede registrar ninguna pieza del lote")
-    void testRegistrarLoteRecepcionDenegada() {
-        autenticar(new ClinicaUserPrincipal(UUID.randomUUID(), "rec@odontomax.pe", "Recepción", "RECEPCION", "sede-chilca-1"));
-        when(pacienteRepository.findById(pacienteId)).thenReturn(Optional.of(paciente));
-
-        assertThrows(AccessDeniedException.class, () -> odontogramaService.registrarLote(pacienteId,
-                OdontogramaLoteRequestDTO.builder().piezas(List.of(pieza(11, "caries", null))).build()));
-        verifyNoInteractions(odontogramaRepository);
-    }
     @Test
     @DisplayName("Estado actual: odontólogo sin cita con el paciente recibe AccessDeniedException")
     void testObtenerEstadoActual_OdontologoSinCita_Denegado() {

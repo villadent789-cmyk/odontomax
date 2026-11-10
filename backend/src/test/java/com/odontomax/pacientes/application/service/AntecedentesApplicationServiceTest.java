@@ -122,23 +122,6 @@ class AntecedentesApplicationServiceTest {
                 .isInstanceOf(AccessDeniedException.class);
     }
 
-    @Test
-    @DisplayName("actualizarAntecedentes: rol RECEPCION es rechazado con mensaje descriptivo")
-    void actualizarRolRecepcionRechazado() {
-        UUID id = UUID.randomUUID();
-        autenticar("RECEPCION", "sede-1");
-        PacienteEntity p = PacienteEntity.builder().id(id).sedeId("sede-1").build();
-        when(pacienteRepository.findById(id)).thenReturn(Optional.of(p));
-
-        AntecedentesUpdateRequestDTO dto = AntecedentesUpdateRequestDTO.builder()
-                .alergias("Latex")
-                .motivoCambio("Actualizacion")
-                .build();
-
-        assertThatThrownBy(() -> service.actualizarAntecedentes(id, dto))
-                .isInstanceOf(AccessDeniedException.class)
-                .hasMessageContaining("El rol 'RECEPCION' no tiene permisos para modificar antecedentes medicos ni alergias");
-    }
 
     @Test
     @DisplayName("actualizarAntecedentes: exito con ODONTOLOGO actualiza paciente, guarda historial con trim, audita y normaliza alergias")

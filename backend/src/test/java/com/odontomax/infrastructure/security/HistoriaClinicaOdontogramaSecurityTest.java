@@ -174,8 +174,8 @@ class HistoriaClinicaOdontogramaSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /odontograma/pacientes/{id}/pieza: RECEPCION no tiene permisos de escritura (403 Forbidden)")
-    void testOdontogramaEscrituraRecepcionRechazada() throws Exception {
+    @DisplayName("POST /odontograma/pacientes/{id}/pieza: RECEPCION sí puede escribir (201 Created)")
+    void testOdontogramaEscrituraRecepcionPermitida() throws Exception {
         UUID pacId = UUID.randomUUID();
         OdontogramaPiezaRequestDTO dto = OdontogramaPiezaRequestDTO.builder()
                 .piezaFdi(16)
@@ -187,7 +187,7 @@ class HistoriaClinicaOdontogramaSecurityTest {
                         .header("Authorization", "Bearer " + tokenRecepcion)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -220,8 +220,8 @@ class HistoriaClinicaOdontogramaSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /evoluciones/pacientes/{id}: RECEPCION no puede registrar notas clínicas (403 Forbidden)")
-    void testEvolucionRecepcionRechazada() throws Exception {
+    @DisplayName("POST /evoluciones/pacientes/{id}: RECEPCION sí puede registrar notas clínicas (201 Created)")
+    void testEvolucionRecepcionPermitida() throws Exception {
         UUID pacId = UUID.randomUUID();
         NotaEvolucionRequestDTO dto = NotaEvolucionRequestDTO.builder()
                 .subjetivo("Paciente refiere dolor")
@@ -234,7 +234,7 @@ class HistoriaClinicaOdontogramaSecurityTest {
                         .header("Authorization", "Bearer " + tokenRecepcion)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -270,8 +270,8 @@ class HistoriaClinicaOdontogramaSecurityTest {
     }
 
     @Test
-    @DisplayName("PUT /antecedentes/pacientes/{id}: RECEPCION no puede editar antecedentes médicos (403 Forbidden)")
-    void testAntecedentesRecepcionRechazada() throws Exception {
+    @DisplayName("PUT /antecedentes/pacientes/{id}: RECEPCION sí puede editar antecedentes médicos (200 OK)")
+    void testAntecedentesRecepcionPermitida() throws Exception {
         UUID pacId = UUID.randomUUID();
         AntecedentesUpdateRequestDTO dto = AntecedentesUpdateRequestDTO.builder()
                 .alergias("Penicilina")
@@ -282,7 +282,7 @@ class HistoriaClinicaOdontogramaSecurityTest {
                         .header("Authorization", "Bearer " + tokenRecepcion)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk());
     }
 
     @Test

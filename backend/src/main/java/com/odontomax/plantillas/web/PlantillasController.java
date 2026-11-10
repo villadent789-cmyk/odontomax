@@ -41,19 +41,19 @@ public class PlantillasController {
     }
 
     @PostMapping("/registros")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<RegistroPlantillaDTO> crear(@RequestBody @Valid RegistroPlantillaRequestDTO req) {
         return ResponseEntity.status(HttpStatus.CREATED).body(plantillas.crear(req));
     }
 
     @PutMapping("/registros/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<RegistroPlantillaDTO> guardar(@PathVariable UUID id, @RequestBody @Valid DatosRegistroRequestDTO req) {
         return ResponseEntity.ok(plantillas.guardarDatos(id, req.datos()));
     }
 
     @PostMapping("/registros/{id}/cerrar")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<RegistroPlantillaDTO> cerrar(@PathVariable UUID id) {
         return ResponseEntity.ok(plantillas.cerrar(id));
     }

@@ -249,14 +249,14 @@ class AntecedentesCaracterizacionTest extends PacientesPostgresTestBase {
     }
 
     @Test
-    @DisplayName("Permisos: RECEPCION 403 (pero un cuerpo invalido da 400 antes que el 403); sede ajena 403; inexistente 400; sin token 401; ODONTOLOGO, ADMIN_SEDE y ADMIN_GENERAL escriben")
+    @DisplayName("Permisos: RECEPCION escribe (y un cuerpo invalido da 400); sede ajena 403; inexistente 400; sin token 401; ODONTOLOGO, ADMIN_SEDE y ADMIN_GENERAL escriben")
     void permisos() throws Exception {
         String sedeA = crearSede();
         String sedeB = crearSede();
         UUID id = insertarPaciente(sedeA, "Permisos", "Antecedentes");
         Map<String, Object> valido = cuerpo("a", "b", false, null, "Motivo");
 
-        assertThat(actualizar(crearUsuario("RECEPCION", sedeA), id, valido).getResponse().getStatus()).isEqualTo(403);
+        assertThat(actualizar(crearUsuario("RECEPCION", sedeA), id, valido).getResponse().getStatus()).isEqualTo(200);
         assertThat(actualizar(crearUsuario("RECEPCION", sedeA), id, new HashMap<>()).getResponse().getStatus())
                 .as("la validacion se ejecuta antes que @PreAuthorize").isEqualTo(400);
         assertThat(actualizar(null, id, valido).getResponse().getStatus()).isEqualTo(401);
@@ -267,14 +267,15 @@ class AntecedentesCaracterizacionTest extends PacientesPostgresTestBase {
         MvcResult r = actualizar(adminGeneral(), inexistente, valido);
         assertThat(r.getResponse().getStatus()).isEqualTo(400);
         assertThat(leer(r).get("message").asText()).isEqualTo("No se encontró el paciente con ID: " + inexistente);
-        assertThat(contar("SELECT count(*) FROM antecedentes_historial WHERE paciente_id = ?", id)).isZero();
+        // Solo escribió recepción (los demás intentos fueron rechazados): queda un único registro
+        assertThat(contar("SELECT count(*) FROM antecedentes_historial WHERE paciente_id = ?", id)).isEqualTo(1);
 
         for (String rol : List.of("ODONTOLOGO", "ADMIN_SEDE", "ADMIN_GENERAL")) {
             UsuarioPrueba u = crearUsuario(rol, "ADMIN_GENERAL".equals(rol) ? null : sedeA);
             if ("ODONTOLOGO".equals(rol)) vincularCita(id, u);
             assertThat(actualizar(u, id, valido).getResponse().getStatus()).as(rol).isEqualTo(200);
         }
-        assertThat(contar("SELECT count(*) FROM antecedentes_historial WHERE paciente_id = ?", id)).isEqualTo(3);
+        assertThat(contar("SELECT count(*) FROM antecedentes_historial WHERE paciente_id = ?", id)).isEqualTo(4);
     }
 
     @Test

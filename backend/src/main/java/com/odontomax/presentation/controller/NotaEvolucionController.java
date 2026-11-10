@@ -27,7 +27,7 @@ public class NotaEvolucionController {
     }
 
     @PostMapping("/pacientes/{pacienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<NotaEvolucionResponseDTO> crearNota(
             @PathVariable UUID pacienteId,
             @Valid @RequestBody NotaEvolucionRequestDTO dto
