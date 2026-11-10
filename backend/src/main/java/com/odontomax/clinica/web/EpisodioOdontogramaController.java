@@ -27,7 +27,7 @@ public class EpisodioOdontogramaController {
     private final EpisodioOdontogramaService episodioService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<EpisodioOdontogramaDTO>> listar(@PathVariable UUID pacienteId) {
         return ResponseEntity.ok(episodioService.listar(pacienteId));
     }

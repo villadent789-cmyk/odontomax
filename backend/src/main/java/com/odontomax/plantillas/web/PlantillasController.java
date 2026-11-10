@@ -23,19 +23,19 @@ public class PlantillasController {
     private final PlantillasService plantillas;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<PlantillaTratamientoDTO>> listar(@RequestParam(required = false) String negocio) {
         return ResponseEntity.ok(plantillas.listar(negocio));
     }
 
     @GetMapping("/servicio/{idONombre}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<PlantillaTratamientoDTO> deServicio(@PathVariable String idONombre) {
         return ResponseEntity.ok(plantillas.deServicio(idONombre));
     }
 
     @GetMapping("/registros/paciente/{pacienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<RegistroPlantillaDTO>> registrosDelPaciente(@PathVariable UUID pacienteId) {
         return ResponseEntity.ok(plantillas.registrosDelPaciente(pacienteId));
     }

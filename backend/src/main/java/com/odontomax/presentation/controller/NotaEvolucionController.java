@@ -21,7 +21,7 @@ public class NotaEvolucionController {
     private final NotaEvolucionService notaEvolucionService;
 
     @GetMapping("/pacientes/{pacienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<NotaEvolucionResponseDTO>> listarPorPaciente(@PathVariable UUID pacienteId) {
         return ResponseEntity.ok(notaEvolucionService.listarPorPaciente(pacienteId));
     }

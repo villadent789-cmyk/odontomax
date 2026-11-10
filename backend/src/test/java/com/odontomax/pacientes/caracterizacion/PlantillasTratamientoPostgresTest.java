@@ -77,7 +77,7 @@ class PlantillasTratamientoPostgresTest extends PacientesPostgresTestBase {
     }
 
     @Test
-    @DisplayName("Un odontólogo no abre las fichas de un paciente que no atiende, ni quien trabaja en otra sede; recepción no entra")
+    @DisplayName("Un odontólogo no abre las fichas de un paciente que no atiende, ni quien trabaja en otra sede; recepción solo lee, no escribe")
     void accesoRestringido() throws Exception {
         String sede = crearSede();
         UsuarioPrueba odontologo = crearUsuario("ODONTOLOGO", sede);
@@ -87,6 +87,7 @@ class PlantillasTratamientoPostgresTest extends PacientesPostgresTestBase {
 
         assertThat(ejecutar(get("/plantillas/registros/paciente/" + ajeno), odontologo).getResponse().getStatus()).isEqualTo(403);
         assertThat(ejecutar(get("/plantillas/registros/paciente/" + ajeno), otraSede).getResponse().getStatus()).isEqualTo(403);
-        assertThat(ejecutar(get("/plantillas"), recepcion).getResponse().getStatus()).isEqualTo(403);
+        assertThat(ejecutar(get("/plantillas"), recepcion).getResponse().getStatus()).isEqualTo(200);
+        assertThat(ejecutar(post("/plantillas/registros/" + UUID.randomUUID() + "/cerrar"), recepcion).getResponse().getStatus()).isEqualTo(403);
     }
 }

@@ -58,10 +58,10 @@ num;verbo;ruta;ANONIMO;ADMIN_GENERAL;ADMIN_SEDE;ODONTOLOGO;RECEPCION
 56;PATCH;/inventario/transferencias/{id}/recibir;401;PERMITIDO;PERMITIDO;403;PERMITIDO
 57;PATCH;/inventario/transferencias/{id}/cancelar;401;PERMITIDO;PERMITIDO;403;403
 58;GET;/admin/mantenimiento/tamano-bd;401;PERMITIDO;403;403;403
-59;GET;/evoluciones/pacientes/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;403
+59;GET;/evoluciones/pacientes/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 60;POST;/evoluciones/pacientes/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;403
-61;GET;/odontograma/pacientes/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;403
-62;GET;/odontograma/pacientes/{pacienteId}/historial;401;PERMITIDO;PERMITIDO;PERMITIDO;403
+61;GET;/odontograma/pacientes/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
+62;GET;/odontograma/pacientes/{pacienteId}/historial;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 63;POST;/odontograma/pacientes/{pacienteId}/pieza;401;PERMITIDO;PERMITIDO;PERMITIDO;403
 64;POST;/odontograma/pacientes/{pacienteId}/lote;401;PERMITIDO;PERMITIDO;PERMITIDO;403
 64b;GET;/odontograma/pacientes/{pacienteId}/pdf;401;PERMITIDO;PERMITIDO;PERMITIDO;403
@@ -161,9 +161,9 @@ num;verbo;ruta;ANONIMO;ADMIN_GENERAL;ADMIN_SEDE;ODONTOLOGO;RECEPCION
 163;PUT;/inventario/servicios/{servicioId}/insumos;401;PERMITIDO;403;403;403
 164;GET;/inventario/alertas-consumo;401;PERMITIDO;PERMITIDO;403;403
 165;POST;/inventario/alertas-consumo/{id}/resolver;401;PERMITIDO;PERMITIDO;403;403
-166;GET;/plantillas;401;PERMITIDO;PERMITIDO;PERMITIDO;403
-167;GET;/plantillas/servicio/{idONombre};401;PERMITIDO;PERMITIDO;PERMITIDO;403
-168;GET;/plantillas/registros/paciente/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;403
+166;GET;/plantillas;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
+167;GET;/plantillas/servicio/{idONombre};401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
+168;GET;/plantillas/registros/paciente/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 169;POST;/plantillas/registros;401;PERMITIDO;PERMITIDO;PERMITIDO;403
 170;PUT;/plantillas/registros/{id};401;PERMITIDO;PERMITIDO;PERMITIDO;403
 171;POST;/plantillas/registros/{id}/cerrar;401;PERMITIDO;PERMITIDO;PERMITIDO;403
@@ -173,7 +173,7 @@ num;verbo;ruta;ANONIMO;ADMIN_GENERAL;ADMIN_SEDE;ODONTOLOGO;RECEPCION
 175;GET;/pacientes/{pacienteId}/foto;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 176;PUT;/pacientes/{pacienteId}/foto;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 177;DELETE;/pacientes/{pacienteId}/foto;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
-178;GET;/odontograma/pacientes/{pacienteId}/episodios;401;PERMITIDO;PERMITIDO;PERMITIDO;403
+178;GET;/odontograma/pacientes/{pacienteId}/episodios;401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO
 179;POST;/odontograma/pacientes/{pacienteId}/episodios;401;PERMITIDO;PERMITIDO;PERMITIDO;403
 180;POST;/odontograma/pacientes/{pacienteId}/episodios/{episodioId}/cerrar;401;PERMITIDO;PERMITIDO;PERMITIDO;403
 181;GET;/presupuestos/paciente/{pacienteId};401;PERMITIDO;PERMITIDO;PERMITIDO;PERMITIDO

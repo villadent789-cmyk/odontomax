@@ -108,6 +108,8 @@ export function FichaPacientePage() {
   const { id } = useParams({ strict: false }) as { id?: string }
   const { tab, desde } = useSearch({ strict: false }) as { tab?: string; desde?: 'agenda' | 'bandeja' }
   const sesion = useSesion()
+  // La historia clínica la escriben administración y odontólogos; recepción solo la ve.
+  const puedeEscribirClinica = ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '')
   const [pestañaActiva, setPestañaActiva] = useState<PestañaFicha>(() => {
     const deUrl = pestañaDesdeUrl(tab)
     if (sesion?.negocioActivo === 'VILLAMAX' && deUrl === 'odontograma') return 'resumen'
@@ -473,14 +475,16 @@ export function FichaPacientePage() {
                 </div>
               </div>
             </div>
-            <Button
-              size="sm"
-              variant="secundario"
-              onClick={() => setModalAntecedentesAbierto(true)}
-              className="text-xs shrink-0 bg-white dark:bg-surface-container-high border-red-300 text-red-800 dark:text-red-300 hover:bg-red-100"
-            >
-              Editar Alertas Médicas
-            </Button>
+            {puedeEscribirClinica && (
+              <Button
+                size="sm"
+                variant="secundario"
+                onClick={() => setModalAntecedentesAbierto(true)}
+                className="text-xs shrink-0 bg-white dark:bg-surface-container-high border-red-300 text-red-800 dark:text-red-300 hover:bg-red-100"
+              >
+                Editar Alertas Médicas
+              </Button>
+            )}
           </div>
         ) : null}
 
@@ -570,15 +574,17 @@ export function FichaPacientePage() {
               Descuento por recomendación pendiente · recomendó a {descuentoPendiente.referidoNombre ?? 'un paciente nuevo'}
             </Badge>
           )}
-          <Button
-            size="sm"
-            variant="fantasma"
-            onClick={() => setModalAntecedentesAbierto(true)}
-            className="text-xs h-6 px-2 text-on-surface-variant hover:text-primary"
-            title="Actualizar antecedentes médicos y alergias"
-          >
-            + Actualizar Antecedentes
-          </Button>
+          {puedeEscribirClinica && (
+            <Button
+              size="sm"
+              variant="fantasma"
+              onClick={() => setModalAntecedentesAbierto(true)}
+              className="text-xs h-6 px-2 text-on-surface-variant hover:text-primary"
+              title="Actualizar antecedentes médicos y alergias"
+            >
+              + Actualizar Antecedentes
+            </Button>
+          )}
         </div>
       </header>
 
@@ -648,9 +654,11 @@ export function FichaPacientePage() {
                   <p className="rounded bg-surface-container-low p-3.5 text-sm text-on-surface-variant">
                     Aún no hay notas de evolución registradas para este paciente.
                   </p>
-                  <Button variant="secundario" size="sm" onClick={() => setModalNotaAbierto(true)}>
-                    + Nueva nota de evolución
-                  </Button>
+                  {puedeEscribirClinica && (
+                    <Button variant="secundario" size="sm" onClick={() => setModalNotaAbierto(true)}>
+                      + Nueva nota de evolución
+                    </Button>
+                  )}
                 </div>
               )}
             </MarcoResumen>
@@ -706,13 +714,15 @@ export function FichaPacientePage() {
             <section className="rounded-card border border-outline-variant/40 bg-surface-container-lowest p-5 shadow-card space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-bold text-on-surface">Ficha Médica & Triage</h3>
-                <Button
-                  variant="secundario"
-                  className="text-xs py-1 px-2.5"
-                  onClick={() => setModalAntecedentesAbierto(true)}
-                >
-                  Editar
-                </Button>
+                {puedeEscribirClinica && (
+                  <Button
+                    variant="secundario"
+                    className="text-xs py-1 px-2.5"
+                    onClick={() => setModalAntecedentesAbierto(true)}
+                  >
+                    Editar
+                  </Button>
+                )}
               </div>
 
               <div className="space-y-2 text-xs">
@@ -808,13 +818,15 @@ export function FichaPacientePage() {
                   Información crítica para la seguridad del paciente antes de intervenciones quirúrgicas o prescripción
                 </p>
               </div>
-              <Button
-                variant="secundario"
-                onClick={() => setModalAntecedentesAbierto(true)}
-                className="text-xs py-1.5 px-3"
-              >
-                Actualizar Antecedentes
-              </Button>
+              {puedeEscribirClinica && (
+                <Button
+                  variant="secundario"
+                  onClick={() => setModalAntecedentesAbierto(true)}
+                  className="text-xs py-1.5 px-3"
+                >
+                  Actualizar Antecedentes
+                </Button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
@@ -887,13 +899,15 @@ export function FichaPacientePage() {
                   <FileText aria-hidden /> Nueva receta
                 </Button>
               )}
-              <Button
-                variant="accion"
-                onClick={() => setModalNotaAbierto(true)}
-                className="text-xs py-1.5 px-3"
-              >
-                + Nueva Nota de Evolución
-              </Button>
+              {puedeEscribirClinica && (
+                <Button
+                  variant="accion"
+                  onClick={() => setModalNotaAbierto(true)}
+                  className="text-xs py-1.5 px-3"
+                >
+                  + Nueva Nota de Evolución
+                </Button>
+              )}
             </div>
           </div>
 
@@ -910,12 +924,14 @@ export function FichaPacientePage() {
                   Registre la primera nota clínica en formato SOAP o formato libre para este paciente.
                 </p>
               </div>
-              <Button
-                variant="accion"
-                onClick={() => setModalNotaAbierto(true)}
-              >
-                Redactar Primera Nota SOAP
-              </Button>
+              {puedeEscribirClinica && (
+                <Button
+                  variant="accion"
+                  onClick={() => setModalNotaAbierto(true)}
+                >
+                  Redactar Primera Nota SOAP
+                </Button>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -1114,16 +1130,18 @@ export function FichaPacientePage() {
                 </Button>
               )}
 
-              <Button
-                variant="secundario"
-                onClick={() => {
-                  setPiezaSeleccionada(undefined)
-                  setModalPiezaAbierto(true)
-                }}
-                className="text-xs py-1.5 px-3"
-              >
-                + Registrar Pieza
-              </Button>
+              {puedeEscribirClinica && (
+                <Button
+                  variant="secundario"
+                  onClick={() => {
+                    setPiezaSeleccionada(undefined)
+                    setModalPiezaAbierto(true)
+                  }}
+                  className="text-xs py-1.5 px-3"
+                >
+                  + Registrar Pieza
+                </Button>
+              )}
             </div>
           </div>
 
@@ -1132,7 +1150,7 @@ export function FichaPacientePage() {
             pacienteId={id}
             denticion={denticion}
             registros={registrosOdontograma}
-            puedeEditar={true}
+            puedeEditar={puedeEscribirClinica}
             onCambio={() => recargarOdontograma()}
             alSeleccionarPieza={(fdi) => {
               setPiezaSeleccionada(fdi)

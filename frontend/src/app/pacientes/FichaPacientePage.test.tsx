@@ -261,6 +261,38 @@ describe('B9 · Ficha Integral del Paciente (Stitch)', () => {
     expect(screen.getByText(/Restauración con resina compuesta Filtek Z350/i)).toBeInTheDocument()
   })
 
+  it('recepción ve la Historia Clínica pero sin botones para escribir', async () => {
+    const user = userEvent.setup()
+    await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)
+
+    await user.click(await screen.findByRole('tab', { name: /Historia Clínica/i }))
+
+    expect(await screen.findByText(/Notas de Evolución Odontológica/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Nueva nota/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Actualizar Antecedentes|Editar antecedentes/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Registrar Pieza/i })).not.toBeInTheDocument()
+  })
+
+  it('el odontólogo conserva los botones para escribir la historia', async () => {
+    guardarSesion({
+      token: 'token-odo',
+      usuario: {
+        id: 'u-2',
+        nombre: 'Dra. Elena Paucar',
+        rol: 'ODONTOLOGO',
+        sedes: [{ id: 'sede-chilca', nombre: 'Villadent Chilca', marca: 'VILLADENT' }],
+      },
+      sedeActivaId: 'sede-chilca',
+    })
+    _reiniciarCacheSesion()
+    const user = userEvent.setup()
+    await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)
+
+    await user.click(await screen.findByRole('tab', { name: /Historia Clínica/i }))
+
+    expect((await screen.findAllByRole('button', { name: /Nueva nota/i })).length).toBeGreaterThan(0)
+  })
+
   it('permite visualizar Odontograma con numeración FDI y hallazgos registrados', async () => {
     const user = userEvent.setup()
     await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)

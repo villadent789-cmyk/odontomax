@@ -27,13 +27,13 @@ public class OdontogramaController {
     private final OdontogramaPdfService odontogramaPdfService;
 
     @GetMapping("/pacientes/{pacienteId}")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<OdontogramaRegistroResponseDTO>> obtenerEstadoActual(@PathVariable UUID pacienteId) {
         return ResponseEntity.ok(odontogramaService.obtenerEstadoActual(pacienteId));
     }
 
     @GetMapping("/pacientes/{pacienteId}/historial")
-    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO', 'RECEPCION')")
     public ResponseEntity<List<OdontogramaRegistroResponseDTO>> obtenerHistorial(@PathVariable UUID pacienteId) {
         return ResponseEntity.ok(odontogramaService.obtenerHistorial(pacienteId));
     }
