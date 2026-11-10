@@ -1,4 +1,5 @@
 import { Trash2 } from 'lucide-react'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import { useState } from 'react'
 import { Button, Field, Input, toast } from '@/design-system'
 import { useSesion } from '@/shared/auth'
@@ -14,7 +15,7 @@ export function SelectorPlantilla({ plantillas, deshabilitado, alElegir }: { pla
   const [elegida, setElegida] = useState('')
   if (plantillas.length === 0) return null
   const actual = plantillas.find((p) => p.id === elegida)
-  const puedeQuitar = sesion?.usuario.rol !== 'ODONTOLOGO'
+  const puedeQuitar = !esSoloOdontologo(sesion?.usuario)
 
   return (
     <Field label="Usar una plantilla" ayuda="Planes que ya armaste antes. El precio sale del catálogo de hoy.">

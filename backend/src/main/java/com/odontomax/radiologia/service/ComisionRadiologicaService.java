@@ -54,7 +54,7 @@ public class ComisionRadiologicaService {
         }
         ClinicaUserPrincipal user = SecurityUtils.getCurrentUser();
         if (user != null && !"ADMIN_GENERAL".equalsIgnoreCase(user.rol())) {
-            if ("ODONTOLOGO".equalsIgnoreCase(user.rol())) {
+            if (user.soloOdontologo()) {
                 if (!atiendeEn("sede-villamax-chilca", user)) {
                     return List.of();
                 }
@@ -351,7 +351,7 @@ public class ComisionRadiologicaService {
         if ("ADMIN_GENERAL".equalsIgnoreCase(user.rol())) {
             return SecurityUtils.sedeEnNegocioActivo(sedeId);
         }
-        return "ODONTOLOGO".equalsIgnoreCase(user.rol())
+        return user.soloOdontologo()
                 ? atiendeEn(sedeId, user)
                 : sedeId != null && sedeId.equals(user.sedeId());
     }
@@ -366,7 +366,7 @@ public class ComisionRadiologicaService {
         if (user == null || "ADMIN_GENERAL".equalsIgnoreCase(user.rol())) {
             return;
         }
-        if ("ODONTOLOGO".equalsIgnoreCase(user.rol())) {
+        if (user.soloOdontologo()) {
             if (!atiendeEn(sedeId, user)) {
                 throw new AccessDeniedException("Acceso denegado: no atiende en esta sede.");
             }

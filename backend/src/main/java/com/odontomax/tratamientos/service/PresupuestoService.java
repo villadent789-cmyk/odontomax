@@ -189,7 +189,7 @@ public class PresupuestoService {
 
     private ClinicaUserPrincipal exigirClinico() {
         ClinicaUserPrincipal user = SecurityUtils.getCurrentUser();
-        if (user == null || !ROLES_CLINICOS.contains(user.rol().toUpperCase())) {
+        if (user == null || user.roles().stream().noneMatch(ROLES_CLINICOS::contains)) {
             throw new AccessDeniedException("Solo un odontólogo o un administrador registra y resuelve presupuestos.");
         }
         return user;

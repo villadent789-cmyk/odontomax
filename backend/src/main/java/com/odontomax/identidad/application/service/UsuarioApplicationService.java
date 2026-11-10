@@ -70,6 +70,7 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
                 .email(emailClean)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .rol(rol)
+                .rolesAdicionales(Usuario.normalizarRolesAdicionales(rol, request.getRolesAdicionales()))
                 .sedeId(sedeId)
                 .activo(true)
                 .build();
@@ -84,12 +85,12 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
                 "CREAR_USUARIO",
                 "usuarios",
                 guardado.getId().toString(),
-                String.format("Usuario creado: %s | Rol: %s | Sede: %s", guardado.getEmail(), guardado.getRol(), guardado.getSedeId()),
+                String.format("Usuario creado: %s | Rol: %s%s | Sede: %s", guardado.getEmail(), guardado.getRol(), detalleFunciones(guardado), guardado.getSedeId()),
                 clientIp
         );
 
         UsuarioResponseDTO response = toResponse(guardado);
-        if ("ODONTOLOGO".equals(rol)) {
+        if ("ODONTOLOGO".equals(rol) || guardado.getRolesAdicionales().contains("ODONTOLOGO")) {
             eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(response.getId(), request.getNombre().trim(), emailClean, sedeId, request.getEspecialidad()));
         }
 
@@ -110,12 +111,12 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
 
         sedeId = Usuario.resolverSedeSegunRol(rol, sedeId);
 
-        usuario.actualizarDatos(request.getNombre().trim(), rol, sedeId, request.getActivo());
+        usuario.actualizarDatos(request.getNombre().trim(), rol, request.getRolesAdicionales(), sedeId, request.getActivo());
 
         Usuario actualizado = usuarioRepository.save(usuario);
         UsuarioResponseDTO response = toResponse(actualizado);
 
-        if ("ODONTOLOGO".equals(rol)) {
+        if ("ODONTOLOGO".equals(rol) || actualizado.getRolesAdicionales().contains("ODONTOLOGO")) {
             eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(id, request.getNombre().trim(), response.getEmail(), sedeId, request.getEspecialidad()));
         }
         if (request.getActivo() != null) {
@@ -128,8 +129,8 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
                 "ACTUALIZAR_USUARIO",
                 "usuarios",
                 actualizado.getId().toString(),
-                String.format("Usuario actualizado: %s | Rol: %s | Sede: %s | Activo: %s",
-                        actualizado.getEmail(), actualizado.getRol(), actualizado.getSedeId(), actualizado.isActivo()),
+                String.format("Usuario actualizado: %s | Rol: %s%s | Sede: %s | Activo: %s",
+                        actualizado.getEmail(), actualizado.getRol(), detalleFunciones(actualizado), actualizado.getSedeId(), actualizado.isActivo()),
                 clientIp
         );
 
@@ -290,6 +291,11 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
     }
 
+    /** Texto de auditoría de las funciones adicionales; vacío si no tiene (el detalle queda como siempre). */
+    private static String detalleFunciones(Usuario usuario) {
+        return usuario.getRolesAdicionales().isEmpty() ? "" : " (+ " + String.join(", ", usuario.getRolesAdicionales()) + ")";
+    }
+
     private static UsuarioResponseDTO toResponse(Usuario usuario) {
         // Las sedes se administran en BD: el frontend resuelve el nombre a partir del id (GET /sedes)
         String sedeNombre = usuario.getSedeId() != null ? usuario.getSedeId() : "Todas las Sedes / General";
@@ -299,6 +305,7 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
                 .nombre(usuario.getNombre())
                 .email(usuario.getEmail())
                 .rol(usuario.getRol())
+                .rolesAdicionales(usuario.getRolesAdicionales())
                 .sedeId(usuario.getSedeId())
                 .sedeNombre(sedeNombre)
                 .activo(usuario.isActivo())

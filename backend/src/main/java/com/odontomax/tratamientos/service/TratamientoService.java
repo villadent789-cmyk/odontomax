@@ -68,7 +68,7 @@ public class TratamientoService implements TratamientoCobroModuloApi, com.odonto
     public List<TratamientoResponseDTO> listarPorSede(String sedeId) {
         SecurityUtils.validarAccesoSede(sedeId);
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        boolean esOdontologo = usuario != null && "ODONTOLOGO".equalsIgnoreCase(usuario.rol());
+        boolean esOdontologo = usuario != null && usuario.soloOdontologo();
         Set<UUID> pacientesDoctor = (esOdontologo && usuario != null)
                 ? consultaEspecialistasApi.pacientesDelOdontologo(usuario.id())
                 : Set.of();
@@ -164,7 +164,9 @@ public class TratamientoService implements TratamientoCobroModuloApi, com.odonto
                     .multiply(BigDecimal.valueOf(100))
                     .divide(subtotalBase, 2, java.math.RoundingMode.HALF_UP);
 
-            String rol = currentUser.rol();
+            // Con funciones sumadas rige el tope más alto: administración, luego odontólogo, luego recepción
+            String rol = currentUser.tieneRol("ADMIN_SEDE") ? "ADMIN_SEDE"
+                    : currentUser.tieneRol("ODONTOLOGO") && !currentUser.tieneRol("ADMIN_GENERAL") ? "ODONTOLOGO" : currentUser.rol();
             if ("RECEPCION".equalsIgnoreCase(rol)) {
                 if (!"VILLAMAX".equalsIgnoreCase(SecurityUtils.negocioDelCatalogo())) {
                     throw new org.springframework.web.server.ResponseStatusException(
@@ -193,7 +195,7 @@ public class TratamientoService implements TratamientoCobroModuloApi, com.odonto
         BigDecimal precioCatalogo = cronograma == null ? dto.getPrecioCatalogo() : null;
         String motivoAjuste = null;
         if (precioCatalogo != null && precioCatalogo.compareTo(subtotalBase) != 0) {
-            if ("RECEPCION".equalsIgnoreCase(currentUser.rol())) {
+            if (currentUser.soloRecepcion()) {
                 throw new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.FORBIDDEN,
                         "Solo el odontólogo o un administrador pueden acordar un precio distinto al del catálogo.");
@@ -290,7 +292,7 @@ public class TratamientoService implements TratamientoCobroModuloApi, com.odonto
         SecurityUtils.validarAccesoSede(entity.getSedeId());
         consultaEspecialistasApi.exigirAccesoDeOdontologo(entity.getPacienteId());
 
-        if (currentUser != null && "ODONTOLOGO".equalsIgnoreCase(currentUser.rol())) {
+        if (currentUser != null && currentUser.soloOdontologo()) {
             Optional<UUID> propio = consultaEspecialistasApi.findEspecialistaIdByUsuarioId(currentUser.id());
             if (propio.isPresent() && entity.getEspecialistaId() != null && !entity.getEspecialistaId().equals(propio.get())) {
                 throw new AccessDeniedException("Solo el odontólogo responsable del plan o la administración pueden modificar o cerrar este tratamiento.");

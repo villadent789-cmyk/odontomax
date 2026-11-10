@@ -80,7 +80,7 @@ public class PacientesSinPlanService {
 
         // Un doctor solo ve a sus pacientes (los que tienen cita con él).
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        if (usuario != null && "ODONTOLOGO".equalsIgnoreCase(usuario.rol())) {
+        if (usuario != null && usuario.soloOdontologo()) {
             Set<UUID> suyos = especialistasApi.pacientesDelOdontologo(usuario.id());
             todos = todos.stream().filter(p -> suyos.contains(p.getPacienteId())).toList();
         }

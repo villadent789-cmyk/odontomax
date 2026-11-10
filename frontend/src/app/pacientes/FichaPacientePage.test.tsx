@@ -293,6 +293,27 @@ describe('B9 · Ficha Integral del Paciente (Stitch)', () => {
     expect((await screen.findAllByRole('button', { name: /Nueva nota/i })).length).toBeGreaterThan(0)
   })
 
+  it('recepcionista con función de odontólogo sí ve los botones para escribir la historia', async () => {
+    guardarSesion({
+      token: 'token-doble',
+      usuario: {
+        id: 'u-3',
+        nombre: 'Doble Función',
+        rol: 'RECEPCION',
+        rolesAdicionales: ['ODONTOLOGO'],
+        sedes: [{ id: 'sede-chilca', nombre: 'Villadent Chilca', marca: 'VILLADENT' }],
+      },
+      sedeActivaId: 'sede-chilca',
+    })
+    _reiniciarCacheSesion()
+    const user = userEvent.setup()
+    await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)
+
+    await user.click(await screen.findByRole('tab', { name: /Historia Clínica/i }))
+
+    expect((await screen.findAllByRole('button', { name: /Nueva nota/i })).length).toBeGreaterThan(0)
+  })
+
   it('permite visualizar Odontograma con numeración FDI y hallazgos registrados', async () => {
     const user = userEvent.setup()
     await renderRuta(`/app/pacientes/${PACIENTE_FICHA.id}`)

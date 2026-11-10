@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import { useState } from 'react'
 import { Alert, Button, Dialog, DialogContent, DialogDescription, DialogTitle, Field, Input } from '@/design-system'
 import { useEspecialistas } from '../agenda/api-agenda'
@@ -54,7 +55,7 @@ export function NuevoPresupuestoModal({
   const [doctor, setDoctor] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const esDoctor = sesion?.usuario.rol === 'ODONTOLOGO'
+  const esDoctor = esSoloOdontologo(sesion?.usuario)
   const miEspecialista = esDoctor ? especialistas.find((e) => e.usuarioId === sesion?.usuario.id) : undefined
   const doctorElegido = esDoctor ? (miEspecialista?.id ?? '') : doctor
   const total = lineas.reduce((suma, l) => suma + (Number(l.cantidad) || 0) * (Number(l.costo) || 0), 0)

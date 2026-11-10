@@ -1,11 +1,12 @@
 import { useNavigate } from '@tanstack/react-router'
+import { tieneRol } from '@/shared/auth/sesion'
 import { ChevronDown, KeyRound, LogOut, Menu, ShieldCheck, Stethoscope } from 'lucide-react'
 import { DropdownMenu } from 'radix-ui'
 import { useState } from 'react'
 import { CambiarPasswordDialog } from '@/app/auth/CambiarPasswordDialog'
 import { RUTAS_ACCESO } from '@/app/auth/rutas'
 import { Avatar } from '@/design-system'
-import { NOMBRE_ROL, RUTA_LOGIN, limpiarSesion, negociosDe, type Sesion } from '@/shared/auth'
+import { RUTA_LOGIN, nombreDeFunciones, limpiarSesion, negociosDe, type Sesion } from '@/shared/auth'
 import { BusquedaRapida } from './BusquedaRapida'
 import { MiEspecialidadDialog } from './MiEspecialidadDialog'
 import { SelectorNegocio } from './SelectorNegocio'
@@ -54,7 +55,7 @@ export function Cabecera({ sesion, onAbrirMenu }: { sesion: Sesion; onAbrirMenu?
             <Avatar nombre={usuario.nombre} tamano="sm" />
             <span className="hidden text-left leading-tight xl:block">
               <span className="block font-display text-sm font-semibold text-primary">{usuario.nombre}</span>
-              <span className="block text-xs text-on-surface-variant">{NOMBRE_ROL[usuario.rol]}</span>
+              <span className="block text-xs text-on-surface-variant">{nombreDeFunciones(usuario.rol, usuario.rolesAdicionales)}</span>
             </span>
             <ChevronDown aria-hidden className="size-3.5 text-on-surface-variant ml-0.5" />
           </DropdownMenu.Trigger>
@@ -71,7 +72,7 @@ export function Cabecera({ sesion, onAbrirMenu }: { sesion: Sesion; onAbrirMenu?
                 <KeyRound aria-hidden />
                 Cambiar contraseña
               </DropdownMenu.Item>
-              {usuario.rol === 'ODONTOLOGO' && (
+              {tieneRol(usuario, 'ODONTOLOGO') && (
                 <DropdownMenu.Item onSelect={() => setMiEspecialidad(true)} className={claseItemMenu}>
                   <Stethoscope aria-hidden />
                   Mi especialidad
@@ -87,7 +88,7 @@ export function Cabecera({ sesion, onAbrirMenu }: { sesion: Sesion; onAbrirMenu?
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
         <span className="sr-only sm:hidden">
-          {usuario.nombre}, {NOMBRE_ROL[usuario.rol]}
+          {usuario.nombre}, {nombreDeFunciones(usuario.rol, usuario.rolesAdicionales)}
         </span>
         <CambiarPasswordDialog abierto={cambiarPassword} onCambio={setCambiarPassword} />
         <MiEspecialidadDialog abierto={miEspecialidad} onCambio={setMiEspecialidad} usuarioId={usuario.id} sedeId={sesion.sedeActivaId} />

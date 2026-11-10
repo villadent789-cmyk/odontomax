@@ -9,6 +9,10 @@ public record UsuarioModuloDTO(
         String email,
         String rol,
         String sedeId,
-        boolean activo
+        boolean activo,
+        java.util.List<String> rolesAdicionales
 ) {
+    public UsuarioModuloDTO(UUID id, String nombre, String email, String rol, String sedeId, boolean activo) {
+        this(id, nombre, email, rol, sedeId, activo, java.util.List.of());
+    }
 }

@@ -67,12 +67,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         String nombre = cachedUser.nombre();
                         UUID userId = cachedUser.id();
 
-                        ClinicaUserPrincipal principal = new ClinicaUserPrincipal(userId, cachedUser.email(), nombre, rol, sedeId);
+                        ClinicaUserPrincipal principal = new ClinicaUserPrincipal(userId, cachedUser.email(), nombre, rol, sedeId, cachedUser.rolesAdicionales());
 
                         List<GrantedAuthority> authorities = new ArrayList<>();
                         if (StringUtils.hasText(rol)) {
                             authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.toUpperCase()));
                             authorities.add(new SimpleGrantedAuthority(rol.toUpperCase()));
+                        }
+                        // Las funciones adicionales suman sus permisos a los del cargo principal
+                        for (String adicional : principal.rolesAdicionales()) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_" + adicional.toUpperCase()));
+                            authorities.add(new SimpleGrantedAuthority(adicional.toUpperCase()));
                         }
 
                         UsernamePasswordAuthenticationToken authentication =
@@ -110,7 +115,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     u.getRol(),
                     u.getSedeId(),
                     u.isActivo(),
-                    u.getTokenVersion()
+                    u.getTokenVersion(),
+                    u.getRolesAdicionales()
             );
             userCache.put(emailLower, fresh);
             return fresh;

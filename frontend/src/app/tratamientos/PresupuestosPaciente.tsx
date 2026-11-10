@@ -1,4 +1,5 @@
 import { Check, FileText, MessageCircle, Printer, X } from 'lucide-react'
+import { tieneAlgunRol } from '@/shared/auth/sesion'
 import { useState } from 'react'
 import { Alert, Badge, Button, Card, Skeleton, toast } from '@/design-system'
 import { useSesion } from '@/shared/auth'
@@ -37,7 +38,7 @@ export function PresupuestosPaciente({ pacienteId, pacienteNombre, pacienteDni, 
   const [nuevo, setNuevo] = useState(false)
   const [elegidas, setElegidas] = useState<Record<string, Set<string>>>({})
   const [error, setError] = useState<string | null>(null)
-  const puedeEditar = ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '')
+  const puedeEditar = tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])
   const negocio = sesion?.negocioActivo === 'VILLAMAX' ? 'VILLAMAX' : 'VILLADENT'
 
   if (consulta.isPending) return <Skeleton className="h-20 w-full" />

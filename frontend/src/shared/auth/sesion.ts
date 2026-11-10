@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { esRol, type Rol } from './roles'
+import { esRol, registrarFuenteDeFuncionesAdicionales, type Rol } from './roles'
 
 /** Negocio del grupo: Villadent (clínica dental) o Villamax (centro radiológico). */
 export type Negocio = 'VILLADENT' | 'VILLAMAX'
@@ -17,7 +17,10 @@ export interface UsuarioSesion {
   id?: string
   nombre: string
   correo?: string
+  /** Cargo principal. */
   rol: Rol
+  /** Funciones que se le suman al cargo principal (solo ODONTOLOGO y/o RECEPCION). */
+  rolesAdicionales?: Rol[]
   /** Sedes a las que el usuario tiene acceso. */
   sedes: SedeSesion[]
 }
@@ -75,6 +78,21 @@ function esSesionValida(v: unknown): v is Sesion {
 }
 
 /** Negocios distintos de las sedes, con Villadent primero. */
+/** ¿La persona cumple esta función, como cargo principal o adicional? */
+export function tieneRol(usuario: Pick<UsuarioSesion, 'rol' | 'rolesAdicionales'> | null | undefined, rol: Rol): boolean {
+  return !!usuario && (usuario.rol === rol || (usuario.rolesAdicionales ?? []).includes(rol))
+}
+
+/** ¿Cumple alguna de estas funciones? */
+export function tieneAlgunRol(usuario: Pick<UsuarioSesion, 'rol' | 'rolesAdicionales'> | null | undefined, roles: readonly Rol[]): boolean {
+  return roles.some((r) => tieneRol(usuario, r))
+}
+
+/** Odontólogo sin función de recepción ni de administración: solo ve a los pacientes que atiende. */
+export function esSoloOdontologo(usuario: Pick<UsuarioSesion, 'rol' | 'rolesAdicionales'> | null | undefined): boolean {
+  return tieneRol(usuario, 'ODONTOLOGO') && !tieneAlgunRol(usuario, ['RECEPCION', 'ADMIN_SEDE', 'ADMIN_GENERAL'])
+}
+
 export function negociosDe(sedes: readonly SedeSesion[]): Negocio[] {
   const marcas = new Set(sedes.map((s) => s.marca))
   return (['VILLADENT', 'VILLAMAX'] as const).filter((n) => marcas.has(n))
@@ -147,6 +165,12 @@ export function obtenerSesion(): Sesion | null {
   }
   return cache ?? null
 }
+
+// `puede(rol, recurso)` suma las funciones adicionales de la persona en sesión cuando el rol consultado es su cargo principal.
+registrarFuenteDeFuncionesAdicionales((rol) => {
+  const u = obtenerSesion()?.usuario
+  return u && u.rol === rol ? (u.rolesAdicionales ?? []) : []
+})
 
 export function guardarSesion(sesion: Sesion): void {
   const normalizada = garantizarInvarianteSesion(sesion)

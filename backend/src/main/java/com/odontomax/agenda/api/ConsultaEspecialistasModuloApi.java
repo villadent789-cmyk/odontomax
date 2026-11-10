@@ -43,7 +43,7 @@ public interface ConsultaEspecialistasModuloApi {
     /** Un odontólogo solo accede a pacientes con los que tiene cita; los demás roles pasan (su alcance es por sede). */
     default void exigirAccesoDeOdontologo(UUID pacienteId) {
         var usuario = SecurityUtils.getCurrentUser();
-        if (usuario != null && "ODONTOLOGO".equalsIgnoreCase(usuario.rol())
+        if (usuario != null && usuario.soloOdontologo()
                 && !odontologoAtiendeAlPaciente(usuario.id(), pacienteId)) {
             throw new AccessDeniedException("Acceso denegado: el paciente no está asignado a este odontólogo.");
         }

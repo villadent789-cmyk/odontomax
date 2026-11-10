@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from 'lucide-react'
+import { esSoloOdontologo, tieneAlgunRol } from '@/shared/auth/sesion'
 import { useState } from 'react'
 import { useAlCambiar } from '@/shared/useAlCambiar'
 import { enfocarAlMontar } from '@/design-system/enfocarAlMontar'
@@ -92,7 +93,7 @@ export function NuevoTratamientoModal({
   const [especialistaElegido, setEspecialistaId] = useState('')
   // Un odontólogo solo crea planes a su nombre: no ve a los demás doctores (las metas se miden por doctor).
   const sesion = useSesion()
-  const esDoctor = sesion?.usuario.rol === 'ODONTOLOGO'
+  const esDoctor = esSoloOdontologo(sesion?.usuario)
   const miEspecialista = esDoctor ? especialistas.find((e) => e.usuarioId === sesion?.usuario.id) : undefined
   const opcionesDoctor = esDoctor ? (miEspecialista ? [miEspecialista] : []) : especialistas
   const especialistaId = esDoctor ? (miEspecialista?.id ?? '') : especialistaElegido
@@ -399,7 +400,7 @@ export function NuevoTratamientoModal({
             <p className="font-semibold text-primary">
               Este paciente recomendó a {descuentoPendiente.referidoNombre ?? 'un paciente nuevo'}: tiene un descuento por recomendación pendiente.
             </p>
-            {['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '') && (
+            {tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO']) && (
               <label className="mt-1.5 flex items-center gap-2 text-on-surface">
                 <input type="checkbox" className="size-4" checked={darDescuentoRecomendacion} onChange={(e) => setDarDescuentoRecomendacion(e.target.checked)} />
                 Dar el descuento en este plan (baja el presupuesto al monto que decidas)

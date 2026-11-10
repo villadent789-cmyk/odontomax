@@ -81,7 +81,7 @@ public class CajaService {
             sesion = cajaSesionRepository.findBySedeIdAndCerradaEnIsNull(sedeId);
         }
 
-        boolean esOdontologo = currentUser != null && "ODONTOLOGO".equalsIgnoreCase(currentUser.rol());
+        boolean esOdontologo = currentUser != null && currentUser.soloOdontologo();
         return sesion.map(this::toResponseDTO).map(dto -> esOdontologo ? soloEstado(dto) : dto);
     }
 
@@ -310,7 +310,7 @@ public class CajaService {
         boolean esAdmin = "ADMIN_GENERAL".equals(currentUser.rol()) || "ADMIN_SEDE".equals(currentUser.rol());
         // Sedes sin cajero: el odontólogo cuadra y cierra la caja de SU sede (validarAccesoSede ya lo
         // restringe a su sede), aunque la haya abierto otro doctor o la apertura automática.
-        boolean esOdontologoDeLaSede = "ODONTOLOGO".equals(currentUser.rol());
+        boolean esOdontologoDeLaSede = currentUser.tieneRol("ODONTOLOGO");
         if (!esQuienAbrio && !esAdmin && !esOdontologoDeLaSede) {
             throw new org.springframework.web.server.ResponseStatusException(
                     org.springframework.http.HttpStatus.FORBIDDEN,

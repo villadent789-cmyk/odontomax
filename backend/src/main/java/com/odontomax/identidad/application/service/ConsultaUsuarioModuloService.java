@@ -18,6 +18,6 @@ public class ConsultaUsuarioModuloService implements ConsultaUsuarioModuloApi {
     @Override
     public Optional<UsuarioModuloDTO> buscarPorId(UUID usuarioId) {
         return usuarioRepository.findById(usuarioId)
-                .map(u -> new UsuarioModuloDTO(u.getId(), u.getNombre(), u.getEmail(), u.getRol(), u.getSedeId(), u.isActivo()));
+                .map(u -> new UsuarioModuloDTO(u.getId(), u.getNombre(), u.getEmail(), u.getRol(), u.getSedeId(), u.isActivo(), u.getRolesAdicionales()));
     }
 }

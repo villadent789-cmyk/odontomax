@@ -16,6 +16,11 @@ export const NOMBRE_ROL: Record<Rol, string> = {
   RECEPCION: 'Recepción y admisión',
 }
 
+/** «Odontología + Recepción y admisión»: cargo principal y funciones adicionales. */
+export function nombreDeFunciones(rol: Rol, adicionales: readonly Rol[] = []): string {
+  return [rol, ...adicionales].map((r) => NOMBRE_ROL[r]).join(' + ')
+}
+
 export type Recurso =
   | 'inicio'
   | 'agenda'
@@ -77,8 +82,20 @@ export function esRol(valor: unknown): valor is Rol {
   return typeof valor === 'string' && (ROLES as readonly string[]).includes(valor)
 }
 
+/**
+ * Funciones adicionales de la persona en sesión (la sesión las registra al cargarse). Una persona con cargo principal
+ * y funciones adicionales (p. ej. odontólogo + recepción) acumula los permisos de todas.
+ */
+let adicionalesDe: (rol: Rol) => readonly Rol[] = () => []
+
+export function registrarFuenteDeFuncionesAdicionales(fuente: (rol: Rol) => readonly Rol[]): void {
+  adicionalesDe = fuente
+}
+
 export function puede(rol: Rol | null | undefined, recurso: Recurso): boolean {
   if (!rol) return false
   if (rol === 'ADMIN_GENERAL') return true
-  return PERMISOS[recurso]?.includes(rol) ?? false
+  const permitidos = PERMISOS[recurso]
+  if (!permitidos) return false
+  return permitidos.includes(rol) || adicionalesDe(rol).some((r) => permitidos.includes(r))
 }

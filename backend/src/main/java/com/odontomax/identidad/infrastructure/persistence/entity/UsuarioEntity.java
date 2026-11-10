@@ -34,6 +34,11 @@ public class UsuarioEntity {
     @Column(nullable = false)
     private String rol;
 
+    /** Funciones adicionales separadas por coma (vacío si no tiene). */
+    @Column(name = "roles_adicionales", nullable = false)
+    @Builder.Default
+    private String rolesAdicionales = "";
+
     @Column(name = "sede_id")
     private String sedeId;
 

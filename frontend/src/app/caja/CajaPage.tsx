@@ -1,4 +1,5 @@
 import { nombreMetodoPago } from '@/shared/metodosPago'
+import { tieneRol } from '@/shared/auth/sesion'
 import { useState, useMemo } from 'react'
 import {
   Wallet,
@@ -97,7 +98,7 @@ export function CajaPage() {
   const sedeId = sesion?.sedeActivaId ?? 'sede-chilca-1'
   const rol = sesion?.usuario.rol ?? 'RECEPCION'
   const esAdmin = rol === 'ADMIN_GENERAL' || rol === 'ADMIN_SEDE'
-  const puedeVerResumen = esAdmin || rol === 'RECEPCION'
+  const puedeVerResumen = esAdmin || tieneRol(sesion?.usuario, 'RECEPCION')
 
   const [pestaña, setPestaña] = useState<PestañaCaja>('turno')
   const [imprimiendoReporte, setImprimiendoReporte] = useState(false)

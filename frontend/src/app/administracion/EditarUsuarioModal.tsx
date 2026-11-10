@@ -14,6 +14,7 @@ import {
 } from '@/design-system'
 import { inputClases } from '@/design-system/components/Input'
 import { mensajeError } from '@/shared/errores'
+import { FuncionesAdicionales, type FuncionAdicional } from './FuncionesAdicionales'
 import { CARGOS, etiquetaCargo, useEditarUsuario } from './api-administracion'
 import type { OpcionSede } from './EditorHorarios'
 
@@ -22,6 +23,7 @@ export interface UsuarioEditable {
   nombre: string
   email?: string
   rol?: string
+  rolesAdicionales?: string[]
   sedeId?: string
 }
 
@@ -44,6 +46,9 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
   const rolInicial = usuario.rol ?? 'RECEPCION'
   const [nombre, setNombre] = useState(usuario.nombre)
   const [rol, setRol] = useState(rolInicial)
+  const [adicionales, setAdicionales] = useState<FuncionAdicional[]>(
+    (usuario.rolesAdicionales ?? []).filter((r): r is FuncionAdicional => r === 'ODONTOLOGO' || r === 'RECEPCION'),
+  )
   const [sedeId, setSedeId] = useState(usuario.sedeId ?? sedes[0]?.id ?? '')
   const [errores, setErrores] = useState<Record<string, string>>({})
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
@@ -53,7 +58,7 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
   const cargoHeredado = !CARGOS.some((c) => c.rol === rolInicial)
   // Una sede ya inactiva sigue siendo la sede actual de la cuenta: se muestra en vez de reemplazarla en silencio.
   const sedeInactiva = !!usuario.sedeId && !sedes.some((s) => s.id === usuario.sedeId)
-  const seraDoctor = rol === 'ODONTOLOGO' && rolInicial !== 'ODONTOLOGO'
+  const seraDoctor = (rol === 'ODONTOLOGO' || adicionales.includes('ODONTOLOGO')) && rolInicial !== 'ODONTOLOGO' && !(usuario.rolesAdicionales ?? []).includes('ODONTOLOGO')
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -66,7 +71,7 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
     try {
       await editar.mutateAsync({
         id: usuario.id,
-        cuerpo: { nombre: nombre.trim(), rol, sedeId: requiereSede ? sedeId : undefined },
+        cuerpo: { nombre: nombre.trim(), rol, rolesAdicionales: rol === 'ADMIN_GENERAL' ? ((usuario.rolesAdicionales ?? []).length ? [] : undefined) : adicionales.some((a) => a !== rol) || (usuario.rolesAdicionales ?? []).length ? adicionales.filter((a) => a !== rol) : undefined, sedeId: requiereSede ? sedeId : undefined },
       })
       toast(`Cuenta actualizada: ${nombre.trim()}`)
       alCerrar()
@@ -101,6 +106,7 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
           ))}
         </select>
       </Field>
+      <FuncionesAdicionales rolPrincipal={rol} valor={adicionales} onChange={setAdicionales} />
       {requiereSede ? (
         <Field label="Sede" error={errores.sede}>
           <select className={inputClases} value={sedeId} onChange={(e) => setSedeId(e.target.value)}>

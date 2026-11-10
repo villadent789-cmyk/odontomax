@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import {
   AlertCircle,
   Building2,
@@ -26,7 +27,7 @@ export function LaboratorioPage() {
   const sesion = obtenerSesion()
   const rol = sesion?.usuario.rol ?? 'RECEPCION'
   const esAdminGeneral = rol === 'ADMIN_GENERAL'
-  const esOdontologo = rol === 'ODONTOLOGO'
+  const esOdontologo = esSoloOdontologo(sesion?.usuario)
 
   // Filtros
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoOrden | ''>('')

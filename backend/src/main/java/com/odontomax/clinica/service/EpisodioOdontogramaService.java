@@ -110,7 +110,7 @@ public class EpisodioOdontogramaService {
 
     private ClinicaUserPrincipal exigirEscritura() {
         ClinicaUserPrincipal user = SecurityUtils.getCurrentUser();
-        if (user == null || !ROLES_ESCRITURA.contains(user.rol().toUpperCase())) {
+        if (user == null || user.roles().stream().noneMatch(ROLES_ESCRITURA::contains)) {
             throw new AccessDeniedException("Solo un odontólogo o un administrador abre y cierra episodios del odontograma.");
         }
         return user;

@@ -39,6 +39,7 @@ interface FilaPersonal {
   nombre: string
   email?: string
   rol?: string
+  rolesAdicionales?: string[]
   sedeIds: string[]
   activo: boolean
   usuarioId?: string
@@ -79,6 +80,7 @@ export function UsuariosPanel() {
         nombre: u.nombre ?? '',
         email: u.email,
         rol: u.rol,
+        rolesAdicionales: u.rolesAdicionales,
         sedeIds: sedesCandidatas.filter((s) => s !== 'sede-chilca-2' && (!sedesIdsActivas.size || sedesIdsActivas.has(s))),
         activo: !!u.activo,
         usuarioId: u.id,
@@ -231,7 +233,7 @@ export function UsuariosPanel() {
                       {f.nombre}
                       {f.email && <span className="block text-xs font-normal text-on-surface-variant">{f.email}</span>}
                     </th>
-                    <td className="px-4 py-3">{etiquetaCargo(f.rol)}</td>
+                    <td className="px-4 py-3">{[f.rol, ...(f.rolesAdicionales ?? [])].map(etiquetaCargo).join(' + ')}</td>
                     <td className="px-4 py-3">
                       {f.sedeIds.length === 0 ? (
                         <span>{f.rol === 'ADMIN_GENERAL' ? 'Todas las sedes' : '—'}</span>
@@ -314,7 +316,7 @@ export function UsuariosPanel() {
 
       <NuevoUsuarioModal abierto={nuevoAbierto} alCerrar={() => setNuevoAbierto(false)} sedes={sedes} />
       <EditarUsuarioModal
-        usuario={editandoCuenta?.usuarioId ? { id: editandoCuenta.usuarioId, nombre: editandoCuenta.nombre, email: editandoCuenta.email, rol: editandoCuenta.rol, sedeId: editandoCuenta.sedeCuenta } : null}
+        usuario={editandoCuenta?.usuarioId ? { id: editandoCuenta.usuarioId, nombre: editandoCuenta.nombre, email: editandoCuenta.email, rol: editandoCuenta.rol, rolesAdicionales: editandoCuenta.rolesAdicionales, sedeId: editandoCuenta.sedeCuenta } : null}
         alCerrar={() => setEditandoCuenta(null)}
         sedes={sedes}
       />

@@ -11,6 +11,8 @@ import {
   obtenerNegocioActivo,
   obtenerSesion,
   obtenerToken,
+  esSoloOdontologo,
+  tieneRol,
   type SedeSesion,
   type Sesion,
 } from './sesion'
@@ -240,5 +242,35 @@ describe('almacenamiento de sesión', () => {
     limpiarSesion()
     expect(obtenerSesion()).toBeNull()
     expect(sessionStorage.getItem('odontomax.sesion')).toBeNull()
+  })
+})
+
+describe('cargo principal + funciones adicionales (los permisos se suman)', () => {
+  afterEach(() => {
+    limpiarSesion()
+    _reiniciarCacheSesion()
+  })
+
+  it('un odontólogo que también es recepcionista tiene los permisos de ambas funciones', () => {
+    guardarSesion({
+      token: 't',
+      usuario: { nombre: 'Doble', rol: 'ODONTOLOGO', rolesAdicionales: ['RECEPCION'], sedes: [{ id: 'sede-a', nombre: 'Sede A', marca: 'VILLADENT' }] },
+      sedeActivaId: 'sede-a',
+    })
+    expect(puede('ODONTOLOGO', 'caja')).toBe(true) // de recepción
+    expect(puede('ODONTOLOGO', 'emitirReceta')).toBe(true) // de odontólogo
+    expect(puede('ODONTOLOGO', 'estadisticas')).toBe(false) // de ninguna de las dos
+  })
+
+  it('sin funciones adicionales el odontólogo no ve la caja', () => {
+    guardarSesion(sesion('ODONTOLOGO'))
+    expect(puede('ODONTOLOGO', 'caja')).toBe(false)
+  })
+
+  it('tieneRol y esSoloOdontologo distinguen al doctor puro del que suma recepción', () => {
+    const doble: { rol: Rol; rolesAdicionales: Rol[] } = { rol: 'ODONTOLOGO', rolesAdicionales: ['RECEPCION'] }
+    expect(tieneRol(doble, 'RECEPCION')).toBe(true)
+    expect(esSoloOdontologo(doble)).toBe(false)
+    expect(esSoloOdontologo({ rol: 'ODONTOLOGO' })).toBe(true)
   })
 })

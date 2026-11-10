@@ -4958,6 +4958,7 @@ export interface components {
             nombre: string;
             password: string;
             rol: string;
+            rolesAdicionales?: string[];
             sedeId?: string;
         };
         UsuarioDTO: {
@@ -4966,6 +4967,7 @@ export interface components {
             id?: string;
             nombre?: string;
             rol?: string;
+            rolesAdicionales?: string[];
             sedeId?: string;
         };
         UsuarioResetPasswordDTO: {
@@ -4980,6 +4982,7 @@ export interface components {
             id?: string;
             nombre?: string;
             rol?: string;
+            rolesAdicionales?: string[];
             sedeId?: string;
             sedeNombre?: string;
             /** Format: date-time */
@@ -4990,6 +4993,7 @@ export interface components {
             especialidad?: string;
             nombre: string;
             rol: string;
+            rolesAdicionales?: string[];
             sedeId?: string;
         };
     };

@@ -51,6 +51,7 @@ export async function establecerSesion(
       nombre: usuario.nombre ?? usuario.email ?? 'Usuario',
       correo: usuario.email,
       rol: usuario.rol,
+      rolesAdicionales: (usuario.rolesAdicionales ?? []).filter(esRol),
       sedes,
     },
     sedeActivaId: usuario.sedeId ?? null,

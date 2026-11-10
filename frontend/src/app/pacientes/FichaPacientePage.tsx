@@ -1,4 +1,5 @@
 import { nombreMetodoPago } from '@/shared/metodosPago'
+import { tieneAlgunRol } from '@/shared/auth/sesion'
 import { CronogramaCuotas } from '../tratamientos/CronogramaCuotas'
 import { useState, useEffect } from 'react'
 import { Link, useParams, useSearch } from '@tanstack/react-router'
@@ -109,7 +110,7 @@ export function FichaPacientePage() {
   const { tab, desde } = useSearch({ strict: false }) as { tab?: string; desde?: 'agenda' | 'bandeja' }
   const sesion = useSesion()
   // La historia clínica la escriben administración y odontólogos; recepción solo la ve.
-  const puedeEscribirClinica = ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '')
+  const puedeEscribirClinica = tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])
   const [pestañaActiva, setPestañaActiva] = useState<PestañaFicha>(() => {
     const deUrl = pestañaDesdeUrl(tab)
     if (sesion?.negocioActivo === 'VILLAMAX' && deUrl === 'odontograma') return 'resumen'
@@ -1030,7 +1031,7 @@ export function FichaPacientePage() {
       {/* ─────────── Pestaña: Odontograma 3D / Anatómico FDI (Fase 5) ─────────── */}
       {pestañaActiva === 'odontograma' && sesion?.negocioActivo !== 'VILLAMAX' && (
         <div className="space-y-6">
-          <EpisodiosOdontograma pacienteId={paciente.id!} pacienteNombre={paciente.nombreCompleto ?? ''} pacienteDni={paciente.dni} sedeNombre={sesion?.usuario.sedes.find((x) => x.id === (paciente.sedeId ?? sesion?.sedeActivaId))?.nombre ?? ''} puedeEditar={['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '')} />
+          <EpisodiosOdontograma pacienteId={paciente.id!} pacienteNombre={paciente.nombreCompleto ?? ''} pacienteDni={paciente.dni} sedeNombre={sesion?.usuario.sedes.find((x) => x.id === (paciente.sedeId ?? sesion?.sedeActivaId))?.nombre ?? ''} puedeEditar={tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])} />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <h2 className="font-display text-xl font-bold text-on-surface">
@@ -1578,7 +1579,7 @@ export function FichaPacientePage() {
                       <div className="h-2 w-full rounded-full bg-surface-container overflow-hidden">
                         <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progresoSesiones}%` }} />
                       </div>
-                      <CambiarSesionesPlan plan={t} puedeEditar={['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'].includes(sesion?.usuario.rol ?? '')} />
+                      <CambiarSesionesPlan plan={t} puedeEditar={tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'ODONTOLOGO'])} />
                     </div>
 
                     {t.items && t.items.length > 0 && (() => {

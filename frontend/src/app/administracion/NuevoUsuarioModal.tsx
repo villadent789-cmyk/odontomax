@@ -18,6 +18,7 @@ import { inputClases } from '@/design-system/components/Input'
 import { mensajeError } from '@/shared/errores'
 import { CARGOS, useCrearUsuario, type RolAlta } from './api-administracion'
 import type { OpcionSede } from './EditorHorarios'
+import { FuncionesAdicionales, type FuncionAdicional } from './FuncionesAdicionales'
 
 interface Props {
   abierto: boolean
@@ -45,6 +46,7 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rol, setRol] = useState<RolAlta>('ODONTOLOGO')
+  const [adicionales, setAdicionales] = useState<FuncionAdicional[]>([])
   const [sedeId, setSedeId] = useState(sedes[0]?.id ?? '')
   const [especialidad, setEspecialidad] = useState('')
   const [errores, setErrores] = useState<Record<string, string>>({})
@@ -69,8 +71,9 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
         email: email.trim().toLowerCase(),
         password,
         rol,
+        rolesAdicionales: rol !== 'ADMIN_GENERAL' && adicionales.some((a) => a !== rol) ? adicionales.filter((a) => a !== rol) : undefined,
         sedeId: requiereSede ? sedeId : undefined,
-        especialidad: rol === 'ODONTOLOGO' && especialidad.trim() ? especialidad.trim() : undefined,
+        especialidad: (rol === 'ODONTOLOGO' || adicionales.includes('ODONTOLOGO')) && especialidad.trim() ? especialidad.trim() : undefined,
       })
       toast(`Usuario creado: ${nombre.trim()}`)
       alCerrar()
@@ -113,6 +116,7 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
           ))}
         </select>
       </Field>
+      <FuncionesAdicionales rolPrincipal={rol} valor={adicionales} onChange={setAdicionales} />
       {requiereSede ? (
         <Field label="Sede" error={errores.sede}>
           <select className={inputClases} value={sedeId} onChange={(e) => setSedeId(e.target.value)}>
@@ -129,7 +133,7 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
         </p>
       )}
 
-      {rol === 'ODONTOLOGO' && (
+      {(rol === 'ODONTOLOGO' || adicionales.includes('ODONTOLOGO')) && (
         <Field
           label="Especialidad"
           ayuda="Se muestra en la web. Si no la pones, será Odontología General; el propio doctor puede cambiarla desde su cuenta."

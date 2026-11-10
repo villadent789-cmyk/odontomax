@@ -599,8 +599,7 @@ public class CitaApplicationService implements
     @Transactional
     public CitaResponseDTO iniciarAtencion(UUID citaId) {
         var usuario = SecurityUtils.getCurrentUser();
-        if (usuario == null || !Set.of("ADMIN_GENERAL", "ADMIN_SEDE", "RECEPCION")
-                .contains(usuario.rol().toUpperCase(Locale.ROOT))) {
+        if (usuario == null || !usuario.tieneAlgunRol("ADMIN_GENERAL", "ADMIN_SEDE", "RECEPCION")) {
             throw new AccessDeniedException("Acceso denegado: solo administración y recepción pueden iniciar la atención.");
         }
 
@@ -1013,7 +1012,7 @@ public class CitaApplicationService implements
 
     private static boolean esOdontologo() {
         var user = SecurityUtils.getCurrentUser();
-        return user != null && "ODONTOLOGO".equalsIgnoreCase(user.rol());
+        return user != null && user.soloOdontologo();
     }
 
     /** Especialista vinculado al usuario ODONTOLOGO actual; vacío si no tiene perfil de especialista. */

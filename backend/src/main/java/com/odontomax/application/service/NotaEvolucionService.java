@@ -91,9 +91,7 @@ public class NotaEvolucionService {
             throw new AccessDeniedException("No autenticado.");
         }
         String rol = user.rol();
-        if (!"ODONTOLOGO".equalsIgnoreCase(rol) &&
-            !"ADMIN_SEDE".equalsIgnoreCase(rol) &&
-            !"ADMIN_GENERAL".equalsIgnoreCase(rol)) {
+        if (!user.tieneAlgunRol("ODONTOLOGO", "ADMIN_SEDE", "ADMIN_GENERAL")) {
             throw new AccessDeniedException(
                     "El rol '" + rol + "' no tiene permisos para redactar notas clínicas de evolución. Solo ODONTOLOGO, ADMIN_SEDE y ADMIN_GENERAL tienen acceso de escritura."
             );

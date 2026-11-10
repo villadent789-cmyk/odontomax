@@ -6711,6 +6711,13 @@
             "pattern": "^(ADMIN_GENERAL|ADMIN_SEDE|ODONTOLOGO|RECEPCION)$",
             "type": "string"
           },
+          "rolesAdicionales": {
+            "items": {
+              "pattern": "^(ODONTOLOGO|RECEPCION)$",
+              "type": "string"
+            },
+            "type": "array"
+          },
           "sedeId": {
             "pattern": "^sede-[a-z0-9-]{1,60}$",
             "type": "string"
@@ -6738,6 +6745,12 @@
           },
           "rol": {
             "type": "string"
+          },
+          "rolesAdicionales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
           },
           "sedeId": {
             "type": "string"
@@ -6780,6 +6793,12 @@
           "rol": {
             "type": "string"
           },
+          "rolesAdicionales": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
           "sedeId": {
             "type": "string"
           },
@@ -6811,6 +6830,13 @@
           "rol": {
             "pattern": "^(ADMIN_GENERAL|ADMIN_SEDE|ODONTOLOGO|RECEPCION)$",
             "type": "string"
+          },
+          "rolesAdicionales": {
+            "items": {
+              "pattern": "^(ODONTOLOGO|RECEPCION)$",
+              "type": "string"
+            },
+            "type": "array"
           },
           "sedeId": {
             "pattern": "^sede-[a-z0-9-]{1,60}$",

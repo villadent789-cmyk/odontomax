@@ -86,7 +86,7 @@ public class PagoService {
     /** Un odontólogo solo ve los cobros atribuidos a su especialista; el resto de roles, todos los de su sede. */
     private List<PagoEntity> soloLosDelOdontologo(List<PagoEntity> pagos) {
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        if (usuario == null || !"ODONTOLOGO".equalsIgnoreCase(usuario.rol())) {
+        if (usuario == null || !usuario.soloOdontologo()) {
             return pagos;
         }
         Optional<UUID> propio = consultaEspecialistasApi.findEspecialistaIdByUsuarioId(usuario.id());
@@ -95,7 +95,10 @@ public class PagoService {
 
     /** Doctor al que se atribuye el cobro: el propio si cobra un odontólogo; si no, el elegido o el del tratamiento. */
     private UUID resolverEspecialista(ClinicaUserPrincipal usuario, UUID solicitado, UUID especialistaTratamiento) {
-        if ("ODONTOLOGO".equalsIgnoreCase(usuario.rol())) {
+        // Odontólogo que además es recepcionista: si no eligió doctor ni hay uno en el tratamiento, el cobro es suyo
+        boolean cobraComoDoctor = usuario.soloOdontologo()
+                || (usuario.tieneRol("ODONTOLOGO") && solicitado == null && especialistaTratamiento == null);
+        if (cobraComoDoctor) {
             return consultaEspecialistasApi.findEspecialistaIdByUsuarioId(usuario.id())
                     .orElseThrow(() -> new IllegalArgumentException("Su usuario no tiene perfil de especialista para registrar cobros"));
         }

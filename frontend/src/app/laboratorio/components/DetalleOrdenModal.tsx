@@ -1,4 +1,5 @@
 import React, { useId, useState } from 'react'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import {
   AlertCircle,
   Clock,
@@ -45,7 +46,7 @@ export function DetalleOrdenModal({ abierto, onCerrar, ordenId, onEditar }: Prop
   const registrarPruebaMut = useRegistrarPruebaOrdenMutation()
   const anularPagoMut = useAnularPagoLaboratorioMutation()
   const rol = obtenerSesion()?.usuario.rol
-  const esOdontologo = rol === 'ODONTOLOGO'
+  const esOdontologo = esSoloOdontologo(obtenerSesion()?.usuario)
   const puedeAnular = rol === 'ADMIN_GENERAL' || rol === 'ADMIN_SEDE'
   const { data: pagos = [], isLoading: cargandoPagos, isError: errorPagos } =
     usePagosLaboratorio(ordenId || undefined, !esOdontologo)

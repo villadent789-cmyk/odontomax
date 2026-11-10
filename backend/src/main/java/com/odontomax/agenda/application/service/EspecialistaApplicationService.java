@@ -625,7 +625,7 @@ public class EspecialistaApplicationService implements
             throw new IllegalArgumentException("El usuario a vincular no existe.");
         }
         var usuario = usuarioOpt.get();
-        if ("RECEPCION".equalsIgnoreCase(usuario.rol())) {
+        if ("RECEPCION".equalsIgnoreCase(usuario.rol()) && !usuario.rolesAdicionales().contains("ODONTOLOGO")) {
             throw new IllegalArgumentException("No se puede vincular un usuario de Recepción como especialista.");
         }
         especialistaRepository.findByUsuarioId(usuarioId)

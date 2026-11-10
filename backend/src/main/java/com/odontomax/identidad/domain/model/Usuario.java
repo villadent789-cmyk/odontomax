@@ -27,6 +27,9 @@ public class Usuario {
     private String email;
     private String passwordHash;
     private String rol;
+    /** Funciones adicionales al cargo principal (solo ODONTOLOGO y/o RECEPCION): sus permisos se suman. */
+    @Builder.Default
+    private List<String> rolesAdicionales = new ArrayList<>();
     private String sedeId;
     private boolean activo;
     private OffsetDateTime ultimoAcceso;
@@ -64,6 +67,43 @@ public class Usuario {
                 && (!ROL_ADMIN_GENERAL.equals(nuevoRol) || Boolean.FALSE.equals(nuevoActivo))) {
             throw new IllegalArgumentException("No puede quitarse el rol de Administrador General ni desactivar su propia cuenta en sesión.");
         }
+    }
+
+    /** Funciones que se pueden sumar a un cargo principal: las del personal de la sede que atiende. */
+    public static final List<String> ROLES_ADICIONALES_PERMITIDOS = List.of("ODONTOLOGO", "RECEPCION");
+
+    /**
+     * Normaliza las funciones adicionales: mayúsculas, sin repetir, sin la del cargo principal y solo ODONTOLOGO/RECEPCION.
+     * El Administrador General no lleva funciones adicionales (ya tiene todo el acceso).
+     */
+    public static List<String> normalizarRolesAdicionales(String rolPrincipal, List<String> pedidos) {
+        if (pedidos == null || pedidos.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<String> limpias = new ArrayList<>();
+        for (String r : pedidos) {
+            if (r == null || r.isBlank()) {
+                continue;
+            }
+            String rol = r.trim().toUpperCase();
+            if (!ROLES_ADICIONALES_PERMITIDOS.contains(rol)) {
+                throw new IllegalArgumentException("Función adicional inválida: " + rol + ". Solo se admiten ODONTOLOGO y RECEPCION.");
+            }
+            if (!rol.equals(rolPrincipal) && !limpias.contains(rol)) {
+                limpias.add(rol);
+            }
+        }
+        if (!limpias.isEmpty() && ROL_ADMIN_GENERAL.equals(rolPrincipal)) {
+            throw new IllegalArgumentException("El Administrador General ya tiene acceso total: no lleva funciones adicionales.");
+        }
+        limpias.sort(null);
+        return limpias;
+    }
+
+    /** Edición administrativa con funciones adicionales. */
+    public void actualizarDatos(String nuevoNombre, String nuevoRol, List<String> nuevosRolesAdicionales, String nuevaSedeId, Boolean nuevoActivo) {
+        actualizarDatos(nuevoNombre, nuevoRol, nuevaSedeId, nuevoActivo);
+        this.rolesAdicionales = normalizarRolesAdicionales(nuevoRol, nuevosRolesAdicionales);
     }
 
     /** Aplica una edición administrativa; {@code nuevoActivo} nulo conserva el estado actual. */

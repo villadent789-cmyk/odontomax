@@ -32,6 +32,9 @@ public class UsuarioCreateRequestDTO {
             message = "Rol inválido. Roles permitidos: ADMIN_GENERAL, ADMIN_SEDE, ODONTOLOGO, RECEPCION")
     private String rol;
 
+    /** Funciones adicionales al cargo principal (ODONTOLOGO y/o RECEPCION). Sus permisos se suman. */
+    private java.util.List<@Pattern(regexp = "^(ODONTOLOGO|RECEPCION)$", message = "Función adicional inválida") String> rolesAdicionales;
+
     @Pattern(regexp = "^sede-[a-z0-9-]{1,60}$",
             message = "Sede inválida")
     private String sedeId;

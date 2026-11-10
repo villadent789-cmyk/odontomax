@@ -25,6 +25,11 @@ public interface JwtUserCachePort {
 
     /** Datos cacheados del usuario, incluido su estado {@code activo} (también se cachean cuentas inactivas). */
     record UsuarioAutenticado(UUID id, String email, String nombre, String rol, String sedeId, boolean activo,
-                              int tokenVersion) {
+                              int tokenVersion, java.util.List<String> rolesAdicionales) {
+
+        public UsuarioAutenticado(UUID id, String email, String nombre, String rol, String sedeId, boolean activo,
+                                  int tokenVersion) {
+            this(id, email, nombre, rol, sedeId, activo, tokenVersion, java.util.List.of());
+        }
     }
 }

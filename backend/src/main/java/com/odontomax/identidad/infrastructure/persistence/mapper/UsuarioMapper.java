@@ -23,6 +23,7 @@ public interface UsuarioMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "passwordHash", source = "passwordHash")
     @Mapping(target = "rol", source = "rol")
+    @Mapping(target = "rolesAdicionales", source = "rolesAdicionales")
     @Mapping(target = "sedeId", source = "sedeId")
     @Mapping(target = "activo", source = "activo")
     @Mapping(target = "ultimoAcceso", source = "ultimoAcceso")
@@ -31,4 +32,15 @@ public interface UsuarioMapper {
     @Mapping(target = "totpBackupCodes", source = "totpBackupCodes")
     @Mapping(target = "tokenVersion", source = "tokenVersion")
     void copiarEstado(Usuario usuario, @MappingTarget UsuarioEntity entity);
+
+    default java.util.List<String> csvALista(String csv) {
+        if (csv == null || csv.isBlank()) {
+            return new java.util.ArrayList<>();
+        }
+        return new java.util.ArrayList<>(java.util.Arrays.asList(csv.split(",")));
+    }
+
+    default String listaACsv(java.util.List<String> roles) {
+        return roles == null ? "" : String.join(",", roles);
+    }
 }

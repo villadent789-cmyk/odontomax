@@ -1,4 +1,5 @@
 import { METODOS_PAGO, nombreMetodoPago, type MetodoPago } from '@/shared/metodosPago'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import { useEffect, useState } from 'react'
 import { useAlCambiar } from '@/shared/useAlCambiar'
 import { enfocarAlMontar } from '@/design-system/enfocarAlMontar'
@@ -78,7 +79,7 @@ export function RegistrarPagoModal({
   const { data: especialistas = [] } = useEspecialistas(sedeId, abierto && Boolean(pacienteId))
   // Un odontólogo solo cobra procedimientos a su nombre (las metas se miden por doctor).
   const sesion = useSesion()
-  const esDoctor = sesion?.usuario.rol === 'ODONTOLOGO'
+  const esDoctor = esSoloOdontologo(sesion?.usuario)
   const miEspecialista = esDoctor ? especialistas.find((e) => e.usuarioId === sesion?.usuario.id) : undefined
   const opcionesDoctor = esDoctor ? (miEspecialista ? [miEspecialista] : []) : especialistas
   const especialistaId = esDoctor ? (miEspecialista?.id ?? '') : especialistaElegido

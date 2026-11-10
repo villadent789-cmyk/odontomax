@@ -75,7 +75,7 @@ public class PacienteApplicationService implements
     public List<PacienteResponseDTO> listar(String busqueda, String sedeId) {
         String sedeEfectiva = SecurityUtils.resolverSedeEfectiva(sedeId);
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        boolean esOdontologo = usuario != null && "ODONTOLOGO".equalsIgnoreCase(usuario.rol());
+        boolean esOdontologo = usuario != null && usuario.soloOdontologo();
 
         List<PacienteEntity> lista;
         if (esOdontologo) {
@@ -115,7 +115,7 @@ public class PacienteApplicationService implements
         String terminoFiltro = (busqueda != null && !busqueda.isBlank()) ? busqueda.trim() : null;
 
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        boolean esOdontologo = usuario != null && "ODONTOLOGO".equalsIgnoreCase(usuario.rol());
+        boolean esOdontologo = usuario != null && usuario.soloOdontologo();
 
         Page<PacienteResponseDTO> pagina;
         if (esOdontologo) {

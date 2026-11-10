@@ -20,6 +20,6 @@ public class UsuarioCrossModuleAdapter implements UsuarioConsultaPort {
             return Optional.empty();
         }
         return consultaUsuarioModuloApi.buscarPorId(usuarioId)
-                .map(u -> new UsuarioInfo(u.id(), u.nombre(), u.email(), u.rol(), u.sedeId(), u.activo()));
+                .map(u -> new UsuarioInfo(u.id(), u.nombre(), u.email(), u.rol(), u.sedeId(), u.activo(), u.rolesAdicionales()));
     }
 }

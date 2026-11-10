@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { tieneRol, tieneAlgunRol } from '@/shared/auth/sesion'
 import {
   AlertCircle,
   CheckCircle2,
@@ -36,7 +37,7 @@ export function RadiologiaPage() {
   const sesion = useSesion()
   const rol = sesion?.usuario.rol
   const esAdminGeneral = rol === 'ADMIN_GENERAL'
-  const esRecepcion = rol === 'RECEPCION'
+  const esRecepcion = tieneRol(sesion?.usuario, 'RECEPCION') && !tieneAlgunRol(sesion?.usuario, ['ODONTOLOGO', 'ADMIN_SEDE', 'ADMIN_GENERAL'])
 
   const [comisiones, setComisiones] = useState<ComisionRadiologicaDTO[]>([])
   const [doctores, setDoctores] = useState<DoctorDerivadorDTO[]>([])

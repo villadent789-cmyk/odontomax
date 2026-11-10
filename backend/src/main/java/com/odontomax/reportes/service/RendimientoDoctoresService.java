@@ -167,7 +167,7 @@ public class RendimientoDoctoresService {
     @Transactional(readOnly = true)
     public MiAvanceResponseDTO obtenerMiAvance(String mes) {
         ClinicaUserPrincipal usuario = SecurityUtils.getCurrentUser();
-        if (usuario == null || !"ODONTOLOGO".equalsIgnoreCase(usuario.rol())) {
+        if (usuario == null || !usuario.tieneRol("ODONTOLOGO")) {
             throw new AccessDeniedException("Acceso denegado: solo un odontólogo consulta su propio avance.");
         }
         UUID doctorId = consultaEspecialistasApi.findEspecialistaIdByUsuarioId(usuario.id())

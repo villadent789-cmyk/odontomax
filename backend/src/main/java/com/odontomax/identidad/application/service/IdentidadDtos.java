@@ -25,6 +25,7 @@ final class IdentidadDtos {
                 .email(user.getEmail())
                 .nombre(user.getNombre())
                 .rol(user.getRol())
+                .rolesAdicionales(user.getRolesAdicionales())
                 .sedeId(user.getSedeId())
                 .build();
     }

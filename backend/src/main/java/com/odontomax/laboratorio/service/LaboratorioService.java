@@ -159,7 +159,7 @@ public class LaboratorioService {
             ordenes = ordenes.stream().filter(o -> SecurityUtils.sedeEnNegocioActivo(o.getSedeId())).toList();
         }
 
-        boolean esOdontologo = user != null && "ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean esOdontologo = user != null && user.soloOdontologo();
         if (esOdontologo && user != null) {
             Set<UUID> autorizados = consultaEspecialistasApi.pacientesDelOdontologo(user.id());
             ordenes = ordenes.stream()
@@ -207,7 +207,7 @@ public class LaboratorioService {
         EspecialistaEntity especialista = especialistaRepository.findById(orden.getEspecialistaId()).orElse(null);
         LaboratorioExternoEntity lab = laboratorioRepository.findById(orden.getLaboratorioId()).orElse(null);
 
-        boolean incluirFinanzas = user == null || !"ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean incluirFinanzas = user == null || !user.soloOdontologo();
         java.math.BigDecimal pagado = incluirFinanzas
                 ? montoPagado(orden.getId())
                 : java.math.BigDecimal.ZERO;
@@ -230,7 +230,7 @@ public class LaboratorioService {
         String codigo = generarCodigoOrden();
         String usuarioNombre = user != null ? user.nombre() : "Sistema";
         String usuarioRol = user != null ? user.rol() : "RECEPCION";
-        boolean incluirFinanzas = user == null || !"ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean incluirFinanzas = user == null || !user.soloOdontologo();
 
         OrdenLaboratorioEntity orden = OrdenLaboratorioEntity.builder()
                 .codigo(codigo)
@@ -304,7 +304,7 @@ public class LaboratorioService {
         }
         orden.setPiezasDentales(req.getPiezasDentales() != null ? req.getPiezasDentales().trim() : null);
         orden.setFechaEstimadaEntrega(req.getFechaEstimadaEntrega());
-        boolean incluirFinanzas = user == null || !"ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean incluirFinanzas = user == null || !user.soloOdontologo();
         if (incluirFinanzas) {
             orden.setCostoLaboratorio(req.getCostoLaboratorio());
             orden.setPrecioPaciente(req.getPrecioPaciente());
@@ -387,7 +387,7 @@ public class LaboratorioService {
         EspecialistaEntity especialista = especialistaRepository.findById(guardada.getEspecialistaId()).orElse(null);
         LaboratorioExternoEntity lab = laboratorioRepository.findById(guardada.getLaboratorioId()).orElse(null);
 
-        boolean incluirFinanzas = user == null || !"ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean incluirFinanzas = user == null || !user.soloOdontologo();
         java.math.BigDecimal pagado = incluirFinanzas ? montoPagado(guardada.getId()) : java.math.BigDecimal.ZERO;
         return toOrdenDTO(guardada, paciente, especialista, lab, true, incluirFinanzas, pagado);
     }
@@ -455,7 +455,7 @@ public class LaboratorioService {
         PacienteResumen paciente = pacientesApi.findById(guardada.getPacienteId()).orElse(null);
         EspecialistaEntity especialista = especialistaRepository.findById(guardada.getEspecialistaId()).orElse(null);
         LaboratorioExternoEntity lab = laboratorioRepository.findById(guardada.getLaboratorioId()).orElse(null);
-        boolean incluirFinanzas = user == null || !"ODONTOLOGO".equalsIgnoreCase(user.rol());
+        boolean incluirFinanzas = user == null || !user.soloOdontologo();
         java.math.BigDecimal pagado = incluirFinanzas ? montoPagado(guardada.getId()) : java.math.BigDecimal.ZERO;
         return toOrdenDTO(guardada, paciente, especialista, lab, true, incluirFinanzas, pagado);
     }
@@ -793,7 +793,7 @@ public class LaboratorioService {
         if (user == null) {
             throw new org.springframework.security.access.AccessDeniedException("No autenticado");
         }
-        if (!Set.of("ADMIN_GENERAL", "ADMIN_SEDE", "RECEPCION").contains(user.rol().toUpperCase(Locale.ROOT))) {
+        if (!user.tieneAlgunRol("ADMIN_GENERAL", "ADMIN_SEDE", "RECEPCION")) {
             throw new org.springframework.security.access.AccessDeniedException(
                     "Los costos del laboratorio son información administrativa.");
         }

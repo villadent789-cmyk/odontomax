@@ -48,7 +48,7 @@ public class DescuentoRecomendacionApplicationService implements GestionarDescue
     public DescuentoRecomendacionResponseDTO aplicar(UUID pacienteId, UUID descuentoId, UUID tratamientoId) {
         exigirAcceso(pacienteId);
         ClinicaUserPrincipal user = SecurityUtils.getCurrentUser();
-        if (user == null || !ROLES_QUE_DAN_DESCUENTO.contains(user.rol().toUpperCase())) {
+        if (user == null || user.roles().stream().noneMatch(ROLES_QUE_DAN_DESCUENTO::contains)) {
             throw new AccessDeniedException("Solo el odontólogo o un administrador da el descuento por recomendación.");
         }
         DescuentoRecomendacionEntity descuento = descuentoRepository.findById(descuentoId)
