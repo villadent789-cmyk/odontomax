@@ -41,6 +41,8 @@ public class Especialista {
     private String telefono;
     private String fotoUrl;
     private boolean activo;
+    /** Viene por cita previa: sin cuenta, sin horario ni sillón fijo (se agenda en cualquier hueco y sillón libre). */
+    private boolean invitado;
     private BigDecimal metaMensual;
     private BigDecimal comisionExcedentePorcentaje;
 

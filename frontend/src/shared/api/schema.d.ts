@@ -3225,6 +3225,7 @@ export interface components {
             email?: string;
             especialidad: string;
             fotoUrl?: string;
+            invitado?: boolean;
             nombre: string;
             sedes: string[];
             telefono?: string;
@@ -3239,6 +3240,7 @@ export interface components {
             fotoUrl?: string;
             /** Format: uuid */
             id?: string;
+            invitado?: boolean;
             nombre?: string;
             sedes?: string[];
             sillonesPorSede?: {

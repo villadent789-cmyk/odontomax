@@ -56,4 +56,22 @@ class FuncionesAdicionalesPostgresIntegrationTest extends PacientesPostgresTestB
         org.junit.jupiter.api.Assertions.assertThrows(Exception.class,
                 () -> jdbc.update("UPDATE usuarios SET roles_adicionales = 'ADMIN_GENERAL' WHERE id = ?", u.id()));
     }
+
+    @Test
+    @DisplayName("Un Administrador General que suma ser odontólogo obtiene su ficha de doctor en la sede elegida; sin sede, se rechaza")
+    void adminGeneralMasOdontologoApareceEnLaAgenda() throws Exception {
+        String sede = crearSede();
+        UsuarioPrueba admin = adminGeneral();
+        String email = "admin-doctor-" + tag() + "@pacientes.odontomax.pe";
+        Map<String, Object> cuerpo = new java.util.HashMap<>(Map.of("nombre", "Admin Doctora", "email", email,
+                "password", "Clave-1234", "rol", "ADMIN_GENERAL", "rolesAdicionales", java.util.List.of("ODONTOLOGO")));
+
+        assertThat(ejecutar(post("/usuarios"), admin, cuerpo).getResponse().getStatus()).as("sin sede").isEqualTo(400);
+
+        cuerpo.put("sedeId", sede);
+        assertThat(ejecutar(post("/usuarios"), admin, cuerpo).getResponse().getStatus()).isEqualTo(201);
+        Integer fichas = jdbc.queryForObject("SELECT count(*) FROM especialistas e JOIN usuarios u ON u.id = e.usuario_id WHERE lower(u.email) = ?", Integer.class, email);
+        assertThat(fichas).isEqualTo(1);
+        assertThat(jdbc.queryForObject("SELECT sede_id FROM usuarios WHERE lower(email) = ?", String.class, email)).isNull();
+    }
 }

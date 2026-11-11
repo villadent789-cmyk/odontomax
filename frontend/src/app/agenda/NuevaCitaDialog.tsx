@@ -191,7 +191,9 @@ function Formulario({ prefijo, onCerrar, onCreada }: { prefijo: PrefijoCita } & 
   }, [activos, getValues, setValue])
   const especialistaElegido = especialistas.data?.find((e) => e.id === doctorId)
   const sillonFijo = especialistaElegido?.sillonesPorSede?.[sedeId ?? ''] ?? undefined
-  const especialistaSinSillon = Boolean(doctorId && especialistas.isSuccess && !sillonFijo)
+  // Doctor invitado: viene por cita previa, sin horario ni sillón fijo (el sistema usa el primer sillón libre a esa hora).
+  const esInvitado = especialistaElegido?.invitado === true
+  const especialistaSinSillon = Boolean(doctorId && especialistas.isSuccess && !sillonFijo && !esInvitado)
 
   const enviar = handleSubmit(async (d) => {
     setErrorPresupuesto(null)
@@ -374,13 +376,18 @@ function Formulario({ prefijo, onCerrar, onCreada }: { prefijo: PrefijoCita } & 
                 <option key={e.id} value={e.id}>
                   {e.nombre}
                   {e.especialidad ? ` · ${e.especialidad}` : ''}
+                  {e.invitado ? ' (invitado)' : ''}
                 </option>
               ))}
             </select>
           </Field>
           {doctorId && (
             <div className="sm:col-span-3">
-              {sillonFijo && especialistaElegido ? (
+              {esInvitado && especialistaElegido ? (
+                <p role="status" className="rounded-panel bg-surface-container p-3 text-sm">
+                  Doctor invitado: viene por cita previa. Elige la fecha y la hora acordadas; se usa el primer sillón libre.
+                </p>
+              ) : sillonFijo && especialistaElegido ? (
                 <p role="status" className="rounded-panel bg-surface-container p-3 text-sm">
                   Sillón {sillonFijo} · {especialistaElegido.nombre}
                 </p>
@@ -403,7 +410,9 @@ function Formulario({ prefijo, onCerrar, onCreada }: { prefijo: PrefijoCita } & 
                     ? 'No se pudo consultar el horario del especialista.'
                     : atencion
                       ? `Atiende en ${sede?.nombre ?? 'esta sede'}: ${atencion}`
-                      : 'El especialista no tiene horario de atención en esta sede.'}
+                      : esInvitado
+                        ? 'Doctor invitado: sin horario fijo, se agenda en la fecha y hora acordadas.'
+                        : 'El especialista no tiene horario de atención en esta sede.'}
               </p>
               {proximosDias.length > 0 && (
                 <div className="flex flex-wrap items-center gap-1.5 text-xs">

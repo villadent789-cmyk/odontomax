@@ -53,7 +53,10 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
   const [errores, setErrores] = useState<Record<string, string>>({})
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
 
-  const requiereSede = rol !== 'ADMIN_GENERAL'
+  // Funciones que de verdad se suman (el administrador general solo puede sumar ser doctor).
+  const funciones = adicionales.filter((a) => a !== rol && (rol !== 'ADMIN_GENERAL' || a === 'ODONTOLOGO'))
+  const adminDoctor = rol === 'ADMIN_GENERAL' && funciones.includes('ODONTOLOGO')
+  const requiereSede = rol !== 'ADMIN_GENERAL' || adminDoctor
   // Un cargo que ya no se ofrece (p. ej. ADMIN_SEDE heredado) se conserva como opción para no cambiarlo sin querer.
   const cargoHeredado = !CARGOS.some((c) => c.rol === rolInicial)
   // Una sede ya inactiva sigue siendo la sede actual de la cuenta: se muestra en vez de reemplazarla en silencio.
@@ -71,7 +74,7 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
     try {
       await editar.mutateAsync({
         id: usuario.id,
-        cuerpo: { nombre: nombre.trim(), rol, rolesAdicionales: rol === 'ADMIN_GENERAL' ? ((usuario.rolesAdicionales ?? []).length ? [] : undefined) : adicionales.some((a) => a !== rol) || (usuario.rolesAdicionales ?? []).length ? adicionales.filter((a) => a !== rol) : undefined, sedeId: requiereSede ? sedeId : undefined },
+        cuerpo: { nombre: nombre.trim(), rol, rolesAdicionales: funciones.length || (usuario.rolesAdicionales ?? []).length ? funciones : undefined, sedeId: requiereSede ? sedeId : undefined },
       })
       toast(`Cuenta actualizada: ${nombre.trim()}`)
       alCerrar()
@@ -108,7 +111,11 @@ function Formulario({ usuario, alCerrar, sedes }: { usuario: UsuarioEditable; al
       </Field>
       <FuncionesAdicionales rolPrincipal={rol} valor={adicionales} onChange={setAdicionales} />
       {requiereSede ? (
-        <Field label="Sede" error={errores.sede}>
+        <Field
+          label={adminDoctor ? 'Sede donde atiende como doctor' : 'Sede'}
+          error={errores.sede}
+          ayuda={adminDoctor ? 'Su cuenta de administración sigue viendo todas las sedes; aquí se elige donde aparece en la agenda.' : undefined}
+        >
           <select className={inputClases} value={sedeId} onChange={(e) => setSedeId(e.target.value)}>
             {sedeInactiva && <option value={usuario.sedeId}>{usuario.sedeId} (inactiva)</option>}
             {sedes.map((s) => (

@@ -207,7 +207,7 @@ export function AgendaPage({ vistaInicial }: Props = {}) {
                 onCambiar={setFiltro}
                 opciones={[
                   { valor: 'todos', texto: `Todos (${especialistas.length})` },
-                  ...especialistas.map((e) => ({ valor: e.id!, texto: e.nombre ?? 'Especialista' })),
+                  ...especialistas.map((e) => ({ valor: e.id!, texto: `${e.nombre ?? 'Especialista'}${e.invitado ? ' (invitado)' : ''}` })),
                 ]}
               />
             )}

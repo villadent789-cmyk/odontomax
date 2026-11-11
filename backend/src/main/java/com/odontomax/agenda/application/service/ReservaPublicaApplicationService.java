@@ -108,7 +108,7 @@ public class ReservaPublicaApplicationService implements
         String doctorNombre = null;
         if (dto.getDoctorId() != null && especialistaRepository != null) {
             var elegido = especialistaRepository.findBySedeIdAndActivoTrue(dto.getSedeId().trim()).stream()
-                    .filter(e -> e.getId().equals(dto.getDoctorId()))
+                    .filter(e -> !e.isInvitado() && e.getId().equals(dto.getDoctorId()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("El doctor seleccionado no atiende en la sede elegida."));
             doctorId = elegido.getId();

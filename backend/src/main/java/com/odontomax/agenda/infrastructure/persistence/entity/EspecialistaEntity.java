@@ -50,6 +50,10 @@ public class EspecialistaEntity {
     @Column(nullable = false)
     private boolean activo = true;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean invitado = false;
+
     @Column(name = "meta_mensual", precision = 10, scale = 2)
     private BigDecimal metaMensual;
 

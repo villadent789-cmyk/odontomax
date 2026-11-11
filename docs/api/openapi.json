@@ -1777,6 +1777,9 @@
             "pattern": "^(https://\\S+)?$",
             "type": "string"
           },
+          "invitado": {
+            "type": "boolean"
+          },
           "nombre": {
             "maxLength": 120,
             "minLength": 0,
@@ -1824,6 +1827,9 @@
           "id": {
             "format": "uuid",
             "type": "string"
+          },
+          "invitado": {
+            "type": "boolean"
           },
           "nombre": {
             "type": "string"

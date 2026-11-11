@@ -45,4 +45,7 @@ public class EspecialistaRequestDTO {
     private List<String> sedes;
 
     private UUID usuarioId;
+
+    /** Doctor invitado (sin cuenta): se agenda sin horario ni sillón fijo. */
+    private boolean invitado;
 }

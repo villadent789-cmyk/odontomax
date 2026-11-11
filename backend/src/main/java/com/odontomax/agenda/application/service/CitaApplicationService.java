@@ -109,12 +109,13 @@ public class CitaApplicationService implements
             }
         }
 
-        Integer sillonNumero = resolverSillonCita(request.getDoctorId(), sedeEfectiva, request.getSillonNumero());
+        int duracion = request.getDuracionMinutos() != null ? request.getDuracionMinutos() : 30;
+        Integer sillonNumero = resolverSillonCita(request.getDoctorId(), sedeEfectiva, request.getSillonNumero(),
+                request.getFecha(), request.getHora(), duracion, null);
         // B-023: sede activa y sillón dentro de 1..sillones (una sede inexistente la sigue rechazando la FK, 409)
         sedeValidacionPort.obtenerSede(sedeEfectiva)
                 .ifPresent(sede -> sede.verificarAdmiteCita(sillonNumero));
 
-        int duracion = request.getDuracionMinutos() != null ? request.getDuracionMinutos() : 30;
 
         boolean esVillamax = sedeValidacionPort.obtenerConfiguracionSede(sedeEfectiva)
                 .map(c -> "VILLAMAX".equalsIgnoreCase(c.unidadDeNegocio()))
@@ -282,13 +283,33 @@ public class CitaApplicationService implements
         return plan.id();
     }
 
-    private Integer resolverSillonCita(UUID especialistaId, String sedeId, Integer sillonSolicitado) {
+    private Integer resolverSillonCita(UUID especialistaId, String sedeId, Integer sillonSolicitado,
+                                       LocalDate fecha, LocalTime hora, int duracion, UUID excluirCitaId) {
         if (especialistaId == null) {
             return sillonSolicitado;
         }
-        return especialistaRepository.findById(especialistaId)
-                .map(especialista -> especialista.resolverSillonCita(sedeId, sillonSolicitado))
-                .orElseThrow(SillonNoAsignadoException::new);
+        var especialista = especialistaRepository.findById(especialistaId).orElseThrow(SillonNoAsignadoException::new);
+        if (especialista.isInvitado()) {
+            return sillonLibreParaInvitado(sedeId, sillonSolicitado, fecha, hora, duracion, excluirCitaId);
+        }
+        return especialista.resolverSillonCita(sedeId, sillonSolicitado);
+    }
+
+    /** Un doctor invitado no tiene sillón fijo: usa el sillón pedido o, si no, el primero libre de la sede a esa hora. */
+    private Integer sillonLibreParaInvitado(String sedeId, Integer solicitado, LocalDate fecha, LocalTime hora, int duracion, UUID excluirCitaId) {
+        if (solicitado != null) {
+            return solicitado;
+        }
+        int sillones = sedeValidacionPort.obtenerSede(sedeId).map(com.odontomax.agenda.domain.model.SedeAgenda::sillones).orElse(0);
+        for (int numero = 1; numero <= sillones; numero++) {
+            final int n = numero;
+            boolean ocupado = citaRepository.findOcupantesSillon(sedeId, n, fecha).stream()
+                    .anyMatch(c -> c.ocupaAgenda() && !Objects.equals(c.getId(), excluirCitaId) && c.solapaCon(fecha, hora, duracion));
+            if (!ocupado) {
+                return n;
+            }
+        }
+        throw new CitaColisionException("No hay un sillón libre en la sede para ese horario.");
     }
 
     @Override
@@ -420,7 +441,8 @@ public class CitaApplicationService implements
         }
 
         int duracion = cita.getDuracionMinutos() > 0 ? cita.getDuracionMinutos() : 30;
-        Integer sillonFijo = resolverSillonCita(cita.getDoctorId(), cita.getSedeId(), null);
+        Integer sillonFijo = resolverSillonCita(cita.getDoctorId(), cita.getSedeId(), null,
+                request.getNuevaFecha(), request.getNuevoHorario(), duracion, cita.getId());
         Integer sillonNumero = sillonFijo != null ? sillonFijo : cita.getSillonNumero();
 
         if (cita.getDoctorId() != null) {
@@ -1084,6 +1106,15 @@ public class CitaApplicationService implements
         if (!doctorHorarioPort.esDoctorActivo(doctorId)) {
             String nombreDoc = doctorHorarioPort.obtenerNombreDoctor(doctorId);
             throw new CitaColisionException("El especialista " + (nombreDoc != null ? nombreDoc : "") + " está inactivo y no recibe nuevas citas.");
+        }
+
+        // Doctor invitado: viene por cita previa, no tiene horario semanal; solo debe estar asignado a la sede.
+        var invitado = especialistaRepository.findById(doctorId).filter(e -> e.isInvitado());
+        if (invitado.isPresent()) {
+            if (sedeId != null && invitado.get().getSedes().stream().noneMatch(sedeId::equalsIgnoreCase)) {
+                throw new CitaColisionException("El doctor invitado no está asignado a esta sede.");
+            }
+            return;
         }
 
         boolean atiende = doctorHorarioPort.atiendeEnHorarioYSede(doctorId, sedeId, fecha, hora, duracionMinutos);

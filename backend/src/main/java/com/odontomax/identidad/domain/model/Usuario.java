@@ -93,8 +93,9 @@ public class Usuario {
                 limpias.add(rol);
             }
         }
-        if (!limpias.isEmpty() && ROL_ADMIN_GENERAL.equals(rolPrincipal)) {
-            throw new IllegalArgumentException("El Administrador General ya tiene acceso total: no lleva funciones adicionales.");
+        // El Administrador General ya tiene todo el acceso; solo puede sumar ser doctor (aparecer en la agenda y atender)
+        if (ROL_ADMIN_GENERAL.equals(rolPrincipal)) {
+            limpias.remove("RECEPCION");
         }
         limpias.sort(null);
         return limpias;

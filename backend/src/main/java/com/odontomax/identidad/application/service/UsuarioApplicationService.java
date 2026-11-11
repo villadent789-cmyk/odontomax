@@ -62,15 +62,22 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
         String rol = request.getRol().trim().toUpperCase();
         String sedeId = request.getSedeId() != null && !request.getSedeId().isBlank() ? request.getSedeId().trim() : null;
 
+        // Sede donde atiende como doctor: la de la cuenta o, si es Administrador General (sin sede propia), la elegida
+        String sedeDelDoctor = sedeId;
+
         // Validar reglas de sede por rol
         sedeId = Usuario.resolverSedeSegunRol(rol, sedeId);
+        List<String> adicionales = Usuario.normalizarRolesAdicionales(rol, request.getRolesAdicionales());
+        if (adicionales.contains("ODONTOLOGO") && sedeDelDoctor == null) {
+            throw new IllegalArgumentException("Elija la sede donde atenderá como odontólogo.");
+        }
 
         Usuario nuevo = Usuario.builder()
                 .nombre(request.getNombre().trim())
                 .email(emailClean)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .rol(rol)
-                .rolesAdicionales(Usuario.normalizarRolesAdicionales(rol, request.getRolesAdicionales()))
+                .rolesAdicionales(adicionales)
                 .sedeId(sedeId)
                 .activo(true)
                 .build();
@@ -91,7 +98,7 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
 
         UsuarioResponseDTO response = toResponse(guardado);
         if ("ODONTOLOGO".equals(rol) || guardado.getRolesAdicionales().contains("ODONTOLOGO")) {
-            eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(response.getId(), request.getNombre().trim(), emailClean, sedeId, request.getEspecialidad()));
+            eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(response.getId(), request.getNombre().trim(), emailClean, sedeDelDoctor, request.getEspecialidad()));
         }
 
         log.info("Usuario creado exitosamente con ID {} por ID {}", response.getId(), adminPrincipal != null ? adminPrincipal.id() : "SISTEMA");
@@ -109,7 +116,11 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
         // Evita que el administrador en sesión se quite a sí mismo el acceso (rol o estado)
         usuario.verificarAutoproteccionAlEditar(adminPrincipal != null ? adminPrincipal.id() : null, rol, request.getActivo());
 
+        String sedeDelDoctor = sedeId;
         sedeId = Usuario.resolverSedeSegunRol(rol, sedeId);
+        if (Usuario.normalizarRolesAdicionales(rol, request.getRolesAdicionales()).contains("ODONTOLOGO") && sedeDelDoctor == null) {
+            throw new IllegalArgumentException("Elija la sede donde atenderá como odontólogo.");
+        }
 
         usuario.actualizarDatos(request.getNombre().trim(), rol, request.getRolesAdicionales(), sedeId, request.getActivo());
 
@@ -117,7 +128,7 @@ public class UsuarioApplicationService implements ConsultarUsuarioUseCase, Gesti
         UsuarioResponseDTO response = toResponse(actualizado);
 
         if ("ODONTOLOGO".equals(rol) || actualizado.getRolesAdicionales().contains("ODONTOLOGO")) {
-            eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(id, request.getNombre().trim(), response.getEmail(), sedeId, request.getEspecialidad()));
+            eventPublisher.publishEvent(new UsuarioOdontologoRegistrado(id, request.getNombre().trim(), response.getEmail(), sedeDelDoctor, request.getEspecialidad()));
         }
         if (request.getActivo() != null) {
             eventPublisher.publishEvent(new UsuarioEstadoModificado(id, Boolean.TRUE.equals(request.getActivo())));

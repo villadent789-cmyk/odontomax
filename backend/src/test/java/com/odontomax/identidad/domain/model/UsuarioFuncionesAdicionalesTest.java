@@ -26,9 +26,9 @@ class UsuarioFuncionesAdicionalesTest {
     }
 
     @Test
-    @DisplayName("El Administrador General no lleva funciones adicionales")
-    void adminGeneralNoLasLleva() {
-        assertThatThrownBy(() -> Usuario.normalizarRolesAdicionales("ADMIN_GENERAL", List.of("ODONTOLOGO")))
-                .isInstanceOf(IllegalArgumentException.class);
+    @DisplayName("El Administrador General puede sumar ser odontólogo; recepción no aporta nada y se descarta")
+    void adminGeneralPuedeSerOdontologo() {
+        assertThat(Usuario.normalizarRolesAdicionales("ADMIN_GENERAL", List.of("ODONTOLOGO", "RECEPCION")))
+                .containsExactly("ODONTOLOGO");
     }
 }

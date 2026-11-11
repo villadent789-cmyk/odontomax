@@ -25,6 +25,8 @@ public class EspecialistaResponseDTO {
     private String telefono;
     private String fotoUrl;
     private boolean activo;
+    /** Doctor invitado: viene por cita previa y se agenda sin horario ni sillón fijo. */
+    private boolean invitado;
     private List<String> sedes;
     private Map<String, Integer> sillonesPorSede;
 }

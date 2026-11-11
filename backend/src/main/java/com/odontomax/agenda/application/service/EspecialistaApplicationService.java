@@ -81,6 +81,7 @@ public class EspecialistaApplicationService implements
                 .telefono(e.getTelefono())
                 .fotoUrl(e.getFotoUrl())
                 .activo(e.isActivo())
+                .invitado(e.isInvitado())
                 .sedes(e.getSedes())
                 .sillonesPorSede(e.getSillonesPorSede())
                 .build();
@@ -114,7 +115,9 @@ public class EspecialistaApplicationService implements
     @Override
     @Transactional(readOnly = true)
     public List<EspecialistaResponseDTO> listarPublicos() {
+        // Los doctores invitados vienen por cita previa: no se ofrecen en la web pública
         return especialistaRepository.findByActivoTrueOrderByNombreAsc().stream()
+                .filter(e -> !e.isInvitado())
                 .map(e -> EspecialistaResponseDTO.builder()
                         .id(e.getId())
                         .nombre(e.getNombre())
@@ -133,6 +136,7 @@ public class EspecialistaApplicationService implements
             return listarPublicos();
         }
         return especialistaRepository.findBySedeIdAndActivoTrue(sedeId.trim()).stream()
+                .filter(e -> !e.isInvitado())
                 .map(e -> EspecialistaResponseDTO.builder()
                         .id(e.getId())
                         .nombre(e.getNombre())
@@ -174,6 +178,7 @@ public class EspecialistaApplicationService implements
                 .fotoUrl(normalizarOpcional(dto.getFotoUrl()))
                 .usuarioId(dto.getUsuarioId())
                 .activo(true)
+                .invitado(dto.isInvitado() && dto.getUsuarioId() == null)
                 .sedes(new ArrayList<>(sedes))
                 .build();
 
@@ -357,7 +362,28 @@ public class EspecialistaApplicationService implements
         int diaSemana = fecha.getDayOfWeek().getValue(); // 1 = Lunes, 7 = Domingo
 
         List<HorarioEspecialista> horarios;
-        if (sedeId != null && !sedeId.isBlank()) {
+        if (esp.isInvitado()) {
+            // Doctor invitado: sin horario semanal. Se ofrecen todas las horas de atención de la clínica, solo en sus sedes.
+            if (sedeId != null && !sedeId.isBlank() && esp.getSedes().stream().noneMatch(sedeId.trim()::equalsIgnoreCase)) {
+                return DisponibilidadResponseDTO.builder()
+                        .especialistaId(especialistaId)
+                        .especialistaNombre(esp.getNombre())
+                        .fecha(fecha)
+                        .sedeId(sedeId)
+                        .atiendeEseDia(false)
+                        .mensaje("El doctor invitado no está asignado a esta sede.")
+                        .slots(Collections.emptyList())
+                        .build();
+            }
+            horarios = List.of(HorarioEspecialista.builder()
+                    .especialistaId(especialistaId)
+                    .sedeId(sedeId)
+                    .diaSemana(diaSemana)
+                    .horaInicio(Especialista.INICIO_HABITUAL)
+                    .horaFin(Especialista.FIN_HABITUAL)
+                    .activo(true)
+                    .build());
+        } else if (sedeId != null && !sedeId.isBlank()) {
             horarios = especialistaHorarioRepository.findByEspecialistaIdAndSedeIdAndDiaSemanaAndActivoTrue(
                     especialistaId, sedeId.trim(), diaSemana);
         } else {

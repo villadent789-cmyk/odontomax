@@ -52,7 +52,10 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
   const [errores, setErrores] = useState<Record<string, string>>({})
   const [errorEnvio, setErrorEnvio] = useState<string | null>(null)
 
-  const requiereSede = rol !== 'ADMIN_GENERAL'
+  // Funciones que de verdad se suman (el administrador general solo puede sumar ser doctor).
+  const funciones = adicionales.filter((a) => a !== rol && (rol !== 'ADMIN_GENERAL' || a === 'ODONTOLOGO'))
+  const adminDoctor = rol === 'ADMIN_GENERAL' && funciones.includes('ODONTOLOGO')
+  const requiereSede = rol !== 'ADMIN_GENERAL' || adminDoctor
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -71,7 +74,7 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
         email: email.trim().toLowerCase(),
         password,
         rol,
-        rolesAdicionales: rol !== 'ADMIN_GENERAL' && adicionales.some((a) => a !== rol) ? adicionales.filter((a) => a !== rol) : undefined,
+        rolesAdicionales: funciones.length ? funciones : undefined,
         sedeId: requiereSede ? sedeId : undefined,
         especialidad: (rol === 'ODONTOLOGO' || adicionales.includes('ODONTOLOGO')) && especialidad.trim() ? especialidad.trim() : undefined,
       })
@@ -118,7 +121,11 @@ function Formulario({ alCerrar, sedes }: Omit<Props, 'abierto'>) {
       </Field>
       <FuncionesAdicionales rolPrincipal={rol} valor={adicionales} onChange={setAdicionales} />
       {requiereSede ? (
-        <Field label="Sede" error={errores.sede}>
+        <Field
+          label={adminDoctor ? 'Sede donde atiende como doctor' : 'Sede'}
+          error={errores.sede}
+          ayuda={adminDoctor ? 'Su cuenta de administración sigue viendo todas las sedes; aquí se elige donde aparece en la agenda.' : undefined}
+        >
           <select className={inputClases} value={sedeId} onChange={(e) => setSedeId(e.target.value)}>
             {sedes.map((s) => (
               <option key={s.id} value={s.id}>

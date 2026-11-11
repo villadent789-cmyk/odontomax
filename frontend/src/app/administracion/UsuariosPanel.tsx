@@ -31,6 +31,7 @@ import {
 import { EditarDoctorModal } from './EditarDoctorModal'
 import { EditarUsuarioModal } from './EditarUsuarioModal'
 import { HorariosDoctorModal } from './HorariosDoctorModal'
+import { NuevoDoctorInvitadoModal } from './NuevoDoctorInvitadoModal'
 import { NuevoUsuarioModal } from './NuevoUsuarioModal'
 import { SeguridadUsuarioModal } from './SeguridadUsuarioModal'
 
@@ -104,6 +105,7 @@ export function UsuariosPanel() {
   }, [usuarios.data, doctores.data, sedesIdsActivas])
 
   const [nuevoAbierto, setNuevoAbierto] = useState(false)
+  const [invitadoAbierto, setInvitadoAbierto] = useState(false)
   const [editandoCuenta, setEditandoCuenta] = useState<FilaPersonal | null>(null)
   const [seguridad, setSeguridad] = useState<FilaPersonal | null>(null)
   const [editando, setEditando] = useState<Doctor | null>(null)
@@ -168,10 +170,16 @@ export function UsuariosPanel() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="text-on-surface-variant">Usuarios del sistema: doctores, recepción y administradores.</p>
-        <Button onClick={() => setNuevoAbierto(true)} disabled={sedes.length === 0}>
-          <Plus aria-hidden />
-          Nuevo usuario
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secundario" onClick={() => setInvitadoAbierto(true)} disabled={sedes.length === 0}>
+            <Plus aria-hidden />
+            Nuevo doctor invitado
+          </Button>
+          <Button onClick={() => setNuevoAbierto(true)} disabled={sedes.length === 0}>
+            <Plus aria-hidden />
+            Nuevo usuario
+          </Button>
+        </div>
       </div>
 
       {errorEstado && (
@@ -233,7 +241,9 @@ export function UsuariosPanel() {
                       {f.nombre}
                       {f.email && <span className="block text-xs font-normal text-on-surface-variant">{f.email}</span>}
                     </th>
-                    <td className="px-4 py-3">{[f.rol, ...(f.rolesAdicionales ?? [])].map(etiquetaCargo).join(' + ')}</td>
+                    <td className="px-4 py-3">
+                      {f.doctor?.invitado ? 'Doctor invitado (sin cuenta)' : [f.rol, ...(f.rolesAdicionales ?? [])].map(etiquetaCargo).join(' + ')}
+                    </td>
                     <td className="px-4 py-3">
                       {f.sedeIds.length === 0 ? (
                         <span>{f.rol === 'ADMIN_GENERAL' ? 'Todas las sedes' : '—'}</span>
@@ -277,10 +287,12 @@ export function UsuariosPanel() {
                               <Pencil aria-hidden />
                               Editar perfil
                             </Button>
-                            <Button size="sm" variant="secundario" onClick={() => setConHorarios(f.doctor!)} aria-label={`Configurar horarios de ${f.nombre}`}>
-                              <CalendarClock aria-hidden />
-                              Horarios
-                            </Button>
+                            {!f.doctor.invitado && (
+                              <Button size="sm" variant="secundario" onClick={() => setConHorarios(f.doctor!)} aria-label={`Configurar horarios de ${f.nombre}`}>
+                                <CalendarClock aria-hidden />
+                                Horarios
+                              </Button>
+                            )}
                           </>
                         )}
                         <Button
@@ -314,6 +326,7 @@ export function UsuariosPanel() {
         )}
       </section>
 
+      <NuevoDoctorInvitadoModal abierto={invitadoAbierto} alCerrar={() => setInvitadoAbierto(false)} sedes={sedes} />
       <NuevoUsuarioModal abierto={nuevoAbierto} alCerrar={() => setNuevoAbierto(false)} sedes={sedes} />
       <EditarUsuarioModal
         usuario={editandoCuenta?.usuarioId ? { id: editandoCuenta.usuarioId, nombre: editandoCuenta.nombre, email: editandoCuenta.email, rol: editandoCuenta.rol, rolesAdicionales: editandoCuenta.rolesAdicionales, sedeId: editandoCuenta.sedeCuenta } : null}

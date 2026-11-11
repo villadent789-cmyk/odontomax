@@ -16,8 +16,8 @@ interface Props {
  * permisos se suman: no cambia de perfil, tiene los de ambas funciones a la vez.
  */
 export function FuncionesAdicionales({ rolPrincipal, valor, onChange }: Props) {
-  if (rolPrincipal === 'ADMIN_GENERAL') return null
-  const ofrecidas = OPCIONES.filter((o) => o !== rolPrincipal)
+  // El administrador general ya tiene todo el acceso: solo puede sumar ser doctor (aparecer en la agenda y atender).
+  const ofrecidas = rolPrincipal === 'ADMIN_GENERAL' ? (['ODONTOLOGO'] as const) : OPCIONES.filter((o) => o !== rolPrincipal)
   return (
     <fieldset className="flex flex-col gap-2 rounded-panel bg-surface-container-low p-3">
       <legend className="px-1 text-sm font-semibold text-on-surface">Funciones adicionales (opcional)</legend>

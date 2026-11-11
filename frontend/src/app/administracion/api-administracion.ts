@@ -81,6 +81,15 @@ export function useCrearUsuario() {
   })
 }
 
+/** Doctor invitado: solo la ficha (sin cuenta, horario ni sillón fijo). POST /especialistas. */
+export function useCrearDoctorInvitado() {
+  const invalidar = useInvalidar()
+  return useMutation({
+    mutationFn: (cuerpo: CuerpoDoctor) => apiTipada.post('/especialistas', { cuerpo }),
+    onSuccess: invalidar,
+  })
+}
+
 /** El propio doctor cambia su especialidad: se ve en la web pública y en el sistema. */
 export function useActualizarMiEspecialidad() {
   const invalidar = useInvalidar()
