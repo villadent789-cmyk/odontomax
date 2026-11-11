@@ -39,7 +39,7 @@ public class CajaMovimientoEntity {
     private String metodoPago = "EFECTIVO";
 
     @Column(name = "referencia_tipo")
-    private String referenciaTipo; // "PAGO_TRATAMIENTO", "GASTO", "AJUSTE_MANUAL", "OTRO"
+    private String referenciaTipo; // "PAGO_TRATAMIENTO", "GASTO", "AJUSTE_MANUAL", "OTRO", "HONORARIO_INVITADO"
 
     @Column(name = "referencia_id")
     private UUID referenciaId;

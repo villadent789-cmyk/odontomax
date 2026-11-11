@@ -71,6 +71,13 @@ public class CitaApplicationService implements
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private com.odontomax.agenda.application.port.out.ConsumoInsumosCitaPort consumoInsumosCitaPort;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.odontomax.agenda.application.port.out.HonorarioInvitadoPort honorarioInvitadoPort;
+
+    public void setHonorarioInvitadoPort(com.odontomax.agenda.application.port.out.HonorarioInvitadoPort honorarioInvitadoPort) {
+        this.honorarioInvitadoPort = honorarioInvitadoPort;
+    }
+
     public void setConsumoInsumosCitaPort(com.odontomax.agenda.application.port.out.ConsumoInsumosCitaPort consumoInsumosCitaPort) {
         this.consumoInsumosCitaPort = consumoInsumosCitaPort;
     }
@@ -578,6 +585,13 @@ public class CitaApplicationService implements
     @Override
     @Transactional
     public CitaResponseDTO cambiarEstado(UUID citaId, String nuevoEstado, String motivo) {
+        return cambiarEstado(citaId, nuevoEstado, motivo, null, null);
+    }
+
+    @Override
+    @Transactional
+    public CitaResponseDTO cambiarEstado(UUID citaId, String nuevoEstado, String motivo,
+                                         java.math.BigDecimal montoHonorario, String metodoPagoHonorario) {
         exigirQueElOdontologoSoloAtienda(nuevoEstado);
         if ("CANCELADA".equalsIgnoreCase(nuevoEstado)) {
             return cancelarCita(citaId, CitaCancelarRequestDTO.builder().motivo(motivo).build());
@@ -590,8 +604,19 @@ public class CitaApplicationService implements
         exigirCitaPropiaSiEsOdontologo(cita);
 
         String estadoAnterior = cita.getEstado();
+        boolean paseAAtendida = "ATENDIDA".equalsIgnoreCase(nuevoEstado) && !"ATENDIDA".equalsIgnoreCase(estadoAnterior);
+        boolean debePagarInvitado = paseAAtendida && cita.getDoctorId() != null && honorarioInvitadoPort != null
+                && especialistaRepository.findById(cita.getDoctorId()).map(e -> e.isInvitado()).orElse(false);
+        if (debePagarInvitado && (montoHonorario == null || montoHonorario.signum() <= 0)) {
+            throw new IllegalArgumentException("Indique el monto a pagar al doctor invitado para finalizar la atención.");
+        }
         cita.transicionarA(nuevoEstado, motivo, clock.instant());
         Cita guardada = citaRepository.save(cita);
+        if (debePagarInvitado) {
+            // Si la caja está cerrada o el monto supera el tope, falla y la cita no queda atendida (misma transacción)
+            honorarioInvitadoPort.pagar(guardada.getId(), guardada.getSedeId(), guardada.getDoctorNombre(),
+                    guardada.getPacienteNombre(), montoHonorario, metodoPagoHonorario);
+        }
 
         // Atender una cita que es sesión de un plan suma la sesión al plan (una sola vez, en la misma transacción).
         if ("ATENDIDA".equalsIgnoreCase(nuevoEstado) && !"ATENDIDA".equalsIgnoreCase(estadoAnterior)) {

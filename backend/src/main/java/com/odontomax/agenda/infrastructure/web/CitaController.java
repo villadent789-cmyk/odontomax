@@ -156,7 +156,20 @@ public class CitaController {
         SecurityUtils.validarAccesoSede(citaExistente.getSedeId());
 
         String motivo = payload != null ? payload.get("motivo") : null;
-        CitaResponseDTO actualizada = cambiarEstadoCitaUseCase.cambiarEstado(id, nuevoEstado.trim().toUpperCase(), motivo);
+        java.math.BigDecimal montoHonorario = null;
+        String montoTexto = payload != null ? payload.get("montoHonorario") : null;
+        if (montoTexto != null && !montoTexto.isBlank()) {
+            try {
+                montoHonorario = new java.math.BigDecimal(montoTexto.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El monto de los honorarios no es válido.");
+            }
+        }
+        String metodoHonorario = payload != null ? payload.get("metodoPagoHonorario") : null;
+        String estadoFinal = nuevoEstado.trim().toUpperCase();
+        CitaResponseDTO actualizada = (montoHonorario == null && metodoHonorario == null)
+                ? cambiarEstadoCitaUseCase.cambiarEstado(id, estadoFinal, motivo)
+                : cambiarEstadoCitaUseCase.cambiarEstado(id, estadoFinal, motivo, montoHonorario, metodoHonorario);
         return ResponseEntity.ok(actualizada);
     }
 

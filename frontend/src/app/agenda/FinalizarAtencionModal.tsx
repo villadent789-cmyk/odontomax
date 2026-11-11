@@ -13,7 +13,7 @@ import { Input } from '@/design-system/components/Input'
 import { useCajaCerrada } from '../caja/useCajaCerrada'
 import { useRegistrarPagoMutation } from '../caja/api-caja'
 import { crearNotaEvolucion } from '../clinica/api-historia'
-import { useCambiarEstado, type Cita } from './api-agenda'
+import { useCambiarEstado, useEspecialistas, type Cita } from './api-agenda'
 import { useSesion } from '@/shared/auth'
 import { useServiciosCatalogo, useTratamiento } from '../tratamientos/api-tratamientos'
 import { textoDeError } from '@/shared/http'
@@ -44,6 +44,11 @@ export function FinalizarAtencionModal({ cita, abierto, alCerrar, onActualizada 
   const [montoCustom, setMontoCustom] = useState<string | null>(null)
   const [metodoPago, setMetodoPago] = useState<MetodoPago>('EFECTIVO')
   const [error, setError] = useState<string | null>(null)
+  // Doctor invitado (viene por cita previa, sin cuenta): al finalizar hay que pagarle sus honorarios desde la caja.
+  const especialistas = useEspecialistas(cita.sedeId ?? null, abierto)
+  const esInvitado = especialistas.data?.find((e) => e.id === cita.doctorId)?.invitado === true
+  const [honorario, setHonorario] = useState('')
+  const [metodoHonorario, setMetodoHonorario] = useState<MetodoPago>('EFECTIVO')
 
   // Monto sugerido precargado en Villamax con el total a cobrar pendiente
   const montoSugerido = (() => {
@@ -67,6 +72,7 @@ export function FinalizarAtencionModal({ cita, abierto, alCerrar, onActualizada 
 
   function cerrarModal() {
     setMontoCustom(null)
+    setHonorario('')
     setSubjetivo('')
     setPlan('')
     setError(null)
@@ -80,6 +86,12 @@ export function FinalizarAtencionModal({ cita, abierto, alCerrar, onActualizada 
     const montoNum = parseFloat(monto)
     if (monto && (isNaN(montoNum) || montoNum <= 0)) {
       setError('El monto debe ser un número positivo')
+      return
+    }
+
+    const honorarioNum = parseFloat(honorario)
+    if (esInvitado && (isNaN(honorarioNum) || honorarioNum <= 0)) {
+      setError('Indica el monto a pagar al doctor invitado.')
       return
     }
 
@@ -110,7 +122,11 @@ export function FinalizarAtencionModal({ cita, abierto, alCerrar, onActualizada 
       }
 
       // 3. Marcar ATENDIDA (siempre)
-      const actualizada = await cambiarEstado.mutateAsync({ id: cita.id!, estado: 'ATENDIDA' })
+      const actualizada = await cambiarEstado.mutateAsync({
+        id: cita.id!,
+        estado: 'ATENDIDA',
+        ...(esInvitado ? { montoHonorario: honorarioNum.toFixed(2), metodoPagoHonorario: metodoHonorario } : {}),
+      })
       if (actualizada) onActualizada(actualizada)
 
       cerrarModal()
@@ -191,11 +207,46 @@ export function FinalizarAtencionModal({ cita, abierto, alCerrar, onActualizada 
             )}
           </section>
 
+          {esInvitado && (
+            <section className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                Pago al doctor invitado: {cita.doctorNombre ?? 'doctor'}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Honorarios (S/)">
+                  <Input
+                    id="finalizarHonorario"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={honorario}
+                    onChange={(e) => setHonorario(e.target.value)}
+                    placeholder="0.00"
+                  />
+                </Field>
+                <Field label="Método de pago">
+                  <select
+                    id="finalizarMetodoHonorario"
+                    value={metodoHonorario}
+                    onChange={(e) => setMetodoHonorario(e.target.value as MetodoPago)}
+                    className="w-full rounded-md border border-outline bg-surface-container-lowest px-3 py-2 text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    {METODOS_PAGO.map((m) => (<option key={m.valor} value={m.valor}>{m.nombre}</option>))}
+                  </select>
+                </Field>
+              </div>
+              <p className="text-xs text-on-surface-variant">Se registra como egreso en la caja de la sede.</p>
+              {cajaCerrada && (
+                <Alert tono="error" titulo="La caja de la sede está cerrada. Ábrela para registrar el pago al doctor invitado y poder finalizar la atención." />
+              )}
+            </section>
+          )}
+
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-outline">
             <Button type="button" variant="secundario" onClick={cerrarModal} disabled={enviando}>
               Cancelar
             </Button>
-            <Button type="submit" variant="accion" disabled={enviando} cargando={enviando}>
+            <Button type="submit" variant="accion" disabled={enviando || (esInvitado && cajaCerrada)} cargando={enviando}>
               {enviando ? 'Finalizando...' : 'Finalizar Atención'}
             </Button>
           </div>

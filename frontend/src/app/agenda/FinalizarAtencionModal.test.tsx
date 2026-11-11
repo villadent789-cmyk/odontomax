@@ -183,3 +183,51 @@ describe('Módulo 6 · Cobro en sillón con la caja cerrada', { timeout: 15_000 
     expect(onActualizada).toHaveBeenCalledWith(expect.objectContaining({ estado: 'ATENDIDA' }))
   })
 })
+
+describe('Doctor invitado · pago de honorarios al finalizar', { timeout: 15_000 }, () => {
+  let cuerpoEstado: Record<string, string> | null = null
+
+  function conInvitado(caja: Caja) {
+    api(caja)
+    cuerpoEstado = null
+    servidor.use(
+      http.get(`${API}/especialistas`, () =>
+        HttpResponse.json([{ id: CITA.doctorId, nombre: 'Dr. Invitado', especialidad: 'Implantes', activo: true, invitado: true, sedes: ['sede-chilca'] }]),
+      ),
+      http.patch(`${API}/citas/:id/estado`, async ({ request }) => {
+        cuerpoEstado = (await request.json()) as Record<string, string>
+        return HttpResponse.json({ ...CITA, estado: 'ATENDIDA' })
+      }),
+    )
+  }
+
+  it('pide los honorarios, y los envía al marcar la cita como atendida', async () => {
+    conInvitado('abierta')
+    const { onActualizada } = montar()
+
+    await userEvent.type(await screen.findByLabelText('Honorarios (S/)'), '150')
+    await userEvent.click(screen.getByRole('button', { name: 'Finalizar Atención' }))
+
+    await waitFor(() => expect(onActualizada).toHaveBeenCalled())
+    expect(cuerpoEstado).toMatchObject({ estado: 'ATENDIDA', montoHonorario: '150.00', metodoPagoHonorario: 'EFECTIVO' })
+  })
+
+  it('con la caja cerrada no deja finalizar y pide abrirla', async () => {
+    conInvitado('cerrada')
+    montar()
+
+    expect(await screen.findByText(/La caja de la sede está cerrada/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Finalizar Atención' })).toBeDisabled()
+  })
+
+  it('sin monto de honorarios no envía nada', async () => {
+    conInvitado('abierta')
+    montar()
+
+    await screen.findByLabelText('Honorarios (S/)')
+    await userEvent.click(screen.getByRole('button', { name: 'Finalizar Atención' }))
+
+    expect(await screen.findByText('Indica el monto a pagar al doctor invitado.')).toBeInTheDocument()
+    expect(cuerpoEstado).toBeNull()
+  })
+})

@@ -5,7 +5,7 @@ import { Alert, Button, definicionEstado, toast, type ButtonProps } from '@/desi
 import { cn } from '@/design-system/cn'
 import { useSesion } from '@/shared/auth'
 import type { EstadoCita } from '@/shared/api'
-import { useCambiarEstado, useIniciarAtencion, type Cita } from './api-agenda'
+import { useCambiarEstado, useEspecialistas, useIniciarAtencion, type Cita } from './api-agenda'
 import { mensajeError } from './errores'
 import { ACCION_ESTADO, accionesPara } from './transiciones'
 import { FinalizarAtencionModal } from './FinalizarAtencionModal'
@@ -55,9 +55,16 @@ export function AccionesCita({ cita, onCancelar, onReprogramar, tamano = 'sm', s
   const mostrarFlujoRapido = cita.estado === 'EN_ATENCION' && Boolean(onActualizada)
   const hayAlgo = acciones.estados.length > 0 || (acciones.cancelar && onCancelar) || (acciones.reprogramar && onReprogramar) || puedePasarAlSillon || mostrarFlujoRapido
   const [modalFinalizarAbierto, setModalFinalizarAbierto] = useState(false)
+  // Con un doctor invitado, finalizar la atención pasa siempre por el modal que registra el pago de sus honorarios.
+  const especialistas = useEspecialistas(cita.sedeId ?? null, Boolean(cita.doctorId))
+  const esInvitado = especialistas.data?.find((e) => e.id === cita.doctorId)?.invitado === true
   if (!hayAlgo && !mostrarFlujoRapido) return null
 
   async function pasarA(estado: EstadoCita) {
+    if (estado === 'ATENDIDA' && esInvitado) {
+      setModalFinalizarAbierto(true)
+      return
+    }
     try {
       const actualizada = await cambiar.mutateAsync({ id: cita.id!, estado })
       if (actualizada) onActualizada?.(actualizada)
@@ -139,12 +146,12 @@ export function AccionesCita({ cita, onCancelar, onReprogramar, tamano = 'sm', s
           {mensajeError(iniciar.error)}
         </Alert>
       )}
-      {mostrarFlujoRapido && onActualizada && (
+      {(mostrarFlujoRapido || esInvitado) && (
         <FinalizarAtencionModal
           cita={cita}
           abierto={modalFinalizarAbierto}
           alCerrar={() => setModalFinalizarAbierto(false)}
-          onActualizada={onActualizada}
+          onActualizada={(c) => onActualizada?.(c)}
         />
       )}
     </div>

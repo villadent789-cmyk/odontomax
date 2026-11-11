@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -90,5 +91,72 @@ class DoctorInvitadoPostgresTest extends AgendaPostgresFixtures {
                 .contentType(MediaType.APPLICATION_JSON).content(cuerpo)).andReturn();
 
         assertThat(r.getResponse().getStatus()).isEqualTo(409);
+    }
+
+    private MvcResult marcarAtendida(UUID cita, String montoHonorario) throws Exception {
+        String cuerpo = "{\"estado\":\"ATENDIDA\"" + (montoHonorario != null ? ",\"montoHonorario\":\"" + montoHonorario + "\"" : "") + "}";
+        return mockMvc.perform(patch("/citas/" + cita + "/estado").header("Authorization", recepcion.bearer())
+                .contentType(MediaType.APPLICATION_JSON).content(cuerpo)).andReturn();
+    }
+
+    @Test
+    @DisplayName("Atender con un invitado exige el monto de sus honorarios")
+    void exigeElMonto() throws Exception {
+        UUID cita = insertarCita(paciente, invitado, sede, 2, fecha, LocalTime.of(11, 0), 30, "EN_ATENCION");
+
+        MvcResult r = marcarAtendida(cita, null);
+
+        assertThat(r.getResponse().getStatus()).isEqualTo(400);
+        assertThat(estadoDe(cita)).isEqualTo("EN_ATENCION");
+    }
+
+    @Test
+    @DisplayName("Con la caja cerrada no se puede finalizar la atención del invitado: la cita sigue en atención y no hay egreso")
+    void conCajaCerradaNoDejaFinalizar() throws Exception {
+        UUID cita = insertarCita(paciente, invitado, sede, 2, fecha, LocalTime.of(11, 0), 30, "EN_ATENCION");
+
+        MvcResult r = marcarAtendida(cita, "100.00");
+
+        assertThat(r.getResponse().getStatus()).isEqualTo(409);
+        assertThat(estadoDe(cita)).isEqualTo("EN_ATENCION");
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM caja_movimientos WHERE referencia_id = ?", Integer.class, cita)).isZero();
+    }
+
+    @Test
+    @DisplayName("Con la caja abierta, finalizar la atención del invitado registra su pago como egreso de caja")
+    void conCajaAbiertaRegistraElEgreso() throws Exception {
+        jdbc.update("INSERT INTO caja_sesiones (sede_id, abierta_por) VALUES (?, ?)", sede, recepcion.id());
+        UUID cita = insertarCita(paciente, invitado, sede, 2, fecha, LocalTime.of(11, 0), 30, "EN_ATENCION");
+
+        MvcResult r = marcarAtendida(cita, "150.00");
+
+        assertThat(r.getResponse().getStatus()).as(r.getResponse().getContentAsString()).isEqualTo(200);
+        assertThat(estadoDe(cita)).isEqualTo("ATENDIDA");
+        assertThat(jdbc.queryForObject(
+                "SELECT count(*) FROM caja_movimientos WHERE referencia_id = ? AND tipo = 'EGRESO' AND monto = 150.00",
+                Integer.class, cita)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("Recepción no paga en efectivo más del tope sin un administrador")
+    void respetaElTopeDeRecepcion() throws Exception {
+        jdbc.update("INSERT INTO caja_sesiones (sede_id, abierta_por) VALUES (?, ?)", sede, recepcion.id());
+        UUID cita = insertarCita(paciente, invitado, sede, 2, fecha, LocalTime.of(11, 0), 30, "EN_ATENCION");
+
+        MvcResult r = marcarAtendida(cita, "5000.00");
+
+        assertThat(r.getResponse().getStatus()).isEqualTo(403);
+        assertThat(estadoDe(cita)).isEqualTo("EN_ATENCION");
+    }
+
+    @Test
+    @DisplayName("Un doctor fijo se sigue atendiendo sin monto de honorarios")
+    void elDoctorFijoNoPide() throws Exception {
+        UUID cita = insertarCita(paciente, fijo, sede, 1, fecha, LocalTime.of(12, 0), 30, "EN_ATENCION");
+
+        MvcResult r = marcarAtendida(cita, null);
+
+        assertThat(r.getResponse().getStatus()).isEqualTo(200);
+        assertThat(estadoDe(cita)).isEqualTo("ATENDIDA");
     }
 }
