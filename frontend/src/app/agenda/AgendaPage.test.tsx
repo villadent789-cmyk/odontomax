@@ -170,4 +170,34 @@ describe('B3 · Agenda diaria y semanal', { timeout: 15_000 }, () => {
     await renderRuta('/app/agenda')
     expect(await screen.findByText('Tu usuario no está vinculado a un especialista')).toBeInTheDocument()
   })
+
+  it('ODONTOLOGO que suma la función de RECEPCION ve la agenda de todos los doctores', async () => {
+    guardarSesion({
+      token: 't',
+      usuario: {
+        id: '9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a',
+        nombre: 'Doble Función',
+        rol: 'ODONTOLOGO',
+        rolesAdicionales: ['RECEPCION'],
+        sedes: [{ id: 'sede-chilca', nombre: 'Sede Chilca', marca: 'VILLADENT' }],
+      },
+      sedeActivaId: 'sede-chilca',
+    })
+    api()
+    await renderRuta('/app/agenda')
+    const t = within(await screen.findByRole('table'))
+    expect(t.getByRole('columnheader', { name: /Sillón 2 · Dr\. Luis Rojas/ })).toBeInTheDocument()
+    expect(t.getByRole('columnheader', { name: /Sillón 1 · Dra\. Elena Paucar/ })).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Especialista' })).toBeInTheDocument()
+  })
+
+  it('el nombre del paciente en la cita es un enlace a su ficha', async () => {
+    sesion('RECEPCION')
+    api()
+    await renderRuta('/app/agenda')
+    const t = within(await screen.findByRole('table'))
+    const enlace = await t.findByRole('link', { name: 'Beatriz Tovar Lazo' })
+    expect(enlace.getAttribute('href')).toContain(`/app/pacientes/${C_PAUCAR.pacienteId}`)
+    expect(enlace.getAttribute('href')).toContain('desde=agenda')
+  })
 })

@@ -1,4 +1,5 @@
 import { Armchair, Stethoscope } from 'lucide-react'
+import { NombrePaciente } from './NombrePaciente'
 import { EstadoBadge } from '@/design-system'
 import type { Cita } from './api-agenda'
 import { horaCorta, horaFin } from './fechas'
@@ -17,11 +18,18 @@ export function VistaDiaLista({ citas, citaSeleccionada, onAbrir }: Props) {
     <ul aria-label="Citas del día" className="flex flex-col gap-2">
       {activas.map((cita) => (
         <li key={cita.id}>
-          <button
-            type="button"
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => onAbrir?.(cita)}
+            onKeyDown={(e) => {
+              if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault()
+                onAbrir?.(cita)
+              }
+            }}
             aria-current={citaSeleccionada === cita.id || undefined}
-            className="flex w-full items-stretch gap-3 rounded-card border border-outline-variant/60 bg-surface-container-lowest p-3 text-left shadow-card active:bg-surface-container-low"
+            className="flex w-full cursor-pointer items-stretch gap-3 rounded-card border border-outline-variant/60 bg-surface-container-lowest p-3 text-left shadow-card active:bg-surface-container-low"
           >
             <span className="flex w-16 shrink-0 flex-col items-center justify-center rounded-control bg-acento/15 py-2">
               <span className="font-display text-lg font-bold text-primary">{horaCorta(cita.hora)}</span>
@@ -29,7 +37,9 @@ export function VistaDiaLista({ citas, citaSeleccionada, onAbrir }: Props) {
             </span>
             <span className="flex min-w-0 flex-1 flex-col gap-1">
               <span className="flex flex-wrap items-center gap-2">
-                <span className="font-bold text-on-surface">{cita.pacienteNombre || 'Paciente sin nombre'}</span>
+                <span className="font-bold text-on-surface">
+                  <NombrePaciente cita={cita} />
+                </span>
                 <EstadoBadge estado={cita.estado ?? ''} />
               </span>
               {cita.motivoConsulta && <span className="truncate text-sm text-on-surface-variant">{cita.motivoConsulta}</span>}
@@ -48,7 +58,7 @@ export function VistaDiaLista({ citas, citaSeleccionada, onAbrir }: Props) {
                 )}
               </span>
             </span>
-          </button>
+          </div>
         </li>
       ))}
     </ul>

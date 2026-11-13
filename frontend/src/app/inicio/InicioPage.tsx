@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { tieneRol } from '@/shared/auth/sesion'
 import {
   CalendarCheck,
   CalendarDays,
@@ -170,7 +171,7 @@ export function InicioPage() {
       </section>
       )}
 
-      {rol === 'ODONTOLOGO' && <TarjetaMiAvance hoy={hoy} />}
+      {tieneRol(usuario, 'ODONTOLOGO') && <TarjetaMiAvance hoy={hoy} />}
 
       {puede(rol, 'estadisticas') && <PanelMes sedeId={sedeId} hoy={hoy} nombreSede={sede?.nombre} />}
     </motion.div>

@@ -1,4 +1,5 @@
 import { AlertTriangle, Armchair, Globe } from 'lucide-react'
+import { NombrePaciente } from './NombrePaciente'
 import { EstadoBadge, definicionEstado } from '@/design-system'
 import { cn } from '@/design-system/cn'
 import type { Cita } from './api-agenda'
@@ -46,7 +47,9 @@ export function TarjetaCita({ cita, compacta = false, onAbrir, seleccionada = fa
         )}
         {cita.estado === 'PENDIENTE_WEB' && <Globe aria-hidden className="size-3.5 text-tertiary" />}
       </div>
-      <p className={cn('truncate font-bold text-sm text-on-surface', tachada && 'line-through')}>{paciente}</p>
+      <p className={cn('truncate font-bold text-sm text-on-surface', tachada && 'line-through')}>
+        <NombrePaciente cita={cita} />
+      </p>
       {!compacta && cita.motivoConsulta && <p className="truncate text-xs text-on-surface-variant">{cita.motivoConsulta}</p>}
       <p className="text-xs font-medium text-on-surface-variant">
         {horaCorta(cita.hora)} – {horaFin(cita.hora, cita.duracionMinutos)}
@@ -79,14 +82,22 @@ export function TarjetaCita({ cita, compacta = false, onAbrir, seleccionada = fa
     )
   }
   return (
-    <button
-      type="button"
-      className={cn(clases, 'transition-shadow hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus')}
+    // Es un div con rol de botón (y no un <button>) porque dentro lleva el enlace a la ficha del paciente.
+    <div
+      role="button"
+      tabIndex={0}
+      className={cn(clases, 'cursor-pointer transition-shadow hover:shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus')}
       onClick={() => onAbrir(cita)}
+      onKeyDown={(e) => {
+        if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onAbrir(cita)
+        }
+      }}
       aria-label={`Ver cita: ${etiqueta}`}
       data-cita={cita.id}
     >
       {contenido}
-    </button>
+    </div>
   )
 }

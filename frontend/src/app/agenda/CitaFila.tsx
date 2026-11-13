@@ -1,4 +1,5 @@
 import { Armchair, MessageCircle, Phone, Stethoscope, Ticket } from 'lucide-react'
+import { NombrePaciente } from './NombrePaciente'
 import type { ReactNode } from 'react'
 import { Button, EstadoBadge, buttonVariants } from '@/design-system'
 import { formatFecha } from '@/shared/format'
@@ -32,7 +33,9 @@ export function CitaFila({ cita, conFecha = false, acciones, onVerDetalle }: Pro
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="font-bold text-on-surface">{paciente}</h3>
+            <h3 className="font-bold text-on-surface">
+              <NombrePaciente cita={cita} />
+            </h3>
             <EstadoBadge estado={cita.estado ?? ''} />
           </div>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-on-surface-variant">

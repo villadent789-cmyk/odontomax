@@ -1,4 +1,5 @@
 import { Link, useNavigate, useSearch } from '@tanstack/react-router'
+import { esSoloOdontologo } from '@/shared/auth/sesion'
 import { CalendarDays, ChevronLeft, ChevronRight, DoorOpen, Globe, Plus } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { Alert, Button, EmptyState, ErrorState, Skeleton, buttonVariants } from '@/design-system'
@@ -95,7 +96,8 @@ export function AgendaPage({ vistaInicial }: Props = {}) {
   const listaEspera = useListaEspera(sedeId)
   const reservasWeb = useReservasWebPendientes(sedeId)
 
-  const esOdontologo = rol === 'ODONTOLOGO'
+  // Quien suma recepción o administración ve la agenda de todos los doctores; solo el odontólogo "puro" ve la suya.
+  const esOdontologo = esSoloOdontologo(sesion?.usuario)
   const especialistas: Especialista[] = (especialistasQ.data ?? []).filter((e) => e.activo !== false)
   const propio = esOdontologo ? especialistas.find((e) => e.usuarioId && e.usuarioId === sesion?.usuario.id) : undefined
   const filtroEfectivo = esOdontologo ? (propio?.id ?? '__ninguno__') : filtro
