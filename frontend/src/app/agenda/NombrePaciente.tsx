@@ -27,7 +27,7 @@ function EnlacePaciente({ id, nombre, className }: { id: string; nombre: string;
       search={{ desde: origen }}
       onClick={(e) => e.stopPropagation()}
       title="Abrir la ficha del paciente"
-      className={cn('hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-focus', className)}
+      className={cn('underline decoration-dotted decoration-1 underline-offset-2 hover:text-primary hover:decoration-solid focus-visible:outline-2 focus-visible:outline-focus', className)}
     >
       {nombre}
     </Link>
