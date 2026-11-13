@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class PagoAnulacionRequestDTO {
 
     @NotBlank(message = "El motivo de anulación es obligatorio para auditoría financiera")
+    @com.fasterxml.jackson.annotation.JsonAlias("motivo")
     private String motivoAnulacion;
 }

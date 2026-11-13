@@ -13,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class GastoAnulacionRequestDTO {
 
     @NotBlank(message = "El motivo de anulación es obligatorio")
+    @com.fasterxml.jackson.annotation.JsonAlias("motivo")
     private String motivoAnulacion;
 }

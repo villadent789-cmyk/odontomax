@@ -132,7 +132,7 @@ export async function listarPagosPorPaciente(pacienteId: string): Promise<PagoDT
 }
 
 export async function anularPago(id: string, motivo: string): Promise<PagoDTO> {
-  return api.post<PagoDTO>(`/pagos/${id}/anular`, { motivo })
+  return api.post<PagoDTO>(`/pagos/${id}/anular`, { motivoAnulacion: motivo })
 }
 
 export async function listarGastosPorSede(sedeId: string): Promise<GastoDTO[]> {
@@ -144,7 +144,7 @@ export async function registrarGasto(dto: GastoCreateRequestDTO): Promise<GastoD
 }
 
 export async function anularGasto(id: string, motivo: string): Promise<GastoDTO> {
-  return api.post<GastoDTO>(`/gastos/${id}/anular`, { motivo })
+  return api.post<GastoDTO>(`/gastos/${id}/anular`, { motivoAnulacion: motivo })
 }
 
 /* ─────────── Claves de React Query ─────────── */

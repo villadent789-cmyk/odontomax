@@ -17,7 +17,7 @@ import { Input } from '@/design-system/components/Input'
 import { Alert } from '@/design-system/components/Alert'
 import { formatSoles } from '@/shared/format'
 import { textoDeError } from '@/shared/http'
-import { useRegistrarPagoMutation, type PagoDTO } from './api-caja'
+import { listarPagosPorPaciente, useRegistrarPagoMutation, type PagoDTO } from './api-caja'
 import { listarPacientes, type PacienteDTO } from '../pacientes/api-pacientes'
 import {
   useCrearTratamientoMutation,
@@ -126,6 +126,8 @@ export function RegistrarPagoModal({
 
   useAlCambiar([pacienteId, tratamientosQuery.data, tratamientoInicialId], () => {
     if (!tratamientosQuery.isSuccess) return
+    // Con el plan ya creado en esta ventana se conserva el monto escrito: al recargarse la lista no se pisa con el saldo.
+    if (planCreado) return
     const elegibles = (tratamientosQuery.data ?? []).filter((tratamiento) =>
       tratamiento.estado !== 'CANCELADO' && (tratamiento.saldoPendiente ?? 0) > 0
     )
@@ -184,7 +186,7 @@ export function RegistrarPagoModal({
         return
       }
 
-      if (planesConSaldo.length === 0) {
+      if (planesConSaldo.length === 0 || (planCreado && !tratamientoSeleccionado)) {
         if (!planCreado && (!nombreServicio.trim() || !Number.isFinite(Number(costoServicio)) ||
             Number(costoServicio) <= 0 || !especialistaId)) {
           setErrorLocal('Elige el procedimiento, su precio y el doctor responsable.')
@@ -237,9 +239,39 @@ export function RegistrarPagoModal({
       alGuardar?.(pago)
     } catch (error) {
       const detalle = textoDeError(error, 'No se pudo registrar el cobro.')
+      const planId = planPreparado?.id ?? planCreado?.id ?? tratamientoSeleccionado?.id
+      if (planId && (await recuperarCobroYaRegistrado(planId))) return
       setErrorLocal(planCreado || planPreparado
         ? `El plan ya está creado; al reintentar se usará el mismo plan. ${detalle}`
         : detalle)
+    }
+  }
+
+  /**
+   * Tras un error al cobrar se vuelve a consultar el plan y los pagos del paciente. Si el plan ya quedó pagado, el cobro
+   * sí se registró (la respuesta se perdió o se cobró en un intento anterior): se muestra ese comprobante en vez de pedir
+   * reintentar. Si el plan sigue con saldo, se actualiza el saldo para que los siguientes avisos sean correctos.
+   */
+  async function recuperarCobroYaRegistrado(planId: string): Promise<boolean> {
+    try {
+      const planes = (await tratamientosQuery.refetch()).data ?? []
+      const plan = planes.find((t) => t.id === planId)
+      if (!plan) return false
+      if ((plan.saldoPendiente ?? 0) > 0) {
+        if (planCreado) setPlanCreado(plan)
+        return false
+      }
+      const pagos = await listarPagosPorPaciente(pacienteId)
+      const registrado = pagos
+        .filter((p) => p.tratamientoId === planId && !p.anulado)
+        .sort((a, b) => (b.pagadoEn ?? '').localeCompare(a.pagadoEn ?? ''))[0]
+      if (!registrado) return false
+      setErrorLocal(null)
+      setPagoExitoso(registrado)
+      alGuardar?.(registrado)
+      return true
+    } catch {
+      return false
     }
   }
 

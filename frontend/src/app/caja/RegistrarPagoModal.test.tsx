@@ -268,4 +268,50 @@ describe('Registrar cobro ligado a un plan', () => {
     expect(cuerposPlan).toHaveLength(1)
     expect(cuerposPago.map((cuerpo) => cuerpo.tratamientoId)).toEqual(['t-nuevo', 't-nuevo'])
   })
+
+  const planNuevo = (saldoPendiente: number) => ({
+    id: 't-nuevo', pacienteId: 'p-1', especialistaId: 'e-1', nombre: 'Consulta odontológica', costoTotal: 80, saldoPendiente, estado: 'EN_PROCESO',
+  })
+
+  it('al crearse el plan y recargarse la lista conserva el monto que escribió el usuario', async () => {
+    api({ pagosFallan: 1 })
+    servidor.use(http.get(`${API}/tratamientos/paciente/:id`, () => HttpResponse.json(cuerposPlan.length > 0 ? [planNuevo(80)] : [])))
+    montar()
+
+    const formulario = await screen.findByRole('region', { name: 'Cobrar consulta o procedimiento' })
+    await userEvent.selectOptions(within(formulario).getByLabelText('Tratamiento del catálogo'), 'srv-consulta')
+    await userEvent.selectOptions(within(formulario).getByLabelText('Doctor responsable'), 'e-1')
+    const monto = screen.getByLabelText('Monto a cobrar (S/) *')
+    await userEvent.clear(monto)
+    await userEvent.type(monto, '50')
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar cobro' }))
+
+    expect(await screen.findByText(/El plan ya está creado/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Monto a cobrar (S/) *')).toHaveValue(50)
+
+    // Y el reintento cobra los 50 contra el mismo plan, sin crear otro.
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar cobro' }))
+    await waitFor(() => expect(cuerposPago).toHaveLength(2))
+    expect(cuerposPlan).toHaveLength(1)
+    expect(cuerposPago[1]).toMatchObject({ tratamientoId: 't-nuevo', monto: 50 })
+  })
+
+  it('si el cobro falló pero el plan ya quedó pagado, muestra el comprobante registrado en vez de pedir reintentar', async () => {
+    api({ pagosFallan: 1 })
+    servidor.use(
+      http.get(`${API}/tratamientos/paciente/:id`, () => HttpResponse.json(cuerposPlan.length > 0 ? [planNuevo(0)] : [])),
+      http.get(`${API}/pagos/paciente/:id`, () => HttpResponse.json([
+        { id: 'pg-previo', pacienteId: 'p-1', tratamientoId: 't-nuevo', sedeId: 'sede-chilca', monto: 80, metodoPago: 'EFECTIVO', comprobante: 'R001-000099', anulado: false, pagadoEn: '2026-11-12T15:00:00Z' },
+      ])),
+    )
+    montar()
+
+    const formulario = await screen.findByRole('region', { name: 'Cobrar consulta o procedimiento' })
+    await userEvent.selectOptions(within(formulario).getByLabelText('Tratamiento del catálogo'), 'srv-consulta')
+    await userEvent.selectOptions(within(formulario).getByLabelText('Doctor responsable'), 'e-1')
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar cobro' }))
+
+    expect(await screen.findByText('R001-000099')).toBeInTheDocument()
+    expect(screen.queryByText(/El plan ya está creado/)).not.toBeInTheDocument()
+  })
 })

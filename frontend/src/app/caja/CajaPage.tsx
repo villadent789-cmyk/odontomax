@@ -35,6 +35,7 @@ import {
 import { AbrirCajaModal } from './AbrirCajaModal'
 import { CerrarCajaModal } from './CerrarCajaModal'
 import { RegistrarMovimientoModal } from './RegistrarMovimientoModal'
+import { AnularPagoDialog } from './AnularPagoDialog'
 import { RegistrarPagoModal } from './RegistrarPagoModal'
 import { ImprimirComprobanteModal } from './ImprimirComprobanteModal'
 import { useDatosSede } from './useDatosSede'
@@ -158,6 +159,8 @@ export function CajaPage() {
   } = usePagosSede(sedeId)
 
   const anular = useAnularPagoMutation()
+  const [pagoAAnular, setPagoAAnular] = useState<PagoDTO | null>(null)
+  const [errorAnulacion, setErrorAnulacion] = useState<string | null>(null)
   const tieneTurnoAbierto = Boolean(cajaActiva && cajaActiva.estado === 'ABIERTA')
 
   // Cobros filtrados
@@ -212,17 +215,20 @@ export function CajaPage() {
       .reduce((acc, p) => acc + (p.monto ?? 0), 0)
   }, [pagosFiltrados])
 
-  async function handleAnularPago(pago: PagoDTO) {
-    const motivo = window.prompt(`Ingrese el motivo para anular el comprobante ${pago.comprobante}:`)
-    if (!motivo || motivo.trim().length < 5) {
-      if (motivo !== null) alert('El motivo de anulación debe tener al menos 5 caracteres.')
-      return
-    }
+  function handleAnularPago(pago: PagoDTO) {
+    setErrorAnulacion(null)
+    setPagoAAnular(pago)
+  }
+
+  async function confirmarAnulacion(motivo: string) {
+    if (!pagoAAnular) return
+    setErrorAnulacion(null)
     try {
       // La mutación refresca caja, pagos, saldo del paciente y tratamiento (también en otras pantallas).
-      await anular.mutateAsync({ id: pago.id, motivo: motivo.trim() })
+      await anular.mutateAsync({ id: pagoAAnular.id, motivo })
+      setPagoAAnular(null)
     } catch (err) {
-      alert(textoDeError(err, 'Error al anular el pago'))
+      setErrorAnulacion(textoDeError(err, 'No se pudo anular el comprobante.'))
     }
   }
 
@@ -860,6 +866,14 @@ export function CajaPage() {
           alGuardar={() => recargarCaja()}
         />
       )}
+
+      <AnularPagoDialog
+        pago={pagoAAnular}
+        enviando={anular.isPending}
+        error={errorAnulacion}
+        alCerrar={() => setPagoAAnular(null)}
+        onConfirmar={(m) => void confirmarAnulacion(m)}
+      />
 
       <RegistrarPagoModal
         abierto={modalPago}
