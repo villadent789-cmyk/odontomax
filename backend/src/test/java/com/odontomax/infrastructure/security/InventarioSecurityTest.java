@@ -132,8 +132,8 @@ class InventarioSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /inventario/productos con rol RECEPCION responde 403 Forbidden")
-    void crearProducto_recepcion_retorna403() throws Exception {
+    @DisplayName("POST /inventario/productos con rol RECEPCION responde 201: puede dar de alta un insumo")
+    void crearProducto_recepcion_retorna201() throws Exception {
         ProductoInventarioCreateRequestDTO req = ProductoInventarioCreateRequestDTO.builder()
                 .codigo("ALM-001")
                 .nombre("Algodón Odontológico")
@@ -144,7 +144,7 @@ class InventarioSecurityTest {
                         .header("Authorization", "Bearer " + tokenRecepcionChilca1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -182,8 +182,8 @@ class InventarioSecurityTest {
     }
 
     @Test
-    @DisplayName("POST /inventario/productos con ADMIN_SEDE responde 403: el catálogo es solo de ADMIN_GENERAL")
-    void crearProducto_adminSede_retorna403() throws Exception {
+    @DisplayName("POST /inventario/productos con ADMIN_SEDE responde 201: puede dar de alta un insumo")
+    void crearProducto_adminSede_retorna201() throws Exception {
         ProductoInventarioCreateRequestDTO req = ProductoInventarioCreateRequestDTO.builder()
                 .codigo("ALG-001")
                 .nombre("Alginato Kromopan")
@@ -192,6 +192,22 @@ class InventarioSecurityTest {
 
         mockMvc.perform(post("/inventario/productos")
                         .header("Authorization", "Bearer " + tokenAdminChilca1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @DisplayName("POST /inventario/productos con rol ODONTOLOGO responde 403: el doctor no da de alta insumos")
+    void crearProducto_odontologo_retorna403() throws Exception {
+        ProductoInventarioCreateRequestDTO req = ProductoInventarioCreateRequestDTO.builder()
+                .codigo("DOC-001")
+                .nombre("Insumo del doctor")
+                .stockMinimo(3)
+                .build();
+
+        mockMvc.perform(post("/inventario/productos")
+                        .header("Authorization", "Bearer " + tokenOdontologo)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isForbidden());

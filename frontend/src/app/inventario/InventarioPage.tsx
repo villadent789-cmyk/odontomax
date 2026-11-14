@@ -13,6 +13,7 @@ import { Skeleton } from '@/design-system/components/Skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/design-system/components/Tabs'
 import { formatFechaHora } from '@/shared/format'
 import { useSesion } from '@/shared/auth'
+import { tieneAlgunRol } from '@/shared/auth/sesion'
 import {
   useProductosInventario,
   useMovimientosInventario,
@@ -232,6 +233,7 @@ export function InventarioPage() {
           productos={productos}
           cargando={cargandoProductos}
           esAdminGeneral={esAdminGeneral}
+          puedeCrear={tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'RECEPCION'])}
           sedeSeleccionada={sedeSeleccionada}
           sedesDisponibles={sedesDisponibles}
           onVerProducto={handleVerProducto}

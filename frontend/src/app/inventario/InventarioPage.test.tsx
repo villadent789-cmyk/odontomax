@@ -506,4 +506,39 @@ describe('Fase 6 · Módulo de Inventario y Almacén Odontológico', { timeout: 
     expect(screen.queryByRole('menuitem', { name: /Editar/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('menuitem', { name: /Eliminar/i })).not.toBeInTheDocument()
   })
+
+  it('recepción puede crear un insumo nuevo ("Nuevo Insumo"), pero no editarlo ni darlo de baja', async () => {
+    limpiarSesion()
+    _reiniciarCacheSesion()
+    guardarSesion({
+      token: 'token-recepcion',
+      usuario: { id: 'u-recep', nombre: 'Katherin Mendoza', rol: 'RECEPCION', sedes: [{ id: 'sede-chilca-1', nombre: 'Sede Chilca 1', marca: 'VILLADENT' }] },
+      sedeActivaId: 'sede-chilca-1',
+    })
+
+    const user = userEvent.setup()
+    await renderRuta('/app/inventario')
+    await user.click(await screen.findByRole('tab', { name: /Insumos & Stock/i }))
+
+    expect(await screen.findByRole('button', { name: /Nuevo Insumo/i })).toBeInTheDocument()
+    const filaAnestesia = (await screen.findByText('MAT-001')).closest('tr')!
+    expect(within(within(filaAnestesia).getByTestId('acciones-insumo')).queryByRole('button', { name: /Más opciones para/i })).not.toBeInTheDocument()
+  })
+
+  it('un odontólogo no ve "Nuevo Insumo"', async () => {
+    limpiarSesion()
+    _reiniciarCacheSesion()
+    guardarSesion({
+      token: 'token-doctor',
+      usuario: { id: 'u-doc', nombre: 'Dra. Elena Paucar', rol: 'ODONTOLOGO', sedes: [{ id: 'sede-chilca-1', nombre: 'Sede Chilca 1', marca: 'VILLADENT' }] },
+      sedeActivaId: 'sede-chilca-1',
+    })
+
+    const user = userEvent.setup()
+    await renderRuta('/app/inventario')
+    await user.click(await screen.findByRole('tab', { name: /Insumos & Stock/i }))
+
+    await screen.findByText('MAT-001')
+    expect(screen.queryByRole('button', { name: /Nuevo Insumo/i })).not.toBeInTheDocument()
+  })
 })

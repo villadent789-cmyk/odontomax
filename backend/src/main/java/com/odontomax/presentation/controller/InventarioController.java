@@ -47,9 +47,11 @@ public class InventarioController {
         return ResponseEntity.ok(inventarioService.obtenerProductoPorId(id));
     }
 
-    // El catálogo maestro de insumos es compartido por todas las sedes: solo la Administradora General lo modifica
+    // El catálogo maestro de insumos es compartido por todas las sedes. Dar de alta un insumo nuevo lo puede hacer también
+    // el administrador de sede y recepción (para no depender de la dueña al llegar mercadería); editarlo o darlo de baja,
+    // solo la Administradora General.
     @PostMapping("/productos")
-    @PreAuthorize("hasRole('ADMIN_GENERAL')")
+    @PreAuthorize("hasAnyRole('ADMIN_GENERAL', 'ADMIN_SEDE', 'RECEPCION')")
     public ResponseEntity<ProductoInventarioResponseDTO> crearProducto(
             @Valid @RequestBody ProductoInventarioCreateRequestDTO req
     ) {

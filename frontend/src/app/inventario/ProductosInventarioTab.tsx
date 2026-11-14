@@ -32,6 +32,8 @@ interface ProductosInventarioTabProps {
   productos: ProductoInventarioDTO[]
   cargando: boolean
   esAdminGeneral: boolean
+  /** Crear un insumo nuevo: administrador general, administrador de sede y recepción. Editar y dar de baja, solo el general. */
+  puedeCrear?: boolean
   sedeSeleccionada?: string
   sedesDisponibles?: Array<{ id: string; nombre: string }>
   onVerProducto: (prod: ProductoInventarioDTO) => void
@@ -49,6 +51,7 @@ export function ProductosInventarioTab({
   productos,
   cargando,
   esAdminGeneral,
+  puedeCrear = esAdminGeneral,
   sedeSeleccionada,
   onVerProducto,
   onAbrirMovimiento,
@@ -144,7 +147,7 @@ export function ProductosInventarioTab({
           </select>
         </div>
 
-        {esAdminGeneral && (
+        {puedeCrear && (
           <Button
             variant="primario"
             onClick={onCrearProducto}
@@ -175,7 +178,7 @@ export function ProductosInventarioTab({
                 : 'Aún no hay productos registrados en el almacén.'
             }
             accion={
-              esAdminGeneral ? (
+              puedeCrear ? (
                 <Button variant="primario" onClick={onCrearProducto}>
                   <Plus className="size-4" /> Registrar Primer Insumo
                 </Button>
