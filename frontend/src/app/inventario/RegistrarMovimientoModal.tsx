@@ -33,6 +33,8 @@ interface RegistrarMovimientoModalProps {
   productos: ProductoInventarioDTO[]
   sedeDefecto: string
   sedesDisponibles: Array<{ id: string; nombre: string }>
+  /** Si se indica, con el almacén vacío se ofrece crear el primer insumo desde aquí. */
+  onCrearInsumo?: () => void
 }
 
 export function RegistrarMovimientoModal({
@@ -43,6 +45,7 @@ export function RegistrarMovimientoModal({
   productos,
   sedeDefecto,
   sedesDisponibles,
+  onCrearInsumo,
 }: RegistrarMovimientoModalProps) {
   const uid = useId()
   const [productoElegido, setProductoId] = useState('')
@@ -174,6 +177,34 @@ export function RegistrarMovimientoModal({
           </DialogDescription>
         </DialogHeader>
 
+        {productos.length === 0 ? (
+          <div role="status" className="flex flex-col gap-3 py-2">
+            <p className="rounded-xl border border-outline-variant/60 bg-surface-container p-4 text-body-sm text-on-surface">
+              <strong>Aún no hay insumos registrados en el almacén.</strong> Primero se crea el insumo (código, nombre, categoría y
+              unidad) y después se le registra su stock con una entrada.
+            </p>
+            <DialogFooter>
+              <Button variant="fantasma" type="button" onClick={onCerrar}>
+                Cerrar
+              </Button>
+              {onCrearInsumo && (
+                <Button
+                  variant="primario"
+                  type="button"
+                  onClick={() => {
+                    onCerrar()
+                    onCrearInsumo()
+                  }}
+                >
+                  Crear el primer insumo
+                </Button>
+              )}
+            </DialogFooter>
+            {!onCrearInsumo && (
+              <p className="text-xs text-on-surface-variant">Pide a recepción o a la administración que lo cree.</p>
+            )}
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 py-2">
           {errorValidacion && (
             <div className="flex items-center gap-2 rounded-xl border border-error/30 bg-error-container/20 p-3 text-body-sm text-error">
@@ -425,6 +456,7 @@ export function RegistrarMovimientoModal({
             </Button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   )

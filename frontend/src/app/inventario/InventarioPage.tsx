@@ -371,6 +371,7 @@ export function InventarioPage() {
         productos={productos}
         sedeDefecto={sedeSeleccionada || sedeUsuario}
         sedesDisponibles={sedesDisponibles}
+        onCrearInsumo={tieneAlgunRol(sesion?.usuario, ['ADMIN_GENERAL', 'ADMIN_SEDE', 'RECEPCION']) ? handleCrearProducto : undefined}
       />
 
       <SolicitarTransferenciaModal

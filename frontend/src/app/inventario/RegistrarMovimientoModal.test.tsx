@@ -65,4 +65,40 @@ describe('RegistrarMovimientoModal', () => {
     const inputEntregaReabierto = screen.getByLabelText(/fecha de entrega/i)
     expect(inputEntregaReabierto).toHaveValue('')
   })
+
+  it('con el almacén vacío explica que primero hay que crear el insumo y ofrece crearlo', async () => {
+    const user = userEvent.setup()
+    let cerrado = 0
+    let creado = 0
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RegistrarMovimientoModal
+          abierto
+          onCerrar={() => { cerrado += 1 }}
+          productos={[]}
+          sedeDefecto="sede-chilca-1"
+          sedesDisponibles={SEDES_MOCK}
+          onCrearInsumo={() => { creado += 1 }}
+        />
+      </QueryClientProvider>,
+    )
+
+    expect(screen.getByText(/Aún no hay insumos registrados en el almacén/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Confirmar Movimiento' })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Crear el primer insumo' }))
+    expect(cerrado).toBe(1)
+    expect(creado).toBe(1)
+  })
+
+  it('con el almacén vacío y sin permiso para crear, indica a quién pedirlo', () => {
+    render(
+      <QueryClientProvider client={queryClient}>
+        <RegistrarMovimientoModal abierto onCerrar={() => {}} productos={[]} sedeDefecto="sede-chilca-1" sedesDisponibles={SEDES_MOCK} />
+      </QueryClientProvider>,
+    )
+
+    expect(screen.getByText(/Pide a recepción o a la administración que lo cree/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Crear el primer insumo' })).not.toBeInTheDocument()
+  })
 })
