@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { guardarSesion, limpiarSesion, type SedeSesion, type Sesion } from '@/shared/auth'
 import { _reiniciarCacheSesion } from '@/shared/auth/sesion'
@@ -104,5 +105,44 @@ describe('RegistrarNuevoPacienteModal según negocio activo', () => {
     expect(screen.queryByLabelText(/Alergias conocidas/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/Antecedentes médicos relevantes/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/¿Es paciente gestante\?/i)).not.toBeInTheDocument()
+  })
+
+  it('la fecha de nacimiento se escribe con el teclado (no es un calendario) y se envía en formato ISO', async () => {
+    let cuerpo: Record<string, unknown> | null = null
+    servidor.use(
+      http.post(`${API}/pacientes`, async ({ request }) => {
+        cuerpo = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json({ id: 'p-nuevo', ...cuerpo }, { status: 201 })
+      }),
+    )
+    const alGuardar = vi.fn()
+    renderizar('VILLADENT', alGuardar)
+
+    const fecha = screen.getByLabelText(/Fecha de Nacimiento/i)
+    expect(fecha).toHaveAttribute('type', 'text')
+    await userEvent.type(screen.getByLabelText(/DNI \(8 dígitos\)/i), '71213266')
+    await userEvent.type(screen.getByLabelText(/Nombres/i), 'Gustavo')
+    await userEvent.type(screen.getByLabelText(/Apellidos/i), 'Machuca Peñaloza')
+    await userEvent.type(fecha, '15031975')
+    expect(fecha).toHaveValue('15/03/1975')
+    await userEvent.click(screen.getByRole('button', { name: 'Registrar Paciente' }))
+
+    await waitFor(() => expect(alGuardar).toHaveBeenCalled())
+    expect(cuerpo).toMatchObject({ dni: '71213266', fechaNacimiento: '1975-03-15' })
+  })
+
+  it('con una fecha de nacimiento que no existe no registra al paciente y lo avisa', async () => {
+    let llamadas = 0
+    servidor.use(http.post(`${API}/pacientes`, () => { llamadas += 1; return HttpResponse.json({}, { status: 201 }) }))
+    renderizar('VILLADENT')
+
+    await userEvent.type(screen.getByLabelText(/DNI \(8 dígitos\)/i), '71213266')
+    await userEvent.type(screen.getByLabelText(/Nombres/i), 'Gustavo')
+    await userEvent.type(screen.getByLabelText(/Apellidos/i), 'Machuca')
+    await userEvent.type(screen.getByLabelText(/Fecha de Nacimiento/i), '31021980')
+    await userEvent.click(screen.getByRole('button', { name: 'Registrar Paciente' }))
+
+    expect((await screen.findAllByText(/no existe/i)).length).toBeGreaterThan(0)
+    expect(llamadas).toBe(0)
   })
 })

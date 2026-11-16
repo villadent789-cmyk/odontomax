@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { InputFechaNacimiento } from '@/design-system/components/InputFechaNacimiento'
 import { Search, UserPlus, UserRound } from 'lucide-react'
 import { useDeferredValue, useId, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { Alert, Button, Field, Input, Skeleton } from '@/design-system'
 import { cn } from '@/design-system/cn'
-import { hoyEnLima } from '@/shared/format'
 import { nombrePaciente, useCrearPaciente, usePacientes, type Paciente } from './api-agenda'
 import { mensajeError } from './errores'
 import { esquemaPaciente, type DatosPaciente } from './esquemas'
@@ -126,8 +126,11 @@ function RegistroRapido({
   onRegistrado: (p: Paciente) => void
 }) {
   const crear = useCrearPaciente()
+  const [errorFecha, setErrorFecha] = useState<string | null>(null)
   const {
     register,
+    control,
+    setError,
     handleSubmit,
     formState: { errors },
   } = useForm<DatosPaciente>({
@@ -137,6 +140,10 @@ function RegistroRapido({
 
   // Va dentro del formulario de la cita: no puede ser un <form> anidado, se envía con el botón.
   const registrar = handleSubmit(async (d) => {
+    if (errorFecha) {
+      setError('fechaNacimiento', { message: errorFecha })
+      return
+    }
     try {
       const p = await crear.mutateAsync({
         dni: d.dni,
@@ -176,7 +183,19 @@ function RegistroRapido({
           <Input autoComplete="off" {...register('apellidos')} />
         </Field>
         <Field label="Fecha de nacimiento (opcional)" error={errors.fechaNacimiento?.message}>
-          <Input type="date" max={hoyEnLima()} {...register('fechaNacimiento')} />
+          <Controller
+            control={control}
+            name="fechaNacimiento"
+            render={({ field }) => (
+              <InputFechaNacimiento
+                value={field.value ?? ''}
+                onChange={(iso, error) => {
+                  field.onChange(iso)
+                  setErrorFecha(error)
+                }}
+              />
+            )}
+          />
         </Field>
       </div>
       <div className="flex flex-wrap gap-2">

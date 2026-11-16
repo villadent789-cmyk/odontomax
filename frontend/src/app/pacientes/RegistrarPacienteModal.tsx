@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { InputFechaNacimiento } from '@/design-system/components/InputFechaNacimiento'
 import { Button } from '@/design-system/components/Button'
 import {
   Dialog,
@@ -45,6 +46,7 @@ export function RegistrarPacienteModal({ abierto, alCerrar, alGuardar }: Props) 
   const [nombres, setNombres] = useState('')
   const [apellidos, setApellidos] = useState('')
   const [fechaNacimiento, setFechaNacimiento] = useState('')
+  const [errorFecha, setErrorFecha] = useState<string | null>(null)
   const [genero, setGenero] = useState<string>('FEMENINO')
   const [telefono, setTelefono] = useState('')
   const [sedeId, setSedeId] = useState(() => {
@@ -95,6 +97,11 @@ export function RegistrarPacienteModal({ abierto, alCerrar, alGuardar }: Props) 
     }
     if (telefono.trim() && !/^9\d{8}$/.test(telefono.trim())) {
       setErrorLocal('El celular debe tener 9 dígitos y empezar con 9 (ej. 964123456).')
+      return
+    }
+
+    if (errorFecha) {
+      setErrorLocal(errorFecha)
       return
     }
 
@@ -183,11 +190,13 @@ export function RegistrarPacienteModal({ abierto, alCerrar, alGuardar }: Props) 
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Field label="Fecha de Nacimiento">
-              <Input
+              <InputFechaNacimiento
                 id="fechaNacimiento"
-                type="date"
                 value={fechaNacimiento}
-                onChange={(e) => setFechaNacimiento(e.target.value)}
+                onChange={(iso, error) => {
+                  setFechaNacimiento(iso)
+                  setErrorFecha(error)
+                }}
               />
             </Field>
             <Field label="Género">

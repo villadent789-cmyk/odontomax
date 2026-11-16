@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { InputFechaNacimiento } from '@/design-system/components/InputFechaNacimiento'
 import {
   Alert,
   Button,
@@ -39,12 +40,17 @@ function Formulario({ alCerrar, pacienteId, actual }: Omit<Props, 'abierto'>) {
   const [apellidos, setApellidos] = useState(actual.apellidos ?? '')
   const [dni, setDni] = useState(actual.dni ?? '')
   const [fecha, setFecha] = useState(actual.fechaNacimiento ?? '')
+  const [errorFecha, setErrorFecha] = useState<string | null>(null)
   const [motivo, setMotivo] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    if (errorFecha) {
+      setError(errorFecha)
+      return
+    }
     const cambios = {
       nombres: nombres.trim() !== (actual.nombres ?? '') ? nombres.trim() : undefined,
       apellidos: apellidos.trim() !== (actual.apellidos ?? '') ? apellidos.trim() : undefined,
@@ -99,7 +105,13 @@ function Formulario({ alCerrar, pacienteId, actual }: Omit<Props, 'abierto'>) {
           <Input value={dni} onChange={(e) => setDni(e.target.value.replace(/\D/g, '').slice(0, 8))} inputMode="numeric" autoComplete="off" />
         </Field>
         <Field label="Fecha de nacimiento">
-          <Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+          <InputFechaNacimiento
+            value={fecha}
+            onChange={(iso, error) => {
+              setFecha(iso)
+              setErrorFecha(error)
+            }}
+          />
         </Field>
       </div>
       <Field label="Motivo de la corrección *" ayuda="Ej. Se escribió mal el apellido al registrar.">
